@@ -9,9 +9,9 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
 
 @Route("/cadastrar-cliente")
-public class CadastroCliente extends VerticalLayout {
+public class CadastroClienteView extends VerticalLayout {
 
-    public CadastroCliente() {
+    public CadastroClienteView() {
         var titulo = new H3("Cadastro de cliente");
         var formularioCadastro = new FormLayout();
         var descricao = new TextField("Descrição");
