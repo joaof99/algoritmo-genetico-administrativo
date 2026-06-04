@@ -23,16 +23,13 @@ public class CadastroClienteView extends VerticalLayout {
     private final TextField longitude = new TextField("Digite a longitude");
     private final Cliente cliente = new Cliente();
 
-    @Autowired
-    private ClienteRepository clienteRepository;
-
-    public CadastroClienteView() {
+    public CadastroClienteView(ClienteRepository clienteRepository) {
         binder.bindInstanceFields(this);
         binder.setBean(cliente);
 
-        var formularioCadastro = new FormLayout();
         var titulo = new H3("Cadastro de cliente");
 
+        var formularioCadastro = new FormLayout();
         formularioCadastro.add(descricao, latitude, longitude);
 
         var botaoCadastrarCliente = new Button("Cadastrar cliente");
