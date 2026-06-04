@@ -1,7 +1,7 @@
 package com.genetico.views;
 
 import com.genetico.model.Cliente;
-import com.genetico.repository.ClienteRepository;
+import com.genetico.service.ClienteService;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -22,7 +22,7 @@ public class CadastroClienteView extends VerticalLayout {
     private final TextField longitude = new TextField("Digite a longitude");
     private final Cliente cliente = new Cliente();
 
-    public CadastroClienteView(ClienteRepository clienteRepository) {
+    public CadastroClienteView(ClienteService clienteService) {
         binder.bindInstanceFields(this);
         binder.setBean(cliente);
 
@@ -36,7 +36,7 @@ public class CadastroClienteView extends VerticalLayout {
 
         botaoCadastrarCliente.addClickListener(clickBotao -> {
             if (!binder.validate().hasErrors()) {
-                clienteRepository.save(cliente);
+                clienteService.salvar(cliente);
                 Notification.show("Cliente salvo com sucesso");
             }
         });
