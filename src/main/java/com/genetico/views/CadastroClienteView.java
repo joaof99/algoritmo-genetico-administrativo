@@ -16,15 +16,15 @@ import com.vaadin.flow.router.Route;
 @Route("/cadastrar-cliente")
 @PageTitle("Cadastro de cliente")
 public class CadastroClienteView extends VerticalLayout {
-    private final BeanValidationBinder<Cliente> binder = new BeanValidationBinder<>(Cliente.class);
+    private final BeanValidationBinder<Cliente> clienteBinder = new BeanValidationBinder<>(Cliente.class);
     private final TextField descricao = new TextField("Digite a descrição");
     private final TextField latitude = new TextField("Digite a latitude");
     private final TextField longitude = new TextField("Digite a longitude");
     private final Cliente cliente = new Cliente();
 
     public CadastroClienteView(ClienteService clienteService) {
-        binder.bindInstanceFields(this);
-        binder.setBean(cliente);
+        clienteBinder.bindInstanceFields(this);
+        clienteBinder.setBean(cliente);
 
         var titulo = new H3("Cadastro de cliente");
 
@@ -35,7 +35,7 @@ public class CadastroClienteView extends VerticalLayout {
         botaoCadastrarCliente.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         botaoCadastrarCliente.addClickListener(clickBotao -> {
-            if (!binder.validate().hasErrors()) {
+            if (!clienteBinder.validate().hasErrors()) {
                 clienteService.salvar(cliente);
                 Notification.show("Cliente salvo com sucesso");
             }
