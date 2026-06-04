@@ -27,8 +27,6 @@ public class CadastroClienteView extends VerticalLayout {
     private ClienteRepository clienteRepository;
 
     public CadastroClienteView() {
-        add(descricao, latitude, longitude);
-
         binder.bindInstanceFields(this);
         binder.setBean(cliente);
 
