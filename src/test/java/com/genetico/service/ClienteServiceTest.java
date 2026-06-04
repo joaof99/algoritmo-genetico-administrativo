@@ -11,10 +11,6 @@ class ClienteServiceTest {
     @Test
     public void deveChamarSalvarComSucesso() {
         var cliente = new Cliente();
-        cliente.setDescricao("Descrição teste");
-        cliente.setLongitude(Double.valueOf("-90.0"));
-        cliente.setLatitude(Double.valueOf("-450.0"));
-
         var clienteRepository = mock(ClienteRepository.class);
         var clienteService = new ClienteService(clienteRepository);
 
