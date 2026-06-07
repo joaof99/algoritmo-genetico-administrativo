@@ -30,26 +30,11 @@ public class MainView extends VerticalLayout {
     private ListDataProvider<Cliente> clientesProvider;
 
     public MainView(ClienteService clienteService) {
-        renderizarListagemClientes(clienteService);
-        renderizarCadastroClientes(clienteService);
+        criarCadastroClientes(clienteService);
+        criarListagemClientes(clienteService);
     }
 
-    private void renderizarListagemClientes(ClienteService clienteService) {
-        var titulo = new H3("Listagem de clientes existentes");
-
-        var clientes = clienteService.buscarTodos();
-        configurarGrid(clientes);
-
-        add(titulo, grid);
-    }
-
-    private void configurarGrid(List<Cliente> itensGrid) {
-        this.clientesProvider = new ListDataProvider<>(itensGrid);
-        grid.setItems(itensGrid);
-        grid.setDataProvider(this.clientesProvider);
-    }
-
-    private void renderizarCadastroClientes(ClienteService clienteService) {
+    private void criarCadastroClientes(ClienteService clienteService) {
         clienteBinder.bindInstanceFields(this);
         clienteBinder.setBean(new Cliente());
         var titulo = new H3("Cadastro de cliente");
@@ -82,5 +67,19 @@ public class MainView extends VerticalLayout {
 
     private void limparFormularioCliente() {
         clienteBinder.setBean(new Cliente());
+    }
+
+    private void criarListagemClientes(ClienteService clienteService) {
+        var titulo = new H3("Listagem de clientes existentes");
+
+        var clientes = clienteService.buscarTodos();
+        configurarGrid(clientes);
+
+        add(titulo, grid);
+    }
+
+    private void configurarGrid(List<Cliente> itensGrid) {
+        this.clientesProvider = new ListDataProvider<>(itensGrid);
+        grid.setDataProvider(this.clientesProvider);
     }
 }
