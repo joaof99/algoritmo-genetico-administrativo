@@ -15,6 +15,8 @@ import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
+import java.util.List;
+
 @Route("")
 @PageTitle("Algoritmo Genético Administrativo")
 public class MainView extends VerticalLayout {
@@ -36,11 +38,15 @@ public class MainView extends VerticalLayout {
         var titulo = new H3("Listagem de clientes existentes");
 
         var clientes = clienteService.buscarTodos();
-        this.clientesProvider = new ListDataProvider<>(clientes);
-        grid.setItems(clientes);
-        grid.setDataProvider(this.clientesProvider);
+        configurarGrid(clientes);
 
         add(titulo, grid);
+    }
+
+    private void configurarGrid(List<Cliente> itensGrid) {
+        this.clientesProvider = new ListDataProvider<>(itensGrid);
+        grid.setItems(itensGrid);
+        grid.setDataProvider(this.clientesProvider);
     }
 
     private void renderizarCadastroClientes(ClienteService clienteService) {
