@@ -33,7 +33,7 @@ class ClienteServiceTest {
     @Test
     @DisplayName("Deve executar com sucesso a rotina de buscar todos os clientes no banco de dados")
     public void deveExecutarComSucessoBuscarTodosOsClientes() {
-        List<Cliente> clientes = new ArrayList<>();
+        var clientes = new ArrayList<Cliente>();
         clientes.add(new Cliente());
         clientes.add(new Cliente());
         clientes.add(new Cliente());
