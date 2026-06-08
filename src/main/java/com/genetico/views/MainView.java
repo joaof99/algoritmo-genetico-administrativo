@@ -50,7 +50,7 @@ public class MainView extends VerticalLayout {
             if (formularioValido) {
                 var clienteAtual = clienteBinder.getBean();
                 clienteService.salvar(clienteAtual);
-                Notification.show("Cliente salvo com sucesso");
+                Notification.show("Cliente salvo com sucesso", 3000, Notification.Position.MIDDLE);
 
                 adicionarClienteGrid(clienteAtual);
                 limparFormularioCliente();
