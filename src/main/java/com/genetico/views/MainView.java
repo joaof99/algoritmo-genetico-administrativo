@@ -26,12 +26,18 @@ public class MainView extends VerticalLayout {
     private final TextField latitude = new TextField("Digite a latitude");
     private final TextField longitude = new TextField("Digite a longitude");
 
-    private final Grid<Cliente> grid = new Grid<>(Cliente.class, true);
+    private Grid<Cliente> grid;
     private ListDataProvider<Cliente> clientesProvider;
 
     public MainView(ClienteService clienteService) {
+        inicializarGrid();
         criarCadastroClientes(clienteService);
         criarListagemClientes(clienteService);
+    }
+
+    private void inicializarGrid() {
+        this.grid = new Grid<>(Cliente.class, true);
+        this.grid.setId("grid-clientes");
     }
 
     private void criarCadastroClientes(ClienteService clienteService) {
@@ -75,12 +81,12 @@ public class MainView extends VerticalLayout {
         var titulo = new H3("Listagem de clientes existentes");
 
         var clientes = clienteService.buscarTodos();
-        configurarGrid(clientes);
+        atualizarListagemGrid(clientes);
 
         add(titulo, grid);
     }
 
-    private void configurarGrid(List<Cliente> itensGrid) {
+    private void atualizarListagemGrid(List<Cliente> itensGrid) {
         this.clientesProvider = new ListDataProvider<>(itensGrid);
         grid.setDataProvider(this.clientesProvider);
     }
