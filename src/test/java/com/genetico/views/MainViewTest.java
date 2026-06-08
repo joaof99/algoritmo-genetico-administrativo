@@ -61,4 +61,17 @@ class MainViewTest {
         assertEquals(1, quantidadeItensGrid);
     }
 
+    @Test
+    @DisplayName("Não deve atualizar o grid se ocorrer exceção ao salvar o cliente")
+    void naoDeveAtualizarGridSeHouverExcecaoAoSalvarCliente() {
+        when(clienteService.salvar(any())).thenThrow(new RuntimeException("Erro no banco"));
+
+        _setValue(_get(TextField.class, spec -> spec.withLabel("Digite a descrição")), "Cliente Teste");
+        _setValue(_get(TextField.class, spec -> spec.withLabel("Digite a latitude")), "-23.5");
+        _setValue(_get(TextField.class, spec -> spec.withLabel("Digite a longitude")), "-46.6");
+
+        _click(_get(Button.class, spec -> spec.withText("Cadastrar cliente")));
+
+        assertEquals(0, _size(_get(Grid.class)));
+    }
 }
