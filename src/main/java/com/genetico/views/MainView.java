@@ -48,11 +48,14 @@ public class MainView extends VerticalLayout {
         cadastrarCliente.addClickListener(clickBotao -> {
             var formularioValido = !clienteBinder.validate().hasErrors();
             if (formularioValido) {
-                var novoCliente = clienteService.salvar(clienteBinder.getBean());
-                Notification.show("Cliente salvo com sucesso", 3000, Notification.Position.MIDDLE);
-
-                adicionarClienteGrid(novoCliente);
-                limparFormularioCliente();
+                try {
+                    var novoCliente = clienteService.salvar(clienteBinder.getBean());
+                    adicionarClienteGrid(novoCliente);
+                    limparFormularioCliente();
+                    Notification.show("Cliente salvo com sucesso", 3000, Notification.Position.MIDDLE);
+                } catch (Exception exception) {
+                    Notification.show("Erro inesperado ao salvar cliente, tente novamente", 4000, Notification.Position.MIDDLE);
+                }
             }
         });
 
