@@ -42,8 +42,8 @@ class MainViewTest {
     }
 
     @Test
-    @DisplayName("Deve adicionar cliente no grid após salvar com sucesso")
-    void deveAdicionarClienteNoGridAposSalvar() {
+    @DisplayName("Deve adicionar cliente ao grid após salvar com sucesso")
+    void deveAdicionarClienteAoGridAposSalvar() {
         var clienteSalvo = new Cliente();
         clienteSalvo.setDescricao("Cliente Teste");
         clienteSalvo.setLatitude(-23.5);
