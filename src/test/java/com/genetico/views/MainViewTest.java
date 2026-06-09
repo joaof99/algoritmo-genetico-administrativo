@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -51,7 +52,7 @@ class MainViewTest {
         _setValue(_get(TextField.class, spec -> spec.withLabel("Digite a longitude")), "-46.6");
         _click(_get(Button.class, spec -> spec.withText("Cadastrar cliente")));
 
-        verify(clienteService, times(1)).salvar(any());
+        verify(clienteService, times(1)).salvar(any(Cliente.class));
         var quantidadeItensGrid = _size(_get(Grid.class, spec -> spec.withId("grid-clientes")));
         assertEquals(1, quantidadeItensGrid);
     }
