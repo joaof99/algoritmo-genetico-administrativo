@@ -58,7 +58,7 @@ class MainViewTest {
 
     @Test
     @DisplayName("Não deve atualizar o grid se ocorrer exceção ao salvar o cliente")
-    void naoDeveAtualizarGridSeHouverExcecaoAoSalvarCliente() {
+    void naoDeveAtualizarGridSeOcorrerExcecaoAoSalvarCliente() {
         when(clienteService.salvar(any())).thenThrow(new RuntimeException("Erro no banco"));
 
         _setValue(_get(TextField.class, spec -> spec.withLabel("Digite a descrição")), "Cliente Teste");
