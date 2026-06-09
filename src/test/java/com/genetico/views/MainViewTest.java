@@ -44,12 +44,7 @@ class MainViewTest {
     @Test
     @DisplayName("Deve adicionar cliente ao grid após salvar com sucesso")
     void deveAdicionarClienteAoGridAposSalvar() {
-        var clienteSalvo = new Cliente();
-        clienteSalvo.setDescricao("Cliente Teste");
-        clienteSalvo.setLatitude(-23.5);
-        clienteSalvo.setLongitude(-23.5);
-
-        when(clienteService.salvar(any())).thenReturn(clienteSalvo);
+        when(clienteService.salvar(any())).thenReturn(new Cliente());
 
         _setValue(_get(TextField.class, spec -> spec.withLabel("Digite a descrição")), "Cliente Teste");
         _setValue(_get(TextField.class, spec -> spec.withLabel("Digite a latitude")), "-23.5");
