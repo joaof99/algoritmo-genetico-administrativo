@@ -20,7 +20,7 @@ import java.util.List;
 @Route("")
 @PageTitle("Algoritmo Genético Administrativo")
 public class MainView extends VerticalLayout {
-    private final BeanValidationBinder<Cliente> clienteBinder = new BeanValidationBinder<>(Cliente.class);
+    private BeanValidationBinder<Cliente> clienteBinder;
 
     private final TextField descricao = new TextField("Digite a descrição");
     private final TextField latitude = new TextField("Digite a latitude");
@@ -31,18 +31,23 @@ public class MainView extends VerticalLayout {
 
     public MainView(ClienteService clienteService) {
         inicializarGrid();
+        inicializarClienteBinder();
         criarCadastroClientes(clienteService);
         criarListagemClientes(clienteService);
     }
 
     private void inicializarGrid() {
-        this.grid = new Grid<>(Cliente.class, true);
-        this.grid.setId("grid-clientes");
+        grid = new Grid<>(Cliente.class, true);
+        grid.setId("grid-clientes");
+    }
+
+    private void inicializarClienteBinder() {
+        clienteBinder = new BeanValidationBinder<>(Cliente.class);
+        clienteBinder.bindInstanceFields(this);
+        clienteBinder.setBean(new Cliente());
     }
 
     private void criarCadastroClientes(ClienteService clienteService) {
-        clienteBinder.bindInstanceFields(this);
-        clienteBinder.setBean(new Cliente());
         var titulo = new H3("Cadastro de cliente");
 
         var formularioCadastro = new FormLayout();
@@ -81,13 +86,13 @@ public class MainView extends VerticalLayout {
         var titulo = new H3("Listagem de clientes existentes");
 
         var clientes = clienteService.buscarTodos();
-        atualizarListagemGrid(clientes);
+        incluirClientesGrid(clientes);
 
         add(titulo, grid);
     }
 
-    private void atualizarListagemGrid(List<Cliente> itensGrid) {
-        this.clientesProvider = new ListDataProvider<>(itensGrid);
-        grid.setDataProvider(this.clientesProvider);
+    private void incluirClientesGrid(List<Cliente> itensGrid) {
+        clientesProvider = new ListDataProvider<>(itensGrid);
+        grid.setDataProvider(clientesProvider);
     }
 }
