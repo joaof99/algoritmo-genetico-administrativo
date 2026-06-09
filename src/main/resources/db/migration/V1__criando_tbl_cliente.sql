@@ -1,0 +1,6 @@
+CREATE TABLE Cliente (
+    id SERIAL PRIMARY KEY,
+    descricao VARCHAR(255) NOT NULL,
+    latitude DOUBLE PRECISION NOT NULL,
+    longitude DOUBLE PRECISION NOT NULL
+);
