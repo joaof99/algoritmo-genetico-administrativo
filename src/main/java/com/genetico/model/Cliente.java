@@ -9,15 +9,15 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 @Entity
-@Table(name = "clientes")
+@Table(name = "enderecos")
 public class Cliente {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotEmpty(message = "Descrição não pode ser vazia")
-    private String descricao;
+    @NotEmpty(message = "Logradouro não pode ser vazio")
+    private String logradouro;
 
     @NotNull(message = "Latitude é obrigatória")
     @DecimalMin(value = "-90.0", message = "Latitude mínima deve ser -90.0")
@@ -36,12 +36,12 @@ public class Cliente {
 
     }
 
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
+    public void setLogradouro(String logradouro) {
+        this.logradouro = logradouro;
     }
 
-    public String getDescricao() {
-        return descricao;
+    public String getLogradouro() {
+        return logradouro;
     }
 
     public void setLatitude(Double latitude) {

@@ -18,7 +18,7 @@ public class RotaView extends VerticalLayout {
     public RotaView(ClienteService clienteService) {
         var cbxClientes = new MultiSelectComboBox<Cliente>("Selecione os clientes da rota");
         cbxClientes.setItems(clienteService.buscarTodos());
-        cbxClientes.setItemLabelGenerator(Cliente::getDescricao);
+        cbxClientes.setItemLabelGenerator(Cliente::getLogradouro);
         cbxClientes.setWidth("100%");
 
         var cadastrarRota = new Button("Cadastrar Rota");

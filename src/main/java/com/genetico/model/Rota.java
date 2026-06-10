@@ -13,9 +13,9 @@ public class Rota {
 
     @ManyToMany
     @JoinTable(
-            name = "rotas_clientes",
+            name = "rotas_enderecos",
             joinColumns = @JoinColumn(name = "rota_id"),
-            inverseJoinColumns = @JoinColumn(name = "cliente_id")
+            inverseJoinColumns = @JoinColumn(name = "endereco_id")
     )
     private List<Cliente> clientes;
 

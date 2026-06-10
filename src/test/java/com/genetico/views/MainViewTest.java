@@ -47,7 +47,7 @@ class MainViewTest {
     void deveAdicionarClienteAoGridAposSalvar() {
         when(clienteService.salvar(any())).thenReturn(new Cliente());
 
-        _setValue(_get(TextField.class, spec -> spec.withLabel("Digite a descrição")), "Cliente Teste");
+        _setValue(_get(TextField.class, spec -> spec.withLabel("Digite o logradouro")), "Cliente Teste");
         _setValue(_get(TextField.class, spec -> spec.withLabel("Digite a latitude")), "-23.5");
         _setValue(_get(TextField.class, spec -> spec.withLabel("Digite a longitude")), "-46.6");
         _click(_get(Button.class, spec -> spec.withText("Cadastrar cliente")));
@@ -62,7 +62,7 @@ class MainViewTest {
     void deveLimparFormularioCorretamenteAposSalvarCliente() {
         when(clienteService.salvar(any())).thenReturn(new Cliente());
 
-        _setValue(_get(TextField.class, spec -> spec.withLabel("Digite a descrição")), "Cliente Teste");
+        _setValue(_get(TextField.class, spec -> spec.withLabel("Digite o logradouro")), "Cliente Teste");
         _setValue(_get(TextField.class, spec -> spec.withLabel("Digite a latitude")), "-23.5");
         _setValue(_get(TextField.class, spec -> spec.withLabel("Digite a longitude")), "-46.6");
         _click(_get(Button.class, spec -> spec.withText("Cadastrar cliente")));
@@ -79,7 +79,7 @@ class MainViewTest {
     void naoDeveAtualizarGridSeOcorrerExcecaoAoSalvarCliente() {
         when(clienteService.salvar(any())).thenThrow(new RuntimeException("Erro no banco"));
 
-        _setValue(_get(TextField.class, spec -> spec.withLabel("Digite a descrição")), "Cliente Teste");
+        _setValue(_get(TextField.class, spec -> spec.withLabel("Digite o logradouro")), "Cliente Teste");
         _setValue(_get(TextField.class, spec -> spec.withLabel("Digite a latitude")), "-23.5");
         _setValue(_get(TextField.class, spec -> spec.withLabel("Digite a longitude")), "-46.6");
 

@@ -22,7 +22,7 @@ import java.util.List;
 public class MainView extends VerticalLayout {
     private BeanValidationBinder<Cliente> clienteBinder;
 
-    private final TextField descricao = new TextField("Digite a descrição");
+    private final TextField logradouro = new TextField("Digite o logradouro");
     private final TextField latitude = new TextField("Digite a latitude");
     private final TextField longitude = new TextField("Digite a longitude");
 
@@ -51,7 +51,7 @@ public class MainView extends VerticalLayout {
         var titulo = new H3("Cadastro de cliente");
 
         var formularioCadastro = new FormLayout();
-        formularioCadastro.add(descricao, latitude, longitude);
+        formularioCadastro.add(logradouro, latitude, longitude);
 
         var cadastrarCliente = new Button("Cadastrar cliente");
         cadastrarCliente.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -65,6 +65,7 @@ public class MainView extends VerticalLayout {
                     limparFormularioCliente();
                     Notification.show("Cliente salvo com sucesso", 3000, Notification.Position.MIDDLE);
                 } catch (Exception exception) {
+                    System.out.println(exception.getMessage());
                     Notification.show("Erro inesperado ao salvar cliente, tente novamente", 4000, Notification.Position.MIDDLE);
                 }
             }
