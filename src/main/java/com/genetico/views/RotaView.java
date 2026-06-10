@@ -1,8 +1,8 @@
 package com.genetico.views;
 
-import com.genetico.model.Cliente;
+import com.genetico.model.Endereco;
 import com.genetico.model.Rota;
-import com.genetico.service.ClienteService;
+import com.genetico.service.EnderecoService;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
@@ -15,24 +15,24 @@ import com.vaadin.flow.router.Route;
 @PageTitle("Cadastro de Rotas")
 public class RotaView extends VerticalLayout {
 
-    public RotaView(ClienteService clienteService) {
-        var cbxClientes = new MultiSelectComboBox<Cliente>("Selecione os clientes da rota");
-        cbxClientes.setItems(clienteService.buscarTodos());
-        cbxClientes.setItemLabelGenerator(Cliente::getLogradouro);
-        cbxClientes.setWidth("100%");
+    public RotaView(EnderecoService enderecoService) {
+        var cbxEnderecos = new MultiSelectComboBox<Endereco>("Selecione os endereços da rota");
+        cbxEnderecos.setItems(enderecoService.buscarTodos());
+        cbxEnderecos.setItemLabelGenerator(Endereco::getLogradouro);
+        cbxEnderecos.setWidth("100%");
 
         var cadastrarRota = new Button("Cadastrar Rota");
         cadastrarRota.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         cadastrarRota.addClickListener(buttonClickEvent -> {
             var rota = new Rota();
-            var clientesSelecionados = cbxClientes.getSelectedItems().stream().toList();
-            rota.setClientes(clientesSelecionados);
+            var enderecosSelecionados = cbxEnderecos.getSelectedItems().stream().toList();
+            rota.setEnderecos(enderecosSelecionados);
 
             Notification.show("Rota salva com sucesso", 3000, Notification.Position.MIDDLE);
         });
 
-        add(cbxClientes, cadastrarRota);
+        add(cbxEnderecos, cadastrarRota);
     }
 
 }

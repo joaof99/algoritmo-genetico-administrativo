@@ -10,7 +10,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "enderecos")
-public class Cliente {
+public class Endereco {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,10 +29,10 @@ public class Cliente {
     @DecimalMax(value = "180.0", message = "Longitude máxima deve ser 180.0")
     private Double longitude;
 
-    @ManyToMany(mappedBy = "clientes")
+    @ManyToMany(mappedBy = "enderecos")
     private List<Rota> rotas;
 
-    public Cliente() {
+    public Endereco() {
 
     }
 

@@ -17,9 +17,13 @@ public class Rota {
             joinColumns = @JoinColumn(name = "rota_id"),
             inverseJoinColumns = @JoinColumn(name = "endereco_id")
     )
-    private List<Cliente> clientes;
+    private List<Endereco> enderecos;
 
-    public void setClientes(List<Cliente> clientes) {
-        this.clientes = clientes;
+    public void setEnderecos(List<Endereco> enderecos) {
+        this.enderecos = enderecos;
+    }
+
+    public List<Endereco> getEnderecos() {
+        return enderecos;
     }
 }
