@@ -1,15 +1,15 @@
 package com.genetico.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.List;
+
 @Entity
+@Table(name = "clientes")
 public class Cliente {
 
     @Id
@@ -28,6 +28,9 @@ public class Cliente {
     @DecimalMin(value = "-180.0", message = "Longitude mínima deve ser -180.0")
     @DecimalMax(value = "180.0", message = "Longitude máxima deve ser 180.0")
     private Double longitude;
+
+    @ManyToMany(mappedBy = "clientes")
+    private List<Rota> rotas;
 
     public Cliente() {
 
