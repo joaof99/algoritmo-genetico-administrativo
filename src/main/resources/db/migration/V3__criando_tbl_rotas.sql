@@ -1,0 +1,3 @@
+CREATE TABLE rotas (
+    id SERIAL PRIMARY KEY
+);
