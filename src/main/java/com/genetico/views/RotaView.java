@@ -20,15 +20,14 @@ public class RotaView extends VerticalLayout {
 
     private final Button botaoCadastroRota;
     private final MultiSelectComboBox<Endereco> comboBoxEnderecos;
+    private final RotaRepository rotaRepository;
+    private final EnderecoService enderecoService;
 
     public RotaView(EnderecoService enderecoService, RotaRepository rotaRepository) {
-        botaoCadastroRota = inicializarBotaoCadastroRota();
-        comboBoxEnderecos = inicializarComboBoxEnderecos(enderecoService.buscarTodos());
-
-        botaoCadastroRota.addClickListener(evento -> {
-            salvarRota(rotaRepository);
-            comboBoxEnderecos.clear();
-        });
+        this.enderecoService = enderecoService;
+        this.rotaRepository = rotaRepository;
+        this.comboBoxEnderecos = inicializarComboBoxEnderecos();
+        this.botaoCadastroRota = inicializarBotaoCadastroRota();
 
         add(comboBoxEnderecos, botaoCadastroRota);
     }
@@ -37,29 +36,35 @@ public class RotaView extends VerticalLayout {
         var botaoCadastroRota = new Button("Cadastrar Rota");
         botaoCadastroRota.setId("btn-cadastro-rota");
         botaoCadastroRota.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
+        botaoCadastroRota.addClickListener(evento -> {
+            salvarRota();
+            Notification.show("Rota salva com sucesso", 4500, Notification.Position.MIDDLE);
+            comboBoxEnderecos.clear();
+        });
+
         return botaoCadastroRota;
     }
 
-    private MultiSelectComboBox<Endereco> inicializarComboBoxEnderecos(List<Endereco> itensComboBox) {
-        var cbxEnderecos = new MultiSelectComboBox<Endereco>("Selecione os endereços da rota");
+    private MultiSelectComboBox<Endereco> inicializarComboBoxEnderecos() {
+        var comboBoxEnderecos = new MultiSelectComboBox<Endereco>("Selecione os endereços da rota");
 
-        cbxEnderecos.setId("cbx-listagem-enderecos");
-        cbxEnderecos.setItems(itensComboBox);
-        cbxEnderecos.setItemLabelGenerator(Endereco::getLogradouro);
-        cbxEnderecos.setWidth("100%");
+        comboBoxEnderecos.setId("cbx-listagem-enderecos");
+        comboBoxEnderecos.setItems(enderecoService.buscarTodos());
+        comboBoxEnderecos.setItemLabelGenerator(Endereco::getLogradouro);
+        comboBoxEnderecos.setWidth("100%");
 
-        return cbxEnderecos;
+        return comboBoxEnderecos;
     }
 
-    private void salvarRota(RotaRepository rotaRepository) {
+    private void salvarRota() {
         try {
             var enderecosSelecionadosComboBox = List.copyOf(comboBoxEnderecos.getSelectedItems());
 
             var rota = new Rota(enderecosSelecionadosComboBox);
             rotaRepository.save(rota);
-
-            Notification.show("Rota salva com sucesso", 3000, Notification.Position.MIDDLE);
         } catch (Exception exception) {
+            exception.printStackTrace();
             Notification.show("Erro inesperado ao salvar rota, tente novamente", 4000, Notification.Position.MIDDLE);
         }
     }
