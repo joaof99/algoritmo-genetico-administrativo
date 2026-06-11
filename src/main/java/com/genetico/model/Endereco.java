@@ -36,6 +36,12 @@ public class Endereco {
 
     }
 
+    public Endereco(String logradouro, Double latitude, Double longitude) {
+        this.logradouro = logradouro;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
     public void setLogradouro(String logradouro) {
         this.logradouro = logradouro;
     }
