@@ -12,6 +12,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Route("/cadastrar-rotas")
@@ -22,9 +23,11 @@ public class RotaView extends VerticalLayout {
     private final MultiSelectComboBox<Endereco> comboBoxEnderecos;
     private final RotaRepository rotaRepository;
     private final EnderecoService enderecoService;
+    private final List<Endereco> enderecos;
 
     public RotaView(EnderecoService enderecoService, RotaRepository rotaRepository) {
         this.enderecoService = enderecoService;
+        this.enderecos = List.copyOf(this.enderecoService.buscarTodos());
         this.rotaRepository = rotaRepository;
         this.comboBoxEnderecos = inicializarComboBoxEnderecos();
         this.botaoCadastroRota = inicializarBotaoCadastroRota();
@@ -50,7 +53,7 @@ public class RotaView extends VerticalLayout {
         var comboBoxEnderecos = new MultiSelectComboBox<Endereco>("Selecione os endereços da rota");
 
         comboBoxEnderecos.setId("cbx-listagem-enderecos");
-        comboBoxEnderecos.setItems(enderecoService.buscarTodos());
+        comboBoxEnderecos.setItems(enderecos);
         comboBoxEnderecos.setItemLabelGenerator(Endereco::getLogradouro);
         comboBoxEnderecos.setWidth("100%");
 
@@ -59,7 +62,7 @@ public class RotaView extends VerticalLayout {
 
     private void salvarRota() {
         try {
-            var enderecosSelecionadosComboBox = List.copyOf(comboBoxEnderecos.getSelectedItems());
+            var enderecosSelecionadosComboBox = new ArrayList<>(comboBoxEnderecos.getSelectedItems());
 
             var rota = new Rota(enderecosSelecionadosComboBox);
             rotaRepository.save(rota);
