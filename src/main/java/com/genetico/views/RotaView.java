@@ -18,22 +18,16 @@ import java.util.List;
 @PageTitle("Cadastro de Rotas")
 public class RotaView extends VerticalLayout {
 
+    private final Button botaoCadastroRota;
+    private final MultiSelectComboBox<Endereco> comboBoxEnderecos;
+
     public RotaView(EnderecoService enderecoService, RotaRepository rotaRepository) {
-        var botaoCadastroRota = inicializarBotaoCadastroRota();
-        var comboBoxEnderecos = inicializarComboBoxEnderecos(enderecoService.buscarTodos());
+        botaoCadastroRota = inicializarBotaoCadastroRota();
+        comboBoxEnderecos = inicializarComboBoxEnderecos(enderecoService.buscarTodos());
 
         botaoCadastroRota.addClickListener(evento -> {
-            try {
-                var enderecosSelecionadosComboBox = comboBoxEnderecos.getSelectedItems().stream().toList();
-
-                var rota = new Rota(enderecosSelecionadosComboBox);
-                rotaRepository.save(rota);
-                comboBoxEnderecos.clear();
-
-                Notification.show("Rota salva com sucesso", 3000, Notification.Position.MIDDLE);
-            } catch (Exception exception) {
-                Notification.show("Erro inesperado ao salvar rota, tente novamente", 4000, Notification.Position.MIDDLE);
-            }
+            salvarRota(rotaRepository);
+            comboBoxEnderecos.clear();
         });
 
         add(comboBoxEnderecos, botaoCadastroRota);
@@ -55,6 +49,19 @@ public class RotaView extends VerticalLayout {
         cbxEnderecos.setWidth("100%");
 
         return cbxEnderecos;
+    }
+
+    private void salvarRota(RotaRepository rotaRepository) {
+        try {
+            var enderecosSelecionadosComboBox = comboBoxEnderecos.getSelectedItems().stream().toList();
+
+            var rota = new Rota(enderecosSelecionadosComboBox);
+            rotaRepository.save(rota);
+
+            Notification.show("Rota salva com sucesso", 3000, Notification.Position.MIDDLE);
+        } catch (Exception exception) {
+            Notification.show("Erro inesperado ao salvar rota, tente novamente", 4000, Notification.Position.MIDDLE);
+        }
     }
 }
 
