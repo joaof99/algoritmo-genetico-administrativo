@@ -18,12 +18,12 @@ public class Rota {
             joinColumns = @JoinColumn(name = "rota_id"),
             inverseJoinColumns = @JoinColumn(name = "endereco_id")
     )
-    private List<Endereco> enderecos;
+    private final List<Endereco> enderecos;
 
     @Enumerated(EnumType.STRING)
     private StatusRota status = StatusRota.PENDENTE;
 
-    public void setEnderecos(List<Endereco> enderecos) {
+    public Rota(List<Endereco> enderecos) {
         this.enderecos = enderecos;
     }
 
