@@ -12,30 +12,49 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
+import java.util.List;
+
 @Route("/cadastrar-rotas")
 @PageTitle("Cadastro de Rotas")
 public class RotaView extends VerticalLayout {
 
     public RotaView(EnderecoService enderecoService, RotaRepository rotaRepository) {
+        var botaoCadastroRota = inicializarBotaoCadastroRota();
+        var comboBoxEnderecos = inicializarComboBoxEnderecos(enderecoService.buscarTodos());
+
+        botaoCadastroRota.addClickListener(evento -> {
+            try {
+                var enderecosSelecionadosComboBox = comboBoxEnderecos.getSelectedItems().stream().toList();
+
+                var rota = new Rota(enderecosSelecionadosComboBox);
+                rotaRepository.save(rota);
+                comboBoxEnderecos.clear();
+
+                Notification.show("Rota salva com sucesso", 3000, Notification.Position.MIDDLE);
+            } catch (Exception exception) {
+                Notification.show("Erro inesperado ao salvar rota, tente novamente", 4000, Notification.Position.MIDDLE);
+            }
+        });
+
+        add(comboBoxEnderecos, botaoCadastroRota);
+    }
+
+    private Button inicializarBotaoCadastroRota() {
+        var botaoCadastroRota = new Button("Cadastrar Rota");
+        botaoCadastroRota.setId("btn-cadastro-rota");
+        botaoCadastroRota.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        return botaoCadastroRota;
+    }
+
+    private MultiSelectComboBox<Endereco> inicializarComboBoxEnderecos(List<Endereco> itensComboBox) {
         var cbxEnderecos = new MultiSelectComboBox<Endereco>("Selecione os endereços da rota");
-        cbxEnderecos.setItems(enderecoService.buscarTodos());
+
+        cbxEnderecos.setId("cbx-listagem-enderecos");
+        cbxEnderecos.setItems(itensComboBox);
         cbxEnderecos.setItemLabelGenerator(Endereco::getLogradouro);
         cbxEnderecos.setWidth("100%");
 
-        var cadastrarRota = new Button("Cadastrar Rota");
-        cadastrarRota.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-
-        cadastrarRota.addClickListener(evento -> {
-            var rota = new Rota();
-            var enderecosSelecionadosComboBox = cbxEnderecos.getSelectedItems().stream().toList();
-
-            rota.setEnderecos(enderecosSelecionadosComboBox);
-            rotaRepository.save(rota);
-
-            Notification.show("Rota salva com sucesso", 3000, Notification.Position.MIDDLE);
-        });
-
-        add(cbxEnderecos, cadastrarRota);
+        return cbxEnderecos;
     }
-
 }
+
