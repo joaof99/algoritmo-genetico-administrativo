@@ -53,7 +53,7 @@ public class RotaView extends VerticalLayout {
 
     private void salvarRota(RotaRepository rotaRepository) {
         try {
-            var enderecosSelecionadosComboBox = comboBoxEnderecos.getSelectedItems().stream().toList();
+            var enderecosSelecionadosComboBox = List.copyOf(comboBoxEnderecos.getSelectedItems());
 
             var rota = new Rota(enderecosSelecionadosComboBox);
             rotaRepository.save(rota);
