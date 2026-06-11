@@ -2,6 +2,7 @@ package com.genetico.views;
 
 import com.genetico.model.Endereco;
 import com.genetico.model.Rota;
+import com.genetico.repository.RotaRepository;
 import com.genetico.service.EnderecoService;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -15,7 +16,7 @@ import com.vaadin.flow.router.Route;
 @PageTitle("Cadastro de Rotas")
 public class RotaView extends VerticalLayout {
 
-    public RotaView(EnderecoService enderecoService) {
+    public RotaView(EnderecoService enderecoService, RotaRepository rotaRepository) {
         var cbxEnderecos = new MultiSelectComboBox<Endereco>("Selecione os endereços da rota");
         cbxEnderecos.setItems(enderecoService.buscarTodos());
         cbxEnderecos.setItemLabelGenerator(Endereco::getLogradouro);
@@ -24,10 +25,12 @@ public class RotaView extends VerticalLayout {
         var cadastrarRota = new Button("Cadastrar Rota");
         cadastrarRota.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        cadastrarRota.addClickListener(buttonClickEvent -> {
+        cadastrarRota.addClickListener(evento -> {
             var rota = new Rota();
-            var enderecosSelecionados = cbxEnderecos.getSelectedItems().stream().toList();
-            rota.setEnderecos(enderecosSelecionados);
+            var enderecosSelecionadosComboBox = cbxEnderecos.getSelectedItems().stream().toList();
+
+            rota.setEnderecos(enderecosSelecionadosComboBox);
+            rotaRepository.save(rota);
 
             Notification.show("Rota salva com sucesso", 3000, Notification.Position.MIDDLE);
         });

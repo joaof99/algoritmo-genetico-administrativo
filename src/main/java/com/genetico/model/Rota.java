@@ -1,5 +1,6 @@
 package com.genetico.model;
 
+import com.genetico.enums.StatusRota;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -18,6 +19,9 @@ public class Rota {
             inverseJoinColumns = @JoinColumn(name = "endereco_id")
     )
     private List<Endereco> enderecos;
+
+    @Enumerated(EnumType.STRING)
+    private StatusRota status = StatusRota.PENDENTE;
 
     public void setEnderecos(List<Endereco> enderecos) {
         this.enderecos = enderecos;
