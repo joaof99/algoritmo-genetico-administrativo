@@ -15,7 +15,7 @@ import com.vaadin.flow.router.Route;
 import java.util.ArrayList;
 import java.util.List;
 
-@Route("/cadastrar-rotas")
+@Route("cadastro-rotas")
 @PageTitle("Cadastro de Rotas")
 public class RotaView extends VerticalLayout {
 
