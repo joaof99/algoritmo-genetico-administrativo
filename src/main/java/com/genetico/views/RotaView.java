@@ -40,7 +40,6 @@ public class RotaView extends VerticalLayout {
 
         botaoCadastroRota.addClickListener(evento -> {
             salvarRota();
-            Notification.show("Rota salva com sucesso", 4500, Notification.Position.MIDDLE);
             comboBoxEnderecos.clear();
         });
 
@@ -59,15 +58,12 @@ public class RotaView extends VerticalLayout {
     }
 
     private void salvarRota() {
-        try {
-            var enderecosSelecionadosComboBox = new ArrayList<>(comboBoxEnderecos.getSelectedItems());
+        var enderecosSelecionadosComboBox = new ArrayList<>(comboBoxEnderecos.getSelectedItems());
 
-            var rota = new Rota(enderecosSelecionadosComboBox);
-            rotaRepository.save(rota);
-        } catch (Exception exception) {
-            exception.printStackTrace();
-            Notification.show("Erro inesperado ao salvar rota, tente novamente", 4000, Notification.Position.MIDDLE);
-        }
+        var rota = new Rota(enderecosSelecionadosComboBox);
+        rotaRepository.save(rota);
+
+        Notification.show("Rota salva com sucesso", 4500, Notification.Position.MIDDLE);
     }
 }
 
