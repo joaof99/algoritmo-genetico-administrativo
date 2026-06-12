@@ -22,12 +22,10 @@ public class RotaView extends VerticalLayout {
     private final Button botaoCadastroRota;
     private final MultiSelectComboBox<Endereco> comboBoxEnderecos;
     private final RotaRepository rotaRepository;
-    private final EnderecoService enderecoService;
     private final List<Endereco> enderecos;
 
     public RotaView(EnderecoService enderecoService, RotaRepository rotaRepository) {
-        this.enderecoService = enderecoService;
-        this.enderecos = List.copyOf(this.enderecoService.buscarTodos());
+        this.enderecos = List.copyOf(enderecoService.buscarTodos());
         this.rotaRepository = rotaRepository;
         this.comboBoxEnderecos = inicializarComboBoxEnderecos();
         this.botaoCadastroRota = inicializarBotaoCadastroRota();
