@@ -25,6 +25,10 @@ public class Rota {
     @Enumerated(EnumType.STRING)
     private StatusRota status = StatusRota.PENDENTE;
 
+    public Rota(){
+
+    }
+
     public Rota(List<Endereco> enderecos) {
         this.enderecos = enderecos;
     }

@@ -73,12 +73,9 @@ public class RotaView extends VerticalLayout {
     }
 
     private void salvarRota() {
-        if (!rotaBinder.validate().hasErrors()) {
-            var enderecosSelecionadosComboBox = new ArrayList<>(comboBoxEnderecos.getSelectedItems());
-
-            var rota = new Rota(enderecosSelecionadosComboBox);
+        var rota = new Rota();
+        if (rotaBinder.writeBeanIfValid(rota)) {
             rotaRepository.save(rota);
-
             Notification.show("Rota salva com sucesso", 4500, Notification.Position.MIDDLE);
         } else {
             Notification.show("Erro ao salvar rota. Verifique erros apresentados na tela", 4500, Notification.Position.MIDDLE);
