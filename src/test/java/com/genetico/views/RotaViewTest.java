@@ -72,11 +72,13 @@ class RotaViewTest {
     void comboBoxClientesDeveSerLimpaAposUmCadastroDeRota() {
         var endereco1 = new Endereco("Endereço A", -9.5, -8.3);
         var endereco2 = new Endereco("Endereço B", -10.5, -24.3);
+        var endereco3 = new Endereco("Endereço C", -10.5, -24.3);
+        var endereco4 = new Endereco("Endereço D", -10.5, -24.3);
 
         UI.getCurrent().add(new RotaView(enderecoService, rotaRepository));
 
         var cbxEnderecos = _get(MultiSelectComboBox.class, spec -> spec.withId("cbx-listagem-enderecos"));
-        cbxEnderecos.setValue(Set.of(endereco1, endereco2));
+        cbxEnderecos.setValue(Set.of(endereco1, endereco2, endereco3, endereco4));
 
         _click(_get(Button.class, spec -> spec.withId("btn-cadastro-rota")));
 

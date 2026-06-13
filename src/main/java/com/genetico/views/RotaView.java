@@ -25,11 +25,12 @@ public class RotaView extends VerticalLayout {
     private final MultiSelectComboBox<Endereco> comboBoxEnderecos;
     private final RotaRepository rotaRepository;
     private final List<Endereco> enderecos;
-    private BeanValidationBinder<Rota> rotaBinder;
+    private final BeanValidationBinder<Rota> rotaBinder;
 
     public RotaView(EnderecoService enderecoService, RotaRepository rotaRepository) {
         this.enderecos = List.copyOf(enderecoService.buscarTodos());
         this.rotaRepository = rotaRepository;
+        this.rotaBinder = new BeanValidationBinder<>(Rota.class);
         this.comboBoxEnderecos = inicializarComboBoxEnderecos();
         this.botaoCadastroRota = inicializarBotaoCadastroRota();
 
@@ -42,8 +43,9 @@ public class RotaView extends VerticalLayout {
         botaoCadastroRota.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         botaoCadastroRota.addClickListener(evento -> {
-            salvarRota();
-            comboBoxEnderecos.clear();
+            if (salvarRota()) {
+                comboBoxEnderecos.clear();
+            }
         });
 
         return botaoCadastroRota;
@@ -57,28 +59,24 @@ public class RotaView extends VerticalLayout {
         comboBoxEnderecos.setItemLabelGenerator(Endereco::getLogradouro);
         comboBoxEnderecos.setWidth("100%");
 
-        associarEnderecoBinderAoComboBox(comboBoxEnderecos);
+        configurarBinderComboBox(comboBoxEnderecos);
 
         return comboBoxEnderecos;
     }
 
-    private void associarEnderecoBinderAoComboBox(MultiSelectComboBox<Endereco> comboBoxEnderecos) {
-        this.rotaBinder = new BeanValidationBinder<>(Rota.class);
-        this.rotaBinder.forField(comboBoxEnderecos)
-                .withConverter(
-                        ArrayList::new,
-                        HashSet::new
-                )
-                .bind("enderecos");
+    private void configurarBinderComboBox(MultiSelectComboBox<Endereco> comboBoxEnderecos) {
+        this.rotaBinder.forField(comboBoxEnderecos).withConverter(ArrayList::new, HashSet::new).bind("enderecos");
     }
 
-    private void salvarRota() {
+    private boolean salvarRota() {
         var rota = new Rota();
         if (rotaBinder.writeBeanIfValid(rota)) {
             rotaRepository.save(rota);
             Notification.show("Rota salva com sucesso", 4500, Notification.Position.MIDDLE);
+            return true;
         } else {
             Notification.show("Erro ao salvar rota. Verifique erros apresentados na tela", 4500, Notification.Position.MIDDLE);
+            return false;
         }
     }
 }
