@@ -49,13 +49,14 @@ class RotaViewTest {
         var endereco1 = new Endereco("Endereço A", -9.5, -8.3);
         var endereco2 = new Endereco("Endereço B", -10.5, -24.3);
         var endereco3 = new Endereco("Endereço C", -11.5, -25.3);
+        var endereco4 = new Endereco("Endereço D", -25.5, -90.3);
 
-        when(enderecoService.buscarTodos()).thenReturn(List.of(endereco1, endereco2, endereco3));
+        when(enderecoService.buscarTodos()).thenReturn(List.of(endereco1, endereco2, endereco3, endereco4));
 
         UI.getCurrent().add(new RotaView(enderecoService, rotaRepository));
 
         var cbxEnderecos = _get(MultiSelectComboBox.class, spec -> spec.withId("cbx-listagem-enderecos"));
-        cbxEnderecos.setValue(Set.of(endereco1, endereco2));
+        cbxEnderecos.setValue(Set.of(endereco1, endereco2, endereco3));
 
         _click(_get(Button.class, spec -> spec.withId("btn-cadastro-rota")));
 
@@ -63,7 +64,7 @@ class RotaViewTest {
         verify(rotaRepository, times(1)).save(rotaCaptor.capture());
 
         var rotaCapturada = rotaCaptor.getValue();
-        assertEquals(2, rotaCapturada.getEnderecos().size());
+        assertEquals(3, rotaCapturada.getEnderecos().size());
     }
 
     @Test
