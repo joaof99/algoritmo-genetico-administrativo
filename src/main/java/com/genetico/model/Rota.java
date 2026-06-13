@@ -2,6 +2,7 @@ package com.genetico.model;
 
 import com.genetico.enums.StatusRota;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 
 import java.util.List;
 
@@ -18,12 +19,17 @@ public class Rota {
             joinColumns = @JoinColumn(name = "rota_id"),
             inverseJoinColumns = @JoinColumn(name = "endereco_id")
     )
-    private final List<Endereco> enderecos;
+    @Size(min = 3, message = "Devem existir no mínimo 3 endereços para uma rota")
+    private List<Endereco> enderecos;
 
     @Enumerated(EnumType.STRING)
     private StatusRota status = StatusRota.PENDENTE;
 
     public Rota(List<Endereco> enderecos) {
+        this.enderecos = enderecos;
+    }
+
+    public void setEnderecos(List<Endereco> enderecos) {
         this.enderecos = enderecos;
     }
 
