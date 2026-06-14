@@ -37,20 +37,6 @@ public class RotaView extends VerticalLayout {
         add(comboBoxEnderecos, botaoCadastroRota);
     }
 
-    private Button inicializarBotaoCadastroRota() {
-        var botaoCadastroRota = new Button("Cadastrar Rota");
-        botaoCadastroRota.setId("btn-cadastro-rota");
-        botaoCadastroRota.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-
-        botaoCadastroRota.addClickListener(evento -> {
-            if (salvarRota()) {
-                comboBoxEnderecos.clear();
-            }
-        });
-
-        return botaoCadastroRota;
-    }
-
     private MultiSelectComboBox<Endereco> inicializarComboBoxEnderecos() {
         var comboBoxEnderecos = new MultiSelectComboBox<Endereco>("Selecione os endereços da rota");
 
@@ -66,6 +52,20 @@ public class RotaView extends VerticalLayout {
 
     private void configurarBinderComboBox(MultiSelectComboBox<Endereco> comboBoxEnderecos) {
         this.rotaBinder.forField(comboBoxEnderecos).withConverter(ArrayList::new, HashSet::new).bind("enderecos");
+    }
+
+    private Button inicializarBotaoCadastroRota() {
+        var botaoCadastroRota = new Button("Cadastrar Rota");
+        botaoCadastroRota.setId("btn-cadastro-rota");
+        botaoCadastroRota.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
+        botaoCadastroRota.addClickListener(evento -> {
+            if (salvarRota()) {
+                comboBoxEnderecos.clear();
+            }
+        });
+
+        return botaoCadastroRota;
     }
 
     private boolean salvarRota() {
