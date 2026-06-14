@@ -28,11 +28,11 @@ public class RotaView extends VerticalLayout {
     private final BeanValidationBinder<Rota> rotaBinder;
 
     public RotaView(EnderecoService enderecoService, RotaRepository rotaRepository) {
-        this.enderecos = List.copyOf(enderecoService.buscarTodos());
+        enderecos = List.copyOf(enderecoService.buscarTodos());
         this.rotaRepository = rotaRepository;
-        this.rotaBinder = new BeanValidationBinder<>(Rota.class);
-        this.comboBoxEnderecos = inicializarComboBoxEnderecos();
-        this.botaoCadastroRota = inicializarBotaoCadastroRota();
+        rotaBinder = new BeanValidationBinder<>(Rota.class);
+        comboBoxEnderecos = inicializarComboBoxEnderecos();
+        botaoCadastroRota = inicializarBotaoCadastroRota();
 
         add(comboBoxEnderecos, botaoCadastroRota);
     }
@@ -51,7 +51,7 @@ public class RotaView extends VerticalLayout {
     }
 
     private void configurarBinderComboBox(MultiSelectComboBox<Endereco> comboBoxEnderecos) {
-        this.rotaBinder.forField(comboBoxEnderecos).withConverter(ArrayList::new, HashSet::new).bind("enderecos");
+        rotaBinder.forField(comboBoxEnderecos).withConverter(ArrayList::new, HashSet::new).bind("enderecos");
     }
 
     private Button inicializarBotaoCadastroRota() {
