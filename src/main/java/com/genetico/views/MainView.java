@@ -1,5 +1,6 @@
 package com.genetico.views;
 
+import com.genetico.api.IntegracaoLocationIQ;
 import com.genetico.model.Endereco;
 import com.genetico.service.EnderecoService;
 import com.vaadin.flow.component.button.Button;
@@ -15,6 +16,7 @@ import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
+import java.io.IOException;
 import java.util.List;
 
 @Route("")
@@ -29,11 +31,14 @@ public class MainView extends VerticalLayout {
     private Grid<Endereco> grid;
     private ListDataProvider<Endereco> enderecoProvider;
 
+    private final IntegracaoLocationIQ integracaoLocationIQ;
+
     public MainView(EnderecoService enderecoService) {
+        this.integracaoLocationIQ = new IntegracaoLocationIQ();
         inicializarGrid();
         inicializarEnderecoBinder();
-        criarCadastroEnderecos(enderecoService);
-        criarListagemEnderecos(enderecoService);
+        inicializarBotoes(enderecoService);
+        inicializarListagemEnderecos(enderecoService);
     }
 
     private void inicializarGrid() {
@@ -47,7 +52,7 @@ public class MainView extends VerticalLayout {
         enderecoBinder.setBean(new Endereco());
     }
 
-    private void criarCadastroEnderecos(EnderecoService enderecoService) {
+    private void inicializarBotoes(EnderecoService enderecoService) {
         var titulo = new H3("Cadastro de endereço");
 
         var formularioCadastro = new FormLayout();
@@ -57,8 +62,7 @@ public class MainView extends VerticalLayout {
         cadastrarEndereco.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         cadastrarEndereco.addClickListener(clickBotao -> {
-            var formularioValido = !enderecoBinder.validate().hasErrors();
-            if (formularioValido) {
+            if (!enderecoBinder.validate().hasErrors()) {
                 try {
                     var novoEndereco = enderecoService.salvar(enderecoBinder.getBean());
                     adicionarEnderecoGrid(novoEndereco);
@@ -71,7 +75,34 @@ public class MainView extends VerticalLayout {
             }
         });
 
-        add(titulo, formularioCadastro, cadastrarEndereco);
+        var botaoBuscaApi = inicializarBotaoBuscaApi();
+
+        add(titulo, formularioCadastro, cadastrarEndereco, botaoBuscaApi);
+    }
+
+    private Button inicializarBotaoBuscaApi() {
+        var botaoBuscaApi = new Button("Buscar lat/long na API");
+        botaoBuscaApi.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
+        botaoBuscaApi.addClickListener(clickBotao -> {
+            if (logradouro.isEmpty()) {
+                Notification.show("Erro. Digite o logradouro antes de pesquisar na API", 4500, Notification.Position.MIDDLE);
+            } else {
+                try {
+                    System.out.println("Buscando logradouro: " + logradouro.getValue());
+
+                    var coordenadaGeografica = integracaoLocationIQ.buscarCoordenadaGeografica(logradouro.getValue());
+                    latitude.setValue(String.valueOf(coordenadaGeografica.latitude()));
+                    longitude.setValue(String.valueOf(coordenadaGeografica.longitude()));
+                } catch (IOException e) {
+                    Notification.show("Houve um erro de I/O ao consultar na API LocationIQ", 4500, Notification.Position.MIDDLE);
+                } catch (InterruptedException e) {
+                    Notification.show("Conexão interrompida ao consultar API LocationIQ", 4500, Notification.Position.MIDDLE);
+                }
+            }
+        });
+
+        return botaoBuscaApi;
     }
 
     private void adicionarEnderecoGrid(Endereco endereco) {
@@ -83,7 +114,7 @@ public class MainView extends VerticalLayout {
         enderecoBinder.setBean(new Endereco());
     }
 
-    private void criarListagemEnderecos(EnderecoService enderecoService) {
+    private void inicializarListagemEnderecos(EnderecoService enderecoService) {
         var titulo = new H3("Listagem de endereços existentes");
 
         var enderecos = enderecoService.buscarTodos();
