@@ -1,7 +1,7 @@
 package com.genetico.views;
 
-import com.genetico.model.Cliente;
-import com.genetico.service.ClienteService;
+import com.genetico.model.Endereco;
+import com.genetico.service.EnderecoService;
 import com.github.mvysny.kaributesting.v10.MockVaadin;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -28,13 +28,13 @@ import static org.mockito.Mockito.*;
 class MainViewTest {
 
     @Mock
-    private ClienteService clienteService;
+    private EnderecoService enderecoService;
 
     @BeforeEach
     void setUp() {
         MockVaadin.setup();
-        when(clienteService.buscarTodos()).thenReturn(new ArrayList<>());
-        UI.getCurrent().add(new MainView(clienteService));
+        when(enderecoService.buscarTodos()).thenReturn(new ArrayList<>());
+        UI.getCurrent().add(new MainView(enderecoService));
     }
 
     @AfterEach
@@ -43,29 +43,29 @@ class MainViewTest {
     }
 
     @Test
-    @DisplayName("Deve adicionar cliente ao grid após salvar com sucesso")
-    void deveAdicionarClienteAoGridAposSalvar() {
-        when(clienteService.salvar(any())).thenReturn(new Cliente());
+    @DisplayName("Deve adicionar endereco ao grid após salvar com sucesso")
+    void deveAdicionarEnderecoAoGridAposSalvar() {
+        when(enderecoService.salvar(any())).thenReturn(new Endereco());
 
-        _setValue(_get(TextField.class, spec -> spec.withLabel("Digite a descrição")), "Cliente Teste");
+        _setValue(_get(TextField.class, spec -> spec.withLabel("Digite o logradouro")), "Endereco Teste");
         _setValue(_get(TextField.class, spec -> spec.withLabel("Digite a latitude")), "-23.5");
         _setValue(_get(TextField.class, spec -> spec.withLabel("Digite a longitude")), "-46.6");
-        _click(_get(Button.class, spec -> spec.withText("Cadastrar cliente")));
+        _click(_get(Button.class, spec -> spec.withText("Cadastrar endereco")));
 
-        verify(clienteService, times(1)).salvar(any(Cliente.class));
-        var quantidadeItensGrid = _size(_get(Grid.class, spec -> spec.withId("grid-clientes")));
+        verify(enderecoService, times(1)).salvar(any(Endereco.class));
+        var quantidadeItensGrid = _size(_get(Grid.class, spec -> spec.withId("grid-enderecos")));
         assertEquals(1, quantidadeItensGrid);
     }
 
     @Test
-    @DisplayName("Deve limpar o formulário após salvar um cliente")
-    void deveLimparFormularioCorretamenteAposSalvarCliente() {
-        when(clienteService.salvar(any())).thenReturn(new Cliente());
+    @DisplayName("Deve limpar o formulário após salvar um endereco")
+    void deveLimparFormularioCorretamenteAposSalvarEndereco() {
+        when(enderecoService.salvar(any())).thenReturn(new Endereco());
 
-        _setValue(_get(TextField.class, spec -> spec.withLabel("Digite a descrição")), "Cliente Teste");
+        _setValue(_get(TextField.class, spec -> spec.withLabel("Digite o logradouro")), "Endereco Teste");
         _setValue(_get(TextField.class, spec -> spec.withLabel("Digite a latitude")), "-23.5");
         _setValue(_get(TextField.class, spec -> spec.withLabel("Digite a longitude")), "-46.6");
-        _click(_get(Button.class, spec -> spec.withText("Cadastrar cliente")));
+        _click(_get(Button.class, spec -> spec.withText("Cadastrar endereco")));
 
         var todosInputsEstaoLimpos = _find(TextField.class)
                 .stream()
@@ -75,23 +75,23 @@ class MainViewTest {
     }
 
     @Test
-    @DisplayName("Não deve atualizar o grid se ocorrer exceção ao salvar o cliente")
-    void naoDeveAtualizarGridSeOcorrerExcecaoAoSalvarCliente() {
-        when(clienteService.salvar(any())).thenThrow(new RuntimeException("Erro no banco"));
+    @DisplayName("Não deve atualizar o grid se ocorrer exceção ao salvar o endereco")
+    void naoDeveAtualizarGridSeOcorrerExcecaoAoSalvarEndereco() {
+        when(enderecoService.salvar(any())).thenThrow(new RuntimeException("Erro no banco"));
 
-        _setValue(_get(TextField.class, spec -> spec.withLabel("Digite a descrição")), "Cliente Teste");
+        _setValue(_get(TextField.class, spec -> spec.withLabel("Digite o logradouro")), "Endereco Teste");
         _setValue(_get(TextField.class, spec -> spec.withLabel("Digite a latitude")), "-23.5");
         _setValue(_get(TextField.class, spec -> spec.withLabel("Digite a longitude")), "-46.6");
 
-        _click(_get(Button.class, spec -> spec.withText("Cadastrar cliente")));
-        var quantidadeItensGrid = _size(_get(Grid.class, spec -> spec.withId("grid-clientes")));
+        _click(_get(Button.class, spec -> spec.withText("Cadastrar endereco")));
+        var quantidadeItensGrid = _size(_get(Grid.class, spec -> spec.withId("grid-enderecos")));
         assertEquals(0, quantidadeItensGrid);
     }
 
     @Test
     @DisplayName("Não deve salvar se o formulário estiver inválido")
     void naoDeveSalvarComFormularioInvalido() {
-        _click(_get(Button.class, spec -> spec.withText("Cadastrar cliente")));
-        verify(clienteService, never()).salvar(any());
+        _click(_get(Button.class, spec -> spec.withText("Cadastrar endereco")));
+        verify(enderecoService, never()).salvar(any());
     }
 }

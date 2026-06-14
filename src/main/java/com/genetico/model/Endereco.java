@@ -1,23 +1,23 @@
 package com.genetico.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.List;
+
 @Entity
-public class Cliente {
+@Table(name = "enderecos")
+public class Endereco {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotEmpty(message = "Descrição não pode ser vazia")
-    private String descricao;
+    @NotEmpty(message = "Logradouro não pode ser vazio")
+    private String logradouro;
 
     @NotNull(message = "Latitude é obrigatória")
     @DecimalMin(value = "-90.0", message = "Latitude mínima deve ser -90.0")
@@ -29,16 +29,25 @@ public class Cliente {
     @DecimalMax(value = "180.0", message = "Longitude máxima deve ser 180.0")
     private Double longitude;
 
-    public Cliente() {
+    @ManyToMany(mappedBy = "enderecos")
+    private List<Rota> rotas;
+
+    public Endereco() {
 
     }
 
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
+    public Endereco(String logradouro, Double latitude, Double longitude) {
+        this.logradouro = logradouro;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
-    public String getDescricao() {
-        return descricao;
+    public void setLogradouro(String logradouro) {
+        this.logradouro = logradouro;
+    }
+
+    public String getLogradouro() {
+        return logradouro;
     }
 
     public void setLatitude(Double latitude) {

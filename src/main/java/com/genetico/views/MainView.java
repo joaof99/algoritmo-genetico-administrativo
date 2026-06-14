@@ -1,7 +1,7 @@
 package com.genetico.views;
 
-import com.genetico.model.Cliente;
-import com.genetico.service.ClienteService;
+import com.genetico.model.Endereco;
+import com.genetico.service.EnderecoService;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -20,79 +20,80 @@ import java.util.List;
 @Route("")
 @PageTitle("Algoritmo Genético Administrativo")
 public class MainView extends VerticalLayout {
-    private BeanValidationBinder<Cliente> clienteBinder;
+    private BeanValidationBinder<Endereco> enderecoBinder;
 
-    private final TextField descricao = new TextField("Digite a descrição");
+    private final TextField logradouro = new TextField("Digite o logradouro");
     private final TextField latitude = new TextField("Digite a latitude");
     private final TextField longitude = new TextField("Digite a longitude");
 
-    private Grid<Cliente> grid;
-    private ListDataProvider<Cliente> clientesProvider;
+    private Grid<Endereco> grid;
+    private ListDataProvider<Endereco> enderecoProvider;
 
-    public MainView(ClienteService clienteService) {
+    public MainView(EnderecoService enderecoService) {
         inicializarGrid();
-        inicializarClienteBinder();
-        criarCadastroClientes(clienteService);
-        criarListagemClientes(clienteService);
+        inicializarEnderecoBinder();
+        criarCadastroEnderecos(enderecoService);
+        criarListagemEnderecos(enderecoService);
     }
 
     private void inicializarGrid() {
-        grid = new Grid<>(Cliente.class, true);
-        grid.setId("grid-clientes");
+        grid = new Grid<>(Endereco.class, true);
+        grid.setId("grid-enderecos");
     }
 
-    private void inicializarClienteBinder() {
-        clienteBinder = new BeanValidationBinder<>(Cliente.class);
-        clienteBinder.bindInstanceFields(this);
-        clienteBinder.setBean(new Cliente());
+    private void inicializarEnderecoBinder() {
+        enderecoBinder = new BeanValidationBinder<>(Endereco.class);
+        enderecoBinder.bindInstanceFields(this);
+        enderecoBinder.setBean(new Endereco());
     }
 
-    private void criarCadastroClientes(ClienteService clienteService) {
-        var titulo = new H3("Cadastro de cliente");
+    private void criarCadastroEnderecos(EnderecoService enderecoService) {
+        var titulo = new H3("Cadastro de endereço");
 
         var formularioCadastro = new FormLayout();
-        formularioCadastro.add(descricao, latitude, longitude);
+        formularioCadastro.add(logradouro, latitude, longitude);
 
-        var cadastrarCliente = new Button("Cadastrar cliente");
-        cadastrarCliente.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        var cadastrarEndereco = new Button("Cadastrar endereco");
+        cadastrarEndereco.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        cadastrarCliente.addClickListener(clickBotao -> {
-            var formularioValido = !clienteBinder.validate().hasErrors();
+        cadastrarEndereco.addClickListener(clickBotao -> {
+            var formularioValido = !enderecoBinder.validate().hasErrors();
             if (formularioValido) {
                 try {
-                    var novoCliente = clienteService.salvar(clienteBinder.getBean());
-                    adicionarClienteGrid(novoCliente);
-                    limparFormularioCliente();
-                    Notification.show("Cliente salvo com sucesso", 3000, Notification.Position.MIDDLE);
+                    var novoEndereco = enderecoService.salvar(enderecoBinder.getBean());
+                    adicionarEnderecoGrid(novoEndereco);
+                    limparFormularioEndereco();
+                    Notification.show("Endereço salvo com sucesso", 3000, Notification.Position.MIDDLE);
                 } catch (Exception exception) {
-                    Notification.show("Erro inesperado ao salvar cliente, tente novamente", 4000, Notification.Position.MIDDLE);
+                    System.out.println(exception.getMessage());
+                    Notification.show("Erro inesperado ao salvar endereço, tente novamente", 4000, Notification.Position.MIDDLE);
                 }
             }
         });
 
-        add(titulo, formularioCadastro, cadastrarCliente);
+        add(titulo, formularioCadastro, cadastrarEndereco);
     }
 
-    private void adicionarClienteGrid(Cliente cliente) {
-        clientesProvider.getItems().add(cliente);
-        clientesProvider.refreshAll();
+    private void adicionarEnderecoGrid(Endereco endereco) {
+        enderecoProvider.getItems().add(endereco);
+        enderecoProvider.refreshAll();
     }
 
-    private void limparFormularioCliente() {
-        clienteBinder.setBean(new Cliente());
+    private void limparFormularioEndereco() {
+        enderecoBinder.setBean(new Endereco());
     }
 
-    private void criarListagemClientes(ClienteService clienteService) {
-        var titulo = new H3("Listagem de clientes existentes");
+    private void criarListagemEnderecos(EnderecoService enderecoService) {
+        var titulo = new H3("Listagem de endereços existentes");
 
-        var clientes = clienteService.buscarTodos();
-        incluirClientesGrid(clientes);
+        var enderecos = enderecoService.buscarTodos();
+        incluirEnderecosGrid(enderecos);
 
         add(titulo, grid);
     }
 
-    private void incluirClientesGrid(List<Cliente> itensGrid) {
-        clientesProvider = new ListDataProvider<>(itensGrid);
-        grid.setDataProvider(clientesProvider);
+    private void incluirEnderecosGrid(List<Endereco> itensGrid) {
+        enderecoProvider = new ListDataProvider<>(itensGrid);
+        grid.setDataProvider(enderecoProvider);
     }
 }
