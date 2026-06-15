@@ -2,6 +2,7 @@ package com.genetico.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.genetico.model.CoordenadaGeografica;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URI;
@@ -11,6 +12,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 
+@Component
 public class IntegracaoLocationIQAPI {
     public CoordenadaGeografica buscarCoordenadaGeografica(String logradouro) throws IOException, InterruptedException {
         var apiKey = System.getenv("IQ_API");
