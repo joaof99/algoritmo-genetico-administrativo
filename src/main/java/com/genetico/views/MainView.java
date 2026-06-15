@@ -88,9 +88,7 @@ public class MainView extends VerticalLayout {
 
         botaoBuscaApi.addClickListener(clickBotao -> {
             if (logradouro.isEmpty()) {
-                var notification = new Notification("Erro. Digite o logradouro antes de pesquisar na API", 4500, Notification.Position.MIDDLE);
-                notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
-                notification.open();
+                exibirMensagemErro("Erro. Digite o logradouro antes de pesquisar na API");
             } else {
                 try {
                     System.out.println("Buscando logradouro: " + logradouro.getValue());
@@ -99,14 +97,20 @@ public class MainView extends VerticalLayout {
                     latitude.setValue(String.valueOf(coordenadaGeografica.latitude()));
                     longitude.setValue(String.valueOf(coordenadaGeografica.longitude()));
                 } catch (IOException e) {
-                    Notification.show("Houve um erro de I/O ao consultar na API LocationIQ", 4500, Notification.Position.MIDDLE);
+                    exibirMensagemErro("Houve um erro de I/O ao consultar na API LocationIQ");
                 } catch (InterruptedException e) {
-                    Notification.show("Conexão interrompida ao consultar API LocationIQ", 4500, Notification.Position.MIDDLE);
+                    exibirMensagemErro("Conexão interrompida ao consultar API LocationIQ");
                 }
             }
         });
 
         return botaoBuscaApi;
+    }
+
+    private void exibirMensagemErro(String mensagem) {
+        var notification = new Notification(mensagem, 4500, Notification.Position.MIDDLE);
+        notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+        notification.open();
     }
 
     private void adicionarEnderecoGrid(Endereco endereco) {
