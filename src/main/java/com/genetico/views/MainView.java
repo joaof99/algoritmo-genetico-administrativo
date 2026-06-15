@@ -3,6 +3,7 @@ package com.genetico.views;
 import com.genetico.api.IntegracaoLocationIQAPI;
 import com.genetico.model.Endereco;
 import com.genetico.service.EnderecoService;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -33,47 +34,18 @@ public class MainView extends VerticalLayout {
 
     private final IntegracaoLocationIQAPI integracaoLocationIQAPI;
     private final EnderecoService enderecoService;
-    private final Button botaoBuscaAPI;
-    private final Button botaoCastroEndereco;
+    private Button botaoBuscaAPI;
+    private Button botaoCastroEndereco;
 
     public MainView(EnderecoService enderecoService, IntegracaoLocationIQAPI integracaoLocationIQAPI) {
         this.enderecoService = enderecoService;
         this.integracaoLocationIQAPI = integracaoLocationIQAPI;
-        enderecoBinder = inicializarEnderecoBinder();
-
-        botaoCastroEndereco = inicializarBotaoCadastroEndereco();
-        var tituloCadastroEndereco = new H3("Cadastro de endereço");
-        var formularioCadastroEndereco = inicializarFormularioCadastroEndereco();
-        add(tituloCadastroEndereco, formularioCadastroEndereco, botaoCastroEndereco);
-
-        botaoBuscaAPI = inicializarBotaoBuscaApi();
-        add(botaoBuscaAPI);
-
-        grid = inicializarGrid();
-        var tituloListagemClientes = new H3("Listagem de endereços existentes");
-        add(tituloListagemClientes, grid);
+        enderecoBinder = criarEnderecoBinder();
+        add(criarSecaoCadastroEnderecos());
+        add(criarSecaoListagemEnderecos());
     }
 
-    private FormLayout inicializarFormularioCadastroEndereco(){
-        var formularioCadastroEndereco = new FormLayout();
-        formularioCadastroEndereco.add(logradouro, latitude, longitude);
-
-        return formularioCadastroEndereco;
-    }
-
-    private Grid<Endereco> inicializarGrid() {
-        grid = new Grid<>(Endereco.class, true);
-        grid.setId("grid-enderecos");
-
-        var enderecos = enderecoService.buscarTodos();
-
-        enderecoProvider = new ListDataProvider<>(enderecos);
-        grid.setDataProvider(enderecoProvider);
-
-        return grid;
-    }
-
-    private BeanValidationBinder<Endereco> inicializarEnderecoBinder() {
+    private BeanValidationBinder<Endereco> criarEnderecoBinder() {
         var enderecoBinder = new BeanValidationBinder<>(Endereco.class);
         enderecoBinder.bindInstanceFields(this);
         enderecoBinder.setBean(new Endereco());
@@ -81,7 +53,16 @@ public class MainView extends VerticalLayout {
         return enderecoBinder;
     }
 
-    private Button inicializarBotaoCadastroEndereco() {
+    private Component criarSecaoCadastroEnderecos() {
+        botaoCastroEndereco = criarBotaoCadastroEndereco();
+        var tituloCadastroEndereco = new H3("Cadastro de endereço");
+        var formularioCadastroEndereco = criarFormularioCadastroEndereco();
+        botaoBuscaAPI = criarBotaoBuscaApi();
+
+        return new VerticalLayout(tituloCadastroEndereco, formularioCadastroEndereco, botaoCastroEndereco, botaoBuscaAPI);
+    }
+
+    private Button criarBotaoCadastroEndereco() {
         var botaoCadastroEndereco = new Button("Cadastrar endereco");
         botaoCadastroEndereco.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
@@ -102,7 +83,19 @@ public class MainView extends VerticalLayout {
         return botaoCadastroEndereco;
     }
 
-    private Button inicializarBotaoBuscaApi() {
+    private FormLayout criarFormularioCadastroEndereco() {
+        var formularioCadastroEndereco = new FormLayout();
+        formularioCadastroEndereco.add(logradouro, latitude, longitude);
+
+        return formularioCadastroEndereco;
+    }
+
+    private void adicionarEnderecoGrid(Endereco endereco) {
+        enderecoProvider.getItems().add(endereco);
+        enderecoProvider.refreshAll();
+    }
+
+    private Button criarBotaoBuscaApi() {
         var botaoBuscaApi = new Button("Buscar lat/long na API");
         botaoBuscaApi.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
@@ -132,15 +125,30 @@ public class MainView extends VerticalLayout {
         return botaoBuscaApi;
     }
 
+    private Component criarSecaoListagemEnderecos() {
+        grid = criarGrid();
+        var tituloListagemClientes = new H3("Listagem de endereços existentes");
+        add(tituloListagemClientes, grid);
+
+        return new VerticalLayout(tituloListagemClientes, grid);
+    }
+
+    private Grid<Endereco> criarGrid() {
+        grid = new Grid<>(Endereco.class, true);
+        grid.setId("grid-enderecos");
+
+        var enderecos = enderecoService.buscarTodos();
+
+        enderecoProvider = new ListDataProvider<>(enderecos);
+        grid.setDataProvider(enderecoProvider);
+
+        return grid;
+    }
+
     private void exibirMensagemErro(String mensagem) {
         var notification = new Notification(mensagem, 4500, Notification.Position.MIDDLE);
         notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
         notification.open();
-    }
-
-    private void adicionarEnderecoGrid(Endereco endereco) {
-        enderecoProvider.getItems().add(endereco);
-        enderecoProvider.refreshAll();
     }
 
     private void limparFormularioEndereco() {
