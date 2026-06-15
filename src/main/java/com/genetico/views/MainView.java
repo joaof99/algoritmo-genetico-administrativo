@@ -34,12 +34,18 @@ public class MainView extends VerticalLayout {
     private final IntegracaoLocationIQAPI integracaoLocationIQAPI;
     private final EnderecoService enderecoService;
     private final Button botaoBuscaAPI;
+    private final Button botaoCastroEndereco;
 
-    public MainView(EnderecoService enderecoService) {
+    public MainView(EnderecoService enderecoService, IntegracaoLocationIQAPI integracaoLocationIQAPI) {
         this.enderecoService = enderecoService;
-        integracaoLocationIQAPI = new IntegracaoLocationIQAPI();
+        this.integracaoLocationIQAPI = integracaoLocationIQAPI;
         enderecoBinder = inicializarEnderecoBinder();
-        inicializarBotaoCadastroEndereco(enderecoService);
+
+        botaoCastroEndereco = inicializarBotaoCadastroEndereco();
+        var tituloCadastroEndereco = new H3("Cadastro de endereço");
+        var formularioCadastroEndereco = new FormLayout();
+        formularioCadastroEndereco.add(logradouro, latitude, longitude);
+        add(tituloCadastroEndereco, formularioCadastroEndereco, botaoCastroEndereco);
 
         botaoBuscaAPI = inicializarBotaoBuscaApi();
         add(botaoBuscaAPI);
@@ -69,16 +75,11 @@ public class MainView extends VerticalLayout {
         return enderecoBinder;
     }
 
-    private void inicializarBotaoCadastroEndereco(EnderecoService enderecoService) {
-        var titulo = new H3("Cadastro de endereço");
+    private Button inicializarBotaoCadastroEndereco() {
+        var botaoCadastroEndereco = new Button("Cadastrar endereco");
+        botaoCadastroEndereco.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        var formularioCadastro = new FormLayout();
-        formularioCadastro.add(logradouro, latitude, longitude);
-
-        var cadastrarEndereco = new Button("Cadastrar endereco");
-        cadastrarEndereco.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-
-        cadastrarEndereco.addClickListener(clickBotao -> {
+        botaoCadastroEndereco.addClickListener(clickBotao -> {
             if (!enderecoBinder.validate().hasErrors()) {
                 try {
                     var novoEndereco = enderecoService.salvar(enderecoBinder.getBean());
@@ -92,7 +93,7 @@ public class MainView extends VerticalLayout {
             }
         });
 
-        add(titulo, formularioCadastro, cadastrarEndereco);
+        return botaoCadastroEndereco;
     }
 
     private Button inicializarBotaoBuscaApi() {

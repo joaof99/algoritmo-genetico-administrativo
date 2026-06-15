@@ -1,5 +1,6 @@
 package com.genetico.views;
 
+import com.genetico.api.IntegracaoLocationIQAPI;
 import com.genetico.model.Endereco;
 import com.genetico.service.EnderecoService;
 import com.github.mvysny.kaributesting.v10.MockVaadin;
@@ -30,11 +31,14 @@ class MainViewTest {
     @Mock
     private EnderecoService enderecoService;
 
+    @Mock
+    private IntegracaoLocationIQAPI integracaoLocationIQAPI;
+
     @BeforeEach
     void setUp() {
         MockVaadin.setup();
         when(enderecoService.buscarTodos()).thenReturn(new ArrayList<>());
-        UI.getCurrent().add(new MainView(enderecoService));
+        UI.getCurrent().add(new MainView(enderecoService, integracaoLocationIQAPI));
     }
 
     @AfterEach
