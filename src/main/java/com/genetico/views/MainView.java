@@ -35,7 +35,7 @@ public class MainView extends VerticalLayout {
     private final IntegracaoLocationIQAPI integracaoLocationIQAPI;
     private final EnderecoService enderecoService;
     private Button botaoBuscaAPI;
-    private Button botaoCastroEndereco;
+    private Button botaoCadastroEndereco;
 
     public MainView(EnderecoService enderecoService, IntegracaoLocationIQAPI integracaoLocationIQAPI) {
         this.enderecoService = enderecoService;
@@ -54,12 +54,12 @@ public class MainView extends VerticalLayout {
     }
 
     private Component criarSecaoCadastroEnderecos() {
-        botaoCastroEndereco = criarBotaoCadastroEndereco();
+        botaoCadastroEndereco = criarBotaoCadastroEndereco();
         var tituloCadastroEndereco = new H3("Cadastro de endereço");
         var formularioCadastroEndereco = criarFormularioCadastroEndereco();
         botaoBuscaAPI = criarBotaoBuscaApi();
 
-        return new VerticalLayout(tituloCadastroEndereco, formularioCadastroEndereco, botaoCastroEndereco, botaoBuscaAPI);
+        return new VerticalLayout(tituloCadastroEndereco, formularioCadastroEndereco, botaoCadastroEndereco, botaoBuscaAPI);
     }
 
     private Button criarBotaoCadastroEndereco() {
