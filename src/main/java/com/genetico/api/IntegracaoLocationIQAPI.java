@@ -11,7 +11,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 
-public class IntegracaoLocationIQ {
+public class IntegracaoLocationIQAPI {
     public CoordenadaGeografica buscarCoordenadaGeografica(String logradouro) throws IOException, InterruptedException {
         var apiKey = System.getenv("IQ_API");
 

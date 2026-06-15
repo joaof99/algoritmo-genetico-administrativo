@@ -1,6 +1,6 @@
 package com.genetico.views;
 
-import com.genetico.api.IntegracaoLocationIQ;
+import com.genetico.api.IntegracaoLocationIQAPI;
 import com.genetico.model.Endereco;
 import com.genetico.service.EnderecoService;
 import com.vaadin.flow.component.button.Button;
@@ -31,10 +31,10 @@ public class MainView extends VerticalLayout {
     private Grid<Endereco> grid;
     private ListDataProvider<Endereco> enderecoProvider;
 
-    private final IntegracaoLocationIQ integracaoLocationIQ;
+    private final IntegracaoLocationIQAPI integracaoLocationIQAPI;
 
     public MainView(EnderecoService enderecoService) {
-        this.integracaoLocationIQ = new IntegracaoLocationIQ();
+        integracaoLocationIQAPI = new IntegracaoLocationIQAPI();
         inicializarGrid();
         inicializarEnderecoBinder();
         inicializarBotoes(enderecoService);
@@ -91,7 +91,7 @@ public class MainView extends VerticalLayout {
                 try {
                     System.out.println("Buscando logradouro: " + logradouro.getValue());
 
-                    var coordenadaGeografica = integracaoLocationIQ.buscarCoordenadaGeografica(logradouro.getValue());
+                    var coordenadaGeografica = integracaoLocationIQAPI.buscarCoordenadaGeografica(logradouro.getValue());
                     latitude.setValue(String.valueOf(coordenadaGeografica.latitude()));
                     longitude.setValue(String.valueOf(coordenadaGeografica.longitude()));
                 } catch (IOException e) {
