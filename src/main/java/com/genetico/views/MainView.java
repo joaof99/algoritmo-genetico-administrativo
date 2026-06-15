@@ -105,6 +105,7 @@ public class MainView extends VerticalLayout {
                 exibirMensagemErro("Erro. Digite o logradouro antes de pesquisar na API");
             } else {
                 try {
+                    botaoBuscaApi.setEnabled(false);
                     System.out.println("Buscando logradouro: " + logradouro.getValue());
 
                     var coordenadaGeografica = integracaoLocationIQAPI.buscarCoordenadaGeografica(logradouro.getValue());
@@ -114,6 +115,10 @@ public class MainView extends VerticalLayout {
                     exibirMensagemErro("Houve um erro de I/O ao consultar na API LocationIQ");
                 } catch (InterruptedException e) {
                     exibirMensagemErro("Conexão interrompida ao consultar API LocationIQ");
+                } catch (Exception e) {
+                    exibirMensagemErro("Erro desconhecido ao consultar API LocationIQ");
+                } finally {
+                    botaoBuscaAPI.setEnabled(true);
                 }
             }
         });
