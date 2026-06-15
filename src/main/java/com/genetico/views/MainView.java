@@ -9,6 +9,7 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
@@ -32,12 +33,15 @@ public class MainView extends VerticalLayout {
     private ListDataProvider<Endereco> enderecoProvider;
 
     private final IntegracaoLocationIQAPI integracaoLocationIQAPI;
+    private final Button botaoBuscaAPI;
 
     public MainView(EnderecoService enderecoService) {
         integracaoLocationIQAPI = new IntegracaoLocationIQAPI();
         inicializarGrid();
         inicializarEnderecoBinder();
-        inicializarBotoes(enderecoService);
+        inicializarBotaoCadastroEndereco(enderecoService);
+        botaoBuscaAPI = inicializarBotaoBuscaApi();
+        add(botaoBuscaAPI);
         inicializarListagemEnderecos(enderecoService);
     }
 
@@ -52,7 +56,7 @@ public class MainView extends VerticalLayout {
         enderecoBinder.setBean(new Endereco());
     }
 
-    private void inicializarBotoes(EnderecoService enderecoService) {
+    private void inicializarBotaoCadastroEndereco(EnderecoService enderecoService) {
         var titulo = new H3("Cadastro de endereço");
 
         var formularioCadastro = new FormLayout();
@@ -75,9 +79,7 @@ public class MainView extends VerticalLayout {
             }
         });
 
-        var botaoBuscaApi = inicializarBotaoBuscaApi();
-
-        add(titulo, formularioCadastro, cadastrarEndereco, botaoBuscaApi);
+        add(titulo, formularioCadastro, cadastrarEndereco);
     }
 
     private Button inicializarBotaoBuscaApi() {
@@ -86,7 +88,9 @@ public class MainView extends VerticalLayout {
 
         botaoBuscaApi.addClickListener(clickBotao -> {
             if (logradouro.isEmpty()) {
-                Notification.show("Erro. Digite o logradouro antes de pesquisar na API", 4500, Notification.Position.MIDDLE);
+                var notification = new Notification("Erro. Digite o logradouro antes de pesquisar na API", 4500, Notification.Position.MIDDLE);
+                notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                notification.open();
             } else {
                 try {
                     System.out.println("Buscando logradouro: " + logradouro.getValue());
