@@ -43,8 +43,7 @@ public class MainView extends VerticalLayout {
 
         botaoCastroEndereco = inicializarBotaoCadastroEndereco();
         var tituloCadastroEndereco = new H3("Cadastro de endereço");
-        var formularioCadastroEndereco = new FormLayout();
-        formularioCadastroEndereco.add(logradouro, latitude, longitude);
+        var formularioCadastroEndereco = inicializarFormularioCadastroEndereco();
         add(tituloCadastroEndereco, formularioCadastroEndereco, botaoCastroEndereco);
 
         botaoBuscaAPI = inicializarBotaoBuscaApi();
@@ -53,6 +52,13 @@ public class MainView extends VerticalLayout {
         grid = inicializarGrid();
         var tituloListagemClientes = new H3("Listagem de endereços existentes");
         add(tituloListagemClientes, grid);
+    }
+
+    private FormLayout inicializarFormularioCadastroEndereco(){
+        var formularioCadastroEndereco = new FormLayout();
+        formularioCadastroEndereco.add(logradouro, latitude, longitude);
+
+        return formularioCadastroEndereco;
     }
 
     private Grid<Endereco> inicializarGrid() {
