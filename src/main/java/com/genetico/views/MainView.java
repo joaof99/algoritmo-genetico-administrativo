@@ -22,7 +22,7 @@ import java.io.IOException;
 @Route("")
 @PageTitle("Algoritmo Genético Administrativo")
 public class MainView extends VerticalLayout {
-    private BeanValidationBinder<Endereco> enderecoBinder;
+    private final BeanValidationBinder<Endereco> enderecoBinder;
 
     private final TextField logradouro = new TextField("Digite o logradouro");
     private final TextField latitude = new TextField("Digite a latitude");
@@ -38,7 +38,7 @@ public class MainView extends VerticalLayout {
     public MainView(EnderecoService enderecoService) {
         this.enderecoService = enderecoService;
         integracaoLocationIQAPI = new IntegracaoLocationIQAPI();
-        inicializarEnderecoBinder();
+        enderecoBinder = inicializarEnderecoBinder();
         inicializarBotaoCadastroEndereco(enderecoService);
 
         botaoBuscaAPI = inicializarBotaoBuscaApi();
@@ -61,10 +61,12 @@ public class MainView extends VerticalLayout {
         return grid;
     }
 
-    private void inicializarEnderecoBinder() {
-        enderecoBinder = new BeanValidationBinder<>(Endereco.class);
+    private BeanValidationBinder<Endereco> inicializarEnderecoBinder() {
+        var enderecoBinder = new BeanValidationBinder<>(Endereco.class);
         enderecoBinder.bindInstanceFields(this);
         enderecoBinder.setBean(new Endereco());
+
+        return enderecoBinder;
     }
 
     private void inicializarBotaoCadastroEndereco(EnderecoService enderecoService) {
