@@ -18,7 +18,6 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 import java.io.IOException;
-import java.util.List;
 
 @Route("")
 @PageTitle("Algoritmo Genético Administrativo")
@@ -33,21 +32,33 @@ public class MainView extends VerticalLayout {
     private ListDataProvider<Endereco> enderecoProvider;
 
     private final IntegracaoLocationIQAPI integracaoLocationIQAPI;
+    private final EnderecoService enderecoService;
     private final Button botaoBuscaAPI;
 
     public MainView(EnderecoService enderecoService) {
+        this.enderecoService = enderecoService;
         integracaoLocationIQAPI = new IntegracaoLocationIQAPI();
-        inicializarGrid();
         inicializarEnderecoBinder();
         inicializarBotaoCadastroEndereco(enderecoService);
+
         botaoBuscaAPI = inicializarBotaoBuscaApi();
         add(botaoBuscaAPI);
-        inicializarListagemEnderecos(enderecoService);
+
+        grid = inicializarGrid();
+        var tituloListagemClientes = new H3("Listagem de endereços existentes");
+        add(tituloListagemClientes, grid);
     }
 
-    private void inicializarGrid() {
+    private Grid<Endereco> inicializarGrid() {
         grid = new Grid<>(Endereco.class, true);
         grid.setId("grid-enderecos");
+
+        var enderecos = enderecoService.buscarTodos();
+
+        enderecoProvider = new ListDataProvider<>(enderecos);
+        grid.setDataProvider(enderecoProvider);
+
+        return grid;
     }
 
     private void inicializarEnderecoBinder() {
@@ -120,19 +131,5 @@ public class MainView extends VerticalLayout {
 
     private void limparFormularioEndereco() {
         enderecoBinder.setBean(new Endereco());
-    }
-
-    private void inicializarListagemEnderecos(EnderecoService enderecoService) {
-        var titulo = new H3("Listagem de endereços existentes");
-
-        var enderecos = enderecoService.buscarTodos();
-        incluirEnderecosGrid(enderecos);
-
-        add(titulo, grid);
-    }
-
-    private void incluirEnderecosGrid(List<Endereco> itensGrid) {
-        enderecoProvider = new ListDataProvider<>(itensGrid);
-        grid.setDataProvider(enderecoProvider);
     }
 }
