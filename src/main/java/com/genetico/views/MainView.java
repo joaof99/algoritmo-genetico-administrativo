@@ -54,9 +54,9 @@ public class MainView extends VerticalLayout {
     }
 
     private Component criarSecaoCadastroEnderecos() {
-        botaoCadastroEndereco = criarBotaoCadastroEndereco();
         var tituloCadastroEndereco = new H3("Cadastro de endereço");
         var formularioCadastroEndereco = criarFormularioCadastroEndereco();
+        botaoCadastroEndereco = criarBotaoCadastroEndereco();
         botaoBuscaAPI = criarBotaoBuscaApi();
 
         return new VerticalLayout(tituloCadastroEndereco, formularioCadastroEndereco, botaoCadastroEndereco, botaoBuscaAPI);
@@ -126,9 +126,9 @@ public class MainView extends VerticalLayout {
     }
 
     private Component criarSecaoListagemEnderecos() {
-        grid = criarGrid();
         var tituloListagemClientes = new H3("Listagem de endereços existentes");
         add(tituloListagemClientes, grid);
+        grid = criarGrid();
 
         return new VerticalLayout(tituloListagemClientes, grid);
     }
