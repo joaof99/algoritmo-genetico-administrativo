@@ -3,28 +3,30 @@ package com.genetico.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.genetico.model.CoordenadaGeografica;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
 
 @Component
 public class IntegracaoLocationIQAPI {
     public CoordenadaGeografica buscarCoordenadaGeografica(String logradouro) throws IOException, InterruptedException {
         var apiKey = System.getenv("IQ_API");
 
-        var url = "https://us1.locationiq.com/v1/search"
-                + "?key=" + apiKey
-                + "&q=" + URLEncoder.encode(logradouro, StandardCharsets.UTF_8)
-                + "&format=json"
-                + "&limit=1";
+        var uri = UriComponentsBuilder
+                .fromUriString("https://us1.locationiq.com/v1/search")
+                .queryParam("key", apiKey)
+                .queryParam("q", logradouro)
+                .queryParam("format", "json")
+                .queryParam("limit", "1")
+                .encode()
+                .build()
+                .toUri();
 
         var request = HttpRequest.newBuilder()
-                .uri(URI.create(url))
+                .uri(uri)
                 .GET()
                 .build();
 
