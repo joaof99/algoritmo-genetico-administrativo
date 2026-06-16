@@ -12,6 +12,13 @@ import java.net.http.HttpResponse;
 
 @Component
 public class IntegracaoLocationIQAPI {
+
+    private final HttpClient httpClient;
+
+    public IntegracaoLocationIQAPI() {
+        httpClient = HttpClient.newHttpClient();
+    }
+
     public CoordenadaGeografica buscarCoordenadaGeografica(String logradouro) throws IOException, InterruptedException {
         var apiKey = System.getenv("IQ_API");
 
@@ -30,7 +37,7 @@ public class IntegracaoLocationIQAPI {
                 .GET()
                 .build();
 
-        var response = HttpClient.newHttpClient()
+        var response = httpClient
                 .send(request, HttpResponse.BodyHandlers.ofString());
 
         var json = new ObjectMapper().readTree(response.body());
