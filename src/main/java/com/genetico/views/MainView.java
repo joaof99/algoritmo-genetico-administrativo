@@ -72,7 +72,7 @@ public class MainView extends VerticalLayout {
                     var novoEndereco = enderecoService.salvar(enderecoBinder.getBean());
                     adicionarEnderecoGrid(novoEndereco);
                     limparFormularioEndereco();
-                    Notification.show("Endereço salvo com sucesso", 3000, Notification.Position.MIDDLE);
+                    exibirMensagemSucesso("Endereço salvo com sucesso");
                 } catch (Exception exception) {
                     System.out.println(exception.getMessage());
                     Notification.show("Erro inesperado ao salvar endereço, tente novamente", 4000, Notification.Position.MIDDLE);
@@ -110,6 +110,7 @@ public class MainView extends VerticalLayout {
                     var coordenadaGeografica = integracaoLocationIQAPI.buscarCoordenadaGeografica(logradouro.getValue());
                     latitude.setValue(String.valueOf(coordenadaGeografica.latitude()));
                     longitude.setValue(String.valueOf(coordenadaGeografica.longitude()));
+                    exibirMensagemSucesso("Latitude e longitude encontradas com sucesso");
                 } catch (IOException e) {
                     exibirMensagemErro("Houve um erro de I/O ao consultar na API LocationIQ");
                 } catch (InterruptedException e) {
@@ -147,6 +148,12 @@ public class MainView extends VerticalLayout {
     private void exibirMensagemErro(String mensagem) {
         var notification = new Notification(mensagem, 4500, Notification.Position.MIDDLE);
         notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+        notification.open();
+    }
+
+    private void exibirMensagemSucesso(String mensagem) {
+        var notification = new Notification(mensagem, 4500, Notification.Position.MIDDLE);
+        notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
         notification.open();
     }
 
