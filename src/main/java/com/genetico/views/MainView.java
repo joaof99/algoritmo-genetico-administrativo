@@ -127,7 +127,6 @@ public class MainView extends VerticalLayout {
 
     private Component criarSecaoListagemEnderecos() {
         var tituloListagemClientes = new H3("Listagem de endereços existentes");
-        add(tituloListagemClientes, grid);
         grid = criarGrid();
 
         return new VerticalLayout(tituloListagemClientes, grid);
