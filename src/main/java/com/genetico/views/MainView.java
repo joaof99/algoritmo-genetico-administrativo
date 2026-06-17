@@ -17,12 +17,15 @@ import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
 @Route("")
 @PageTitle("Algoritmo Genético Administrativo")
 public class MainView extends VerticalLayout {
+    private final Logger log = LoggerFactory.getLogger(MainView.class);
     private final BeanValidationBinder<Endereco> enderecoBinder;
 
     private final TextField logradouro = new TextField("Digite o logradouro");
@@ -74,7 +77,7 @@ public class MainView extends VerticalLayout {
                     limparFormularioEndereco();
                     exibirMensagemSucesso("Endereço salvo com sucesso");
                 } catch (Exception exception) {
-                    System.out.println(exception.getMessage());
+                    log.error(exception.getMessage());
                     Notification.show("Erro inesperado ao salvar endereço, tente novamente", 4000, Notification.Position.MIDDLE);
                 }
             }
@@ -105,7 +108,7 @@ public class MainView extends VerticalLayout {
             } else {
                 try {
                     botaoBuscaApi.setEnabled(false);
-                    System.out.println("Buscando logradouro: " + logradouro.getValue());
+                    log.info("Buscando logradouro {}", logradouro.getValue());
 
                     var coordenadaGeografica = integracaoLocationIQAPI.buscarCoordenadaGeografica(logradouro.getValue());
                     latitude.setValue(String.valueOf(coordenadaGeografica.latitude()));
