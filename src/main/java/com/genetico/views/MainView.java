@@ -101,6 +101,7 @@ public class MainView extends VerticalLayout {
     private Button criarBotaoBuscaApi() {
         var botaoBuscaApi = new Button("Buscar lat/long na API");
         botaoBuscaApi.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        botaoBuscaApi.setId("botao-busca-api");
 
         botaoBuscaApi.addClickListener(clickBotao -> {
             if (logradouro.isEmpty()) {

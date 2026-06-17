@@ -1,6 +1,7 @@
 package com.genetico.views;
 
 import com.genetico.api.IntegracaoLocationIQAPI;
+import com.genetico.model.CoordenadaGeografica;
 import com.genetico.model.Endereco;
 import com.genetico.service.EnderecoService;
 import com.github.mvysny.kaributesting.v10.MockVaadin;
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import static com.github.mvysny.kaributesting.v10.GridKt._size;
@@ -97,5 +99,21 @@ class MainViewTest {
     void naoDeveSalvarComFormularioInvalido() {
         _click(_get(Button.class, spec -> spec.withText("Cadastrar endereco")));
         verify(enderecoService, never()).salvar(any());
+    }
+
+    @Test
+    @DisplayName("Latitude e longitude devem ser preenchidos corretamente ao buscar na API")
+    void latitudeELongitudeDevemSerPreenchidosCorretamenteAobuscarNaAPI() throws IOException, InterruptedException {
+        when(integracaoLocationIQAPI.buscarCoordenadaGeografica(anyString()))
+                .thenReturn(new CoordenadaGeografica(-90.50, -80.40));
+
+        _setValue(_get(TextField.class, spec -> spec.withLabel("Digite o logradouro")), "Logradouro Teste");
+        _click(_get(Button.class, spec -> spec.withId("botao-busca-api")));
+
+        var latitude = _get(TextField.class, spec -> spec.withLabel("Digite a latitude"));
+        var longitude = _get(TextField.class, spec -> spec.withLabel("Digite a longitude"));
+
+        assertEquals(-90.50, Double.valueOf(latitude.getValue()));
+        assertEquals(-80.40, Double.valueOf(longitude.getValue()));
     }
 }
