@@ -116,4 +116,11 @@ class MainViewTest {
         assertEquals(-90.50, Double.valueOf(latitude.getValue()));
         assertEquals(-80.40, Double.valueOf(longitude.getValue()));
     }
+
+    @Test
+    @DisplayName("API não deve ser chamada se não for preenchido um valor para buscar")
+    void apiNaoDeveSerChamadaCasoNaoSejaPreenchidoUmValorParaBuscar() throws IOException, InterruptedException {
+        _click(_get(Button.class, spec -> spec.withId("botao-busca-api")));
+        verify(integracaoLocationIQAPI, never()).buscarCoordenadaGeografica(anyString());
+    }
 }
