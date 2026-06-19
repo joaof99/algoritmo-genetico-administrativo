@@ -1,6 +1,7 @@
 package com.genetico.views;
 
 import com.genetico.api.IntegracaoLocationIQAPI;
+import com.genetico.api.IntegracaoLocationIQAPIException;
 import com.genetico.model.Endereco;
 import com.genetico.service.EnderecoService;
 import com.vaadin.flow.component.Component;
@@ -19,8 +20,6 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
 
 @Route("")
 @PageTitle("Algoritmo Genético Administrativo")
@@ -115,12 +114,9 @@ public class MainView extends VerticalLayout {
                     latitude.setValue(String.valueOf(coordenadaGeografica.latitude()));
                     longitude.setValue(String.valueOf(coordenadaGeografica.longitude()));
                     exibirMensagemSucesso("Latitude e longitude encontradas com sucesso");
-                } catch (IOException e) {
-                    exibirMensagemErro("Houve um erro de I/O ao consultar na API LocationIQ");
-                } catch (InterruptedException e) {
-                    exibirMensagemErro("Conexão interrompida ao consultar API LocationIQ");
-                } catch (Exception e) {
-                    exibirMensagemErro("Erro desconhecido ao consultar API LocationIQ");
+                } catch (IntegracaoLocationIQAPIException e) {
+                    log.error(e.getMessage(), e);
+                    log.info("Houve um erro ao efetuar requisição a API, tente novamente");
                 } finally {
                     botaoBuscaAPI.setEnabled(true);
                 }
