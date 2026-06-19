@@ -118,8 +118,8 @@ class MainViewTest {
     }
 
     @Test
-    @DisplayName("API não deve ser chamada se não for preenchido um valor para buscar")
-    void apiNaoDeveSerChamadaCasoNaoSejaPreenchidoUmValorParaBuscar() throws IOException, InterruptedException {
+    @DisplayName("API não deve ser chamada se não for preenchido valores exigidos para busca")
+    void apiNaoDeveSerChamadaCasoNaoSejaPreenchidoValoresExigidosParaBusca() {
         _click(_get(Button.class, spec -> spec.withId("botao-busca-api")));
         verify(integracaoLocationIQAPI, never()).buscarCoordenadaGeografica(anyString());
     }
