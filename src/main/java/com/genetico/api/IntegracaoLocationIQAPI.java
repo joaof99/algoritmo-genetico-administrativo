@@ -1,30 +1,36 @@
 package com.genetico.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.genetico.model.CoordenadaGeografica;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 @Component
 public class IntegracaoLocationIQAPI {
-
+    private final Logger log = LoggerFactory.getLogger(IntegracaoLocationIQAPI.class);
     private final HttpClient httpClient;
+
+    @Value("${locationiq.api.key}")
+    private String locationIQKey;
 
     public IntegracaoLocationIQAPI() {
         httpClient = HttpClient.newHttpClient();
     }
 
-    public CoordenadaGeografica buscarCoordenadaGeografica(String logradouro) throws IOException, InterruptedException {
-        var apiKey = System.getenv("IQ_API");
-
-        var uri = UriComponentsBuilder
-                .fromUriString("https://us1.locationiq.com/v1/search")
-                .queryParam("key", apiKey)
+    public CoordenadaGeografica buscarCoordenadaGeografica(String logradouro) {
+        var uri = UriComponentsBuilder.fromUriString("https://us1.locationiq.com/v1/search")
+                .queryParam("key", locationIQKey)
                 .queryParam("q", logradouro)
                 .queryParam("format", "json")
                 .queryParam("limit", "1")
@@ -32,15 +38,9 @@ public class IntegracaoLocationIQAPI {
                 .build()
                 .toUri();
 
-        var request = HttpRequest.newBuilder()
-                .uri(uri)
-                .GET()
-                .build();
+        var response = executarRequisicaoAPI(uri);
 
-        var response = httpClient
-                .send(request, HttpResponse.BodyHandlers.ofString());
-
-        var json = new ObjectMapper().readTree(response.body());
+        var json = parsearResposta(response);
 
         var primeiroItem = json.get(0);
 
@@ -48,5 +48,47 @@ public class IntegracaoLocationIQAPI {
         var longitude = primeiroItem.get("lon").asDouble();
 
         return new CoordenadaGeografica(latitude, longitude);
+    }
+
+    private HttpResponse<String> executarRequisicaoAPI(URI uri) {
+        try {
+            var request = HttpRequest.newBuilder().uri(uri).GET().build();
+            var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() != 200) {
+                var mensagemErro = "Erro na API de geocodificação (LocationIQ). HTTP status: " + response.statusCode();
+                log.error("{} - body: {}", mensagemErro, response.body());
+                throw new IntegracaoLocationIQAPIException(mensagemErro);
+            }
+
+            return response;
+        } catch (IOException e) {
+            var mensagemErro = "Erro de comunicação ao consultar a API de geocodificação (LocationIQ)";
+            log.error(mensagemErro);
+            throw new IntegracaoLocationIQAPIException(mensagemErro, e);
+        } catch (InterruptedException e) {
+            var mensagemErro = "Requisição à API de geocodificação (LocationIQ) foi interrompida.";
+            log.error(mensagemErro);
+            Thread.currentThread().interrupt();
+            throw new IntegracaoLocationIQAPIException(mensagemErro, e);
+        }
+    }
+
+    private JsonNode parsearResposta(HttpResponse<String> response) {
+        try {
+            var json = new ObjectMapper().readTree(response.body());
+
+            if (!json.isArray() || json.isEmpty()) {
+                var mensagemErro = "API de geocodificação retornou resposta vazia para";
+                log.error(mensagemErro);
+                throw new IntegracaoLocationIQAPIException(mensagemErro);
+            }
+
+            return json;
+        } catch (JsonProcessingException e) {
+            var mensagemErro = "Resposta inválida da API de geocodificação (formato inesperado).";
+            log.error(mensagemErro);
+            throw new IntegracaoLocationIQAPIException("Resposta inválida da API de geocodificação (formato inesperado).", e);
+        }
     }
 }
