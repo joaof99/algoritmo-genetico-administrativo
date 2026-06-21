@@ -113,7 +113,7 @@ public class MainView extends VerticalLayout {
                     var coordenadaGeografica = integracaoLocationIQAPI.buscarCoordenadaGeografica(logradouro.getValue());
                     latitude.setValue(String.valueOf(coordenadaGeografica.latitude()));
                     longitude.setValue(String.valueOf(coordenadaGeografica.longitude()));
-                    exibirMensagemSucesso("Latitude e longitude encontradas com sucesso");
+                    exibirMensagemSucesso("Latitude e longitude encontradas com sucesso. Foram definidas nos campos de texto");
                 } catch (IntegracaoLocationIQAPIException e) {
                     log.error(e.getMessage(), e);
                     log.info("Houve um erro ao efetuar requisição a API, tente novamente");
