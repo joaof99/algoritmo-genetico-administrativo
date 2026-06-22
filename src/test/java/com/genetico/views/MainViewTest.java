@@ -103,7 +103,7 @@ class MainViewTest {
 
     @Test
     @DisplayName("Latitude e longitude devem ser preenchidos corretamente ao buscar na API")
-    void latitudeELongitudeDevemSerPreenchidosCorretamenteAobuscarNaAPI() throws IOException, InterruptedException {
+    void latitudeELongitudeDevemSerPreenchidosCorretamenteAobuscarNaAPI() {
         when(integracaoLocationIQAPI.buscarCoordenadaGeografica(anyString()))
                 .thenReturn(new CoordenadaGeografica(-90.50, -80.40));
 
