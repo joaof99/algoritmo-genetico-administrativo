@@ -19,6 +19,18 @@ public class Endereco {
     @NotEmpty(message = "Logradouro não pode ser vazio")
     private String logradouro;
 
+    @NotNull(message = "Número é obrigatório")
+    private Integer numero;
+
+    @NotNull(message = "Bairro é obrigatório")
+    @NotEmpty(message = "Bairro não pode ser vazio")
+    private String bairro;
+
+    private String complemento;
+
+    @NotNull(message = "Cep é obrigatório")
+    private String cep;
+
     @NotNull(message = "Latitude é obrigatória")
     @DecimalMin(value = "-90.0", message = "Latitude mínima deve ser -90.0")
     @DecimalMax(value = "90.0", message = "Latitude máxima deve ser 90.0")
@@ -38,6 +50,16 @@ public class Endereco {
 
     public Endereco(String logradouro, Double latitude, Double longitude) {
         this.logradouro = logradouro;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+    public Endereco(String logradouro, int numero, String complemento, String bairro, String cep, Double latitude, Double longitude) {
+        this.logradouro = logradouro;
+        this.numero = numero;
+        this.complemento = complemento;
+        this.bairro = bairro;
+        this.cep = cep;
         this.latitude = latitude;
         this.longitude = longitude;
     }
