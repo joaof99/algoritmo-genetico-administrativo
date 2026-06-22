@@ -27,9 +27,13 @@ public class MainView extends VerticalLayout {
     private final Logger log = LoggerFactory.getLogger(MainView.class);
     private final BeanValidationBinder<Endereco> enderecoBinder;
 
-    private final TextField logradouro = new TextField("Digite o logradouro");
-    private final TextField latitude = new TextField("Digite a latitude");
-    private final TextField longitude = new TextField("Digite a longitude");
+    private TextField logradouro;
+    private TextField numero;
+    private TextField complemento;
+    private TextField bairro;
+    private TextField cep;
+    private TextField latitude;
+    private TextField longitude;
 
     private Grid<Endereco> grid;
     private ListDataProvider<Endereco> enderecoProvider;
@@ -42,8 +46,8 @@ public class MainView extends VerticalLayout {
     public MainView(EnderecoService enderecoService, IntegracaoLocationIQAPI integracaoLocationIQAPI) {
         this.enderecoService = enderecoService;
         this.integracaoLocationIQAPI = integracaoLocationIQAPI;
-        enderecoBinder = criarEnderecoBinder();
         add(criarSecaoCadastroEnderecos());
+        enderecoBinder = criarEnderecoBinder();
         add(criarSecaoListagemEnderecos());
     }
 
@@ -87,7 +91,29 @@ public class MainView extends VerticalLayout {
 
     private FormLayout criarFormularioCadastroEndereco() {
         var formularioCadastroEndereco = new FormLayout();
-        formularioCadastroEndereco.add(logradouro, latitude, longitude);
+
+        logradouro = new TextField("Digite o logradouro");
+        logradouro.setId("txt-logradouro");
+
+        numero = new TextField("Digite o número");
+        numero.setId("txt-numero");
+
+        bairro = new TextField("Digite o bairro");
+        bairro.setId("txt-bairro");
+
+        complemento = new TextField("Digite o complemento");
+        complemento.setId("txt-complemento");
+
+        cep = new TextField("Digite o cep");
+        cep.setId("txt-cep");
+
+        latitude = new TextField("Digite a latitude");
+        latitude.setId("txt-latitude");
+
+        longitude = new TextField("Digite a longitude");
+        longitude.setId("txt-longitude");
+
+        formularioCadastroEndereco.add(logradouro, numero, bairro, complemento, cep, latitude, longitude);
 
         return formularioCadastroEndereco;
     }
