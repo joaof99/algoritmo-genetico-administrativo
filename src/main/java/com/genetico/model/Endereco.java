@@ -87,4 +87,12 @@ public class Endereco {
     public Double getLongitude() {
         return longitude;
     }
+
+    public void setNumero(Integer numero) {
+        this.numero = numero;
+    }
+
+    public Integer getNumero() {
+        return numero;
+    }
 }

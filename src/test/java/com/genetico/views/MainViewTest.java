@@ -17,7 +17,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import static com.github.mvysny.kaributesting.v10.GridKt._size;
@@ -36,11 +35,19 @@ class MainViewTest {
     @Mock
     private IntegracaoLocationIQAPI integracaoLocationIQAPI;
 
+    private TextField txtNumero;
+
     @BeforeEach
     void setUp() {
         MockVaadin.setup();
         when(enderecoService.buscarTodos()).thenReturn(new ArrayList<>());
         UI.getCurrent().add(new MainView(enderecoService, integracaoLocationIQAPI));
+        inicializarTextFields();
+    }
+
+    private void inicializarTextFields() {
+        txtNumero = _get(TextField.class, spec -> spec.withId("txt-numero"));
+        txtNumero.setValue("500");
     }
 
     @AfterEach
