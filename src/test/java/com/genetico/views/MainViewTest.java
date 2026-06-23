@@ -35,7 +35,7 @@ class MainViewTest {
     @Mock
     private IntegracaoLocationIQAPI integracaoLocationIQAPI;
 
-    private TextField txtNumero;
+    private TextField numero;
 
     @BeforeEach
     void setUp() {
@@ -46,8 +46,8 @@ class MainViewTest {
     }
 
     private void inicializarTextFields() {
-        txtNumero = _get(TextField.class, spec -> spec.withId("txt-numero"));
-        txtNumero.setValue("500");
+        numero = _get(TextField.class, spec -> spec.withId("txt-form-cadastro-numero"));
+        numero.setValue("500");
     }
 
     @AfterEach

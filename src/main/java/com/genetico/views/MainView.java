@@ -94,25 +94,25 @@ public class MainView extends VerticalLayout {
         formularioCadastroEndereco.setId("form-cadastro-endereco");
 
         logradouro = new TextField("Digite o logradouro");
-        logradouro.setId("txt-logradouro");
+        logradouro.setId("txt-form-cadastro-logradouro");
 
         numero = new TextField("Digite o número");
-        numero.setId("txt-numero");
+        numero.setId("txt-form-cadastro-numero");
 
         bairro = new TextField("Digite o bairro");
-        bairro.setId("txt-bairro");
+        bairro.setId("txt-form-cadastro-bairro");
 
         complemento = new TextField("Digite o complemento");
-        complemento.setId("txt-complemento");
+        complemento.setId("txt-form-cadastro-complemento");
 
         cep = new TextField("Digite o cep");
-        cep.setId("txt-cep");
+        cep.setId("txt-form-cadastro-cep");
 
         latitude = new TextField("Digite a latitude");
-        latitude.setId("txt-latitude");
+        latitude.setId("txt-form-cadastro-latitude");
 
         longitude = new TextField("Digite a longitude");
-        longitude.setId("txt-longitude");
+        longitude.setId("txt-form-cadastro-longitude");
 
         formularioCadastroEndereco.add(logradouro, numero, bairro, complemento, cep, latitude, longitude);
 
