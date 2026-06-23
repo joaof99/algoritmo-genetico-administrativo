@@ -91,6 +91,7 @@ public class MainView extends VerticalLayout {
 
     private FormLayout criarFormularioCadastroEndereco() {
         var formularioCadastroEndereco = new FormLayout();
+        formularioCadastroEndereco.setId("form-cadastro-endereco");
 
         logradouro = new TextField("Digite o logradouro");
         logradouro.setId("txt-logradouro");
