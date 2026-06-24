@@ -36,6 +36,9 @@ class MainViewTest {
     private IntegracaoLocationIQAPI integracaoLocationIQAPI;
 
     private TextField numero;
+    private TextField logradouro;
+    private TextField latitude;
+    private TextField longitude;
 
     @BeforeEach
     void setUp() {
@@ -48,6 +51,15 @@ class MainViewTest {
     private void inicializarTextFields() {
         numero = _get(TextField.class, spec -> spec.withId("txt-form-cadastro-numero"));
         numero.setValue("500");
+
+        logradouro = _get(TextField.class, spec -> spec.withId("txt-form-cadastro-logradouro"));
+        logradouro.setValue("Endereco Teste");
+
+        latitude = _get(TextField.class, spec -> spec.withId("txt-form-cadastro-latitude"));
+        latitude.setValue("-23.5");
+
+        longitude = _get(TextField.class, spec -> spec.withId("txt-form-cadastro-longitude"));
+        longitude.setValue("-46.6");
     }
 
     @AfterEach
@@ -59,10 +71,6 @@ class MainViewTest {
     @DisplayName("Deve adicionar endereco ao grid após salvar com sucesso")
     void deveAdicionarEnderecoAoGridAposSalvar() {
         when(enderecoService.salvar(any())).thenReturn(new Endereco());
-
-        _setValue(_get(TextField.class, spec -> spec.withLabel("Digite o logradouro")), "Endereco Teste");
-        _setValue(_get(TextField.class, spec -> spec.withLabel("Digite a latitude")), "-23.5");
-        _setValue(_get(TextField.class, spec -> spec.withLabel("Digite a longitude")), "-46.6");
         _click(_get(Button.class, spec -> spec.withText("Cadastrar endereco")));
 
         verify(enderecoService, times(1)).salvar(any(Endereco.class));
@@ -74,10 +82,6 @@ class MainViewTest {
     @DisplayName("Deve limpar o formulário após salvar um endereco")
     void deveLimparFormularioCorretamenteAposSalvarEndereco() {
         when(enderecoService.salvar(any())).thenReturn(new Endereco());
-
-        _setValue(_get(TextField.class, spec -> spec.withLabel("Digite o logradouro")), "Endereco Teste");
-        _setValue(_get(TextField.class, spec -> spec.withLabel("Digite a latitude")), "-23.5");
-        _setValue(_get(TextField.class, spec -> spec.withLabel("Digite a longitude")), "-46.6");
         _click(_get(Button.class, spec -> spec.withText("Cadastrar endereco")));
 
         var todosInputsEstaoLimpos = _find(TextField.class)
@@ -91,12 +95,8 @@ class MainViewTest {
     @DisplayName("Não deve atualizar o grid se ocorrer exceção ao salvar o endereco")
     void naoDeveAtualizarGridSeOcorrerExcecaoAoSalvarEndereco() {
         when(enderecoService.salvar(any())).thenThrow(new RuntimeException("Erro no banco"));
-
-        _setValue(_get(TextField.class, spec -> spec.withLabel("Digite o logradouro")), "Endereco Teste");
-        _setValue(_get(TextField.class, spec -> spec.withLabel("Digite a latitude")), "-23.5");
-        _setValue(_get(TextField.class, spec -> spec.withLabel("Digite a longitude")), "-46.6");
-
         _click(_get(Button.class, spec -> spec.withText("Cadastrar endereco")));
+
         var quantidadeItensGrid = _size(_get(Grid.class, spec -> spec.withId("grid-enderecos")));
         assertEquals(0, quantidadeItensGrid);
     }
@@ -104,6 +104,7 @@ class MainViewTest {
     @Test
     @DisplayName("Não deve salvar se o formulário estiver inválido")
     void naoDeveSalvarComFormularioInvalido() {
+        logradouro.setValue("");
         _click(_get(Button.class, spec -> spec.withText("Cadastrar endereco")));
         verify(enderecoService, never()).salvar(any());
     }
@@ -114,11 +115,7 @@ class MainViewTest {
         when(integracaoLocationIQAPI.buscarCoordenadaGeografica(anyString()))
                 .thenReturn(new CoordenadaGeografica(-90.50, -80.40));
 
-        _setValue(_get(TextField.class, spec -> spec.withLabel("Digite o logradouro")), "Logradouro Teste");
         _click(_get(Button.class, spec -> spec.withId("botao-busca-api")));
-
-        var latitude = _get(TextField.class, spec -> spec.withLabel("Digite a latitude"));
-        var longitude = _get(TextField.class, spec -> spec.withLabel("Digite a longitude"));
 
         assertEquals(-90.50, Double.valueOf(latitude.getValue()));
         assertEquals(-80.40, Double.valueOf(longitude.getValue()));
@@ -127,6 +124,7 @@ class MainViewTest {
     @Test
     @DisplayName("API não deve ser chamada se não for preenchido valores exigidos para busca")
     void apiNaoDeveSerChamadaCasoNaoSejaPreenchidoValoresExigidosParaBusca() {
+        logradouro.setValue("");
         _click(_get(Button.class, spec -> spec.withId("botao-busca-api")));
         verify(integracaoLocationIQAPI, never()).buscarCoordenadaGeografica(anyString());
     }
