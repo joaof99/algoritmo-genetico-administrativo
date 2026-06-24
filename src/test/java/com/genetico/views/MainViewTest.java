@@ -39,6 +39,8 @@ class MainViewTest {
     private TextField logradouro;
     private TextField latitude;
     private TextField longitude;
+    private TextField bairro;
+    private TextField cep;
 
     @BeforeEach
     void setUp() {
@@ -60,6 +62,12 @@ class MainViewTest {
 
         longitude = _get(TextField.class, spec -> spec.withId("txt-form-cadastro-longitude"));
         longitude.setValue("-46.6");
+
+        bairro = _get(TextField.class, spec -> spec.withId("txt-form-cadastro-bairro"));
+        bairro.setValue("Norte");
+
+        cep = _get(TextField.class, spec -> spec.withId("txt-form-cadastro-cep"));
+        cep.setValue("18304-303");
     }
 
     @AfterEach
