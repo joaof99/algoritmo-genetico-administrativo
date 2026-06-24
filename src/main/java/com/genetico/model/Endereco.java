@@ -73,12 +73,24 @@ public class Endereco {
         return logradouro;
     }
 
+    public void setNumero(Integer numero) {
+        this.numero = numero;
+    }
+
     public Integer getNumero() {
         return numero;
     }
 
+    public void setBairro(String bairro) {
+        this.bairro = bairro;
+    }
+
     public String getBairro() {
         return bairro;
+    }
+
+    public void setCep(String cep) {
+        this.cep = cep;
     }
 
     public String getCep() {
