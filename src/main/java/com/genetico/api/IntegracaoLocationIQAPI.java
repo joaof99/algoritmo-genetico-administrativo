@@ -28,10 +28,10 @@ public class IntegracaoLocationIQAPI {
         httpClient = HttpClient.newHttpClient();
     }
 
-    public CoordenadaGeografica buscarCoordenadaGeografica(String logradouro) {
+    public CoordenadaGeografica buscarCoordenadaGeografica(String endereco) {
         var uri = UriComponentsBuilder.fromUriString("https://us1.locationiq.com/v1/search")
                 .queryParam("key", locationIQKey)
-                .queryParam("q", logradouro)
+                .queryParam("q", endereco)
                 .queryParam("format", "json")
                 .queryParam("limit", "1")
                 .encode()
