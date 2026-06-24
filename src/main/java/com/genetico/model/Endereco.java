@@ -29,6 +29,7 @@ public class Endereco {
     private String complemento;
 
     @NotNull(message = "Cep é obrigatório")
+    @NotEmpty(message = "Cep não pode ser vazio")
     private String cep;
 
     @NotNull(message = "Latitude é obrigatória")
@@ -72,6 +73,18 @@ public class Endereco {
         return logradouro;
     }
 
+    public Integer getNumero() {
+        return numero;
+    }
+
+    public String getBairro() {
+        return bairro;
+    }
+
+    public String getCep() {
+        return cep;
+    }
+
     public void setLatitude(Double latitude) {
         this.latitude = latitude;
     }
@@ -86,13 +99,5 @@ public class Endereco {
 
     public Double getLongitude() {
         return longitude;
-    }
-
-    public void setNumero(Integer numero) {
-        this.numero = numero;
-    }
-
-    public Integer getNumero() {
-        return numero;
     }
 }
