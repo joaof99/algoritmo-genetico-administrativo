@@ -50,6 +50,35 @@ public class IntegracaoLocationIQAPI {
         return new CoordenadaGeografica(latitude, longitude);
     }
 
+    public CoordenadaGeografica buscarCoordenadaGeografica(String logradouro, String numero, String bairro, String uf, String cidade, String cep) {
+        var uri = UriComponentsBuilder
+                .fromUriString("https://us1.locationiq.com/v1/search")
+                .queryParam("key", locationIQKey)
+                .queryParam("street", logradouro + ", " + numero)
+                .queryParam("neighbourhood", bairro)
+                .queryParam("city", cidade)
+                .queryParam("state", uf)
+                .queryParam("country", "Brazil")
+                .queryParam("postalcode", cep)
+                .queryParam("format", "json")
+                .queryParam("limit", "1")
+                .encode()
+                .build()
+                .toUri();
+
+        var response = executarRequisicaoAPI(uri);
+
+        var json = parsearResposta(response);
+
+        var primeiroItem = json.get(0);
+
+        var latitude = primeiroItem.get("lat").asDouble();
+        var longitude = primeiroItem.get("lon").asDouble();
+
+        return new CoordenadaGeografica(latitude, longitude);
+    }
+
+
     private HttpResponse<String> executarRequisicaoAPI(URI uri) {
         try {
             var request = HttpRequest.newBuilder().uri(uri).GET().build();
