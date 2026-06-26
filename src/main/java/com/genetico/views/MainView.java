@@ -70,7 +70,7 @@ public class MainView extends VerticalLayout {
         botaoCadastroEndereco = criarBotaoCadastroEndereco();
         botaoBuscaAPI = criarBotaoBuscaApi();
 
-        return new VerticalLayout(tituloCadastroEndereco, formularioCadastroEndereco, botaoCadastroEndereco, botaoBuscaAPI);
+        return new VerticalLayout(tituloCadastroEndereco, botaoBuscaAPI, formularioCadastroEndereco, botaoCadastroEndereco);
     }
 
     private Button criarBotaoCadastroEndereco() {
