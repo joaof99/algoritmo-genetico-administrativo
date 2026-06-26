@@ -7,6 +7,7 @@ import com.genetico.service.EnderecoService;
 import com.github.mvysny.kaributesting.v10.MockVaadin;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.textfield.TextField;
 import org.junit.jupiter.api.AfterEach;
@@ -41,7 +42,7 @@ class MainViewTest {
     private TextField longitude;
     private TextField bairro;
     private TextField cep;
-    private TextField uf;
+    private ComboBox<String> uf;
     private TextField cidade;
 
     @BeforeEach
@@ -71,7 +72,7 @@ class MainViewTest {
         cep = _get(TextField.class, spec -> spec.withId("txt-form-cadastro-cep"));
         cep.setValue("18304-303");
 
-        uf = _get(TextField.class, spec -> spec.withId("txt-form-cadastro-uf"));
+        uf = _get(ComboBox.class, spec -> spec.withId("cbx-form-cadastro-uf"));
         uf.setValue("SP");
 
         cidade = _get(TextField.class, spec -> spec.withId("txt-form-cadastro-cidade"));

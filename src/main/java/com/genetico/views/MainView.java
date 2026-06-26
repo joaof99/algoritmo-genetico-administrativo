@@ -7,6 +7,7 @@ import com.genetico.service.EnderecoService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H3;
@@ -21,6 +22,8 @@ import com.vaadin.flow.router.Route;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 @Route("")
 @PageTitle("Algoritmo Genético Administrativo")
 public class MainView extends VerticalLayout {
@@ -33,7 +36,7 @@ public class MainView extends VerticalLayout {
     private TextField bairro;
     private TextField cep;
     private TextField cidade;
-    private TextField uf;
+    private ComboBox<String> uf;
     private TextField latitude;
     private TextField longitude;
 
@@ -113,8 +116,7 @@ public class MainView extends VerticalLayout {
         cidade = new TextField("Digite a cidade");
         cidade.setId("txt-form-cadastro-cidade");
 
-        uf = new TextField("Digite a UF");
-        uf.setId("txt-form-cadastro-uf");
+        uf = criarComboBoxUF();
 
         latitude = new TextField("Digite a latitude");
         latitude.setId("txt-form-cadastro-latitude");
@@ -127,6 +129,23 @@ public class MainView extends VerticalLayout {
         return formularioCadastroEndereco;
     }
 
+    private ComboBox<String> criarComboBoxUF() {
+        var comboBoxUF = new ComboBox<String>("UF");
+        comboBoxUF.setId("cbx-form-cadastro-uf");
+        comboBoxUF.setWidth("100%");
+
+        var ufs = List.of(
+                "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO",
+                "MA", "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI",
+                "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO"
+        );
+
+        comboBoxUF.setItems(ufs);
+        comboBoxUF.setValue(ufs.getFirst());
+
+        return comboBoxUF;
+    }
+
     private void adicionarEnderecoGrid(Endereco endereco) {
         enderecoProvider.getItems().add(endereco);
         enderecoProvider.refreshAll();
@@ -136,6 +155,7 @@ public class MainView extends VerticalLayout {
         var botaoBuscaApi = new Button("Buscar latitude/longitude na API");
         botaoBuscaApi.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         botaoBuscaApi.setId("botao-busca-api");
+        botaoBuscaApi.setTooltipText("Todos os campos de endereço marcados com * são obrigatórios para pesquisar na API");
 
         botaoBuscaApi.addClickListener(clickBotao -> {
             var algumCampoFaltando = logradouro.isEmpty() || numero.isEmpty() || bairro.isEmpty() || uf.isEmpty() || cidade.isEmpty() || cep.isEmpty();
