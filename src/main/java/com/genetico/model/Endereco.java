@@ -26,6 +26,14 @@ public class Endereco {
     @NotEmpty(message = "Bairro não pode ser vazio")
     private String bairro;
 
+    @NotNull(message = "Cidade é obrigatória")
+    @NotEmpty(message = "Cidade não pode ser vazia")
+    private String cidade;
+
+    @NotNull(message = "Uf é obrigatório")
+    @NotEmpty(message = "Uf não pode ser vazio")
+    private String uf;
+
     private String complemento;
 
     @NotNull(message = "Cep é obrigatório")
@@ -111,5 +119,21 @@ public class Endereco {
 
     public Double getLongitude() {
         return longitude;
+    }
+
+    public void setUf(String uf) {
+        this.uf = uf;
+    }
+
+    public String getUf() {
+        return uf;
+    }
+
+    public void setCidade(String cidade) {
+        this.cidade = cidade;
+    }
+
+    public String getCidade() {
+        return cidade;
     }
 }
