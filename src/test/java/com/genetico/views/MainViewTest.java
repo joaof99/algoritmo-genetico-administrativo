@@ -135,8 +135,8 @@ class MainViewTest {
 
         _click(_get(Button.class, spec -> spec.withId("botao-busca-api")));
 
-        assertEquals(-90.50, Double.valueOf(latitude.getValue()));
-        assertEquals(-80.40, Double.valueOf(longitude.getValue()));
+        assertEquals(-90.50, latitude.getValue());
+        assertEquals(-80.40, longitude.getValue());
     }
 
     @Test
