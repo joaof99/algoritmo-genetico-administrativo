@@ -14,6 +14,7 @@ import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
@@ -32,7 +33,7 @@ public class MainView extends VerticalLayout {
     private final BeanValidationBinder<Endereco> enderecoBinder;
 
     private TextField logradouro;
-    private TextField numero;
+    private IntegerField numero;
     private TextField complemento;
     private TextField bairro;
     private TextField cep;
@@ -102,7 +103,7 @@ public class MainView extends VerticalLayout {
         logradouro = new TextField("Digite o logradouro");
         logradouro.setId("txt-form-cadastro-logradouro");
 
-        numero = new TextField("Digite o número");
+        numero = new IntegerField("Digite o número");
         numero.setId("txt-form-cadastro-numero");
 
         bairro = new TextField("Digite o bairro");

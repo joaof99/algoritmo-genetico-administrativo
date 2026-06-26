@@ -9,6 +9,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
 import org.junit.jupiter.api.AfterEach;
@@ -37,7 +38,7 @@ class MainViewTest {
     @Mock
     private IntegracaoLocationIQAPI integracaoLocationIQAPI;
 
-    private TextField numero;
+    private IntegerField numero;
     private TextField logradouro;
     private TextField bairro;
     private TextField cep;
@@ -55,8 +56,8 @@ class MainViewTest {
     }
 
     private void inicializarTextFields() {
-        numero = _get(TextField.class, spec -> spec.withId("txt-form-cadastro-numero"));
-        numero.setValue("500");
+        numero = _get(IntegerField.class, spec -> spec.withId("txt-form-cadastro-numero"));
+        numero.setValue(500);
 
         logradouro = _get(TextField.class, spec -> spec.withId("txt-form-cadastro-logradouro"));
         logradouro.setValue("Endereco Teste");
@@ -130,7 +131,7 @@ class MainViewTest {
     @Test
     @DisplayName("Latitude e longitude devem ser preenchidos corretamente ao buscar na API")
     void latitudeELongitudeDevemSerPreenchidosCorretamenteAobuscarNaAPI() {
-        when(integracaoLocationIQAPI.buscarCoordenadaGeografica(anyString(), anyString(), anyString(), anyString(), anyString(), anyString()))
+        when(integracaoLocationIQAPI.buscarCoordenadaGeografica(anyString(), anyInt(), anyString(), anyString(), anyString(), anyString()))
                 .thenReturn(new CoordenadaGeografica(-90.50, -80.40));
 
         _click(_get(Button.class, spec -> spec.withId("botao-busca-api")));
