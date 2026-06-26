@@ -141,7 +141,7 @@ public class MainView extends VerticalLayout {
             var algumCampoFaltando = logradouro.isEmpty() || numero.isEmpty() || bairro.isEmpty() || uf.isEmpty() || cidade.isEmpty() || cep.isEmpty();
 
             if (algumCampoFaltando) {
-                exibirMensagemErro("Erro. Todos os campos de endereço são obrigatórios para pesquisar na API");
+                exibirMensagemErro("Erro. Todos os campos de endereço marcados com * são obrigatórios para pesquisar na API");
             } else {
                 try {
                     botaoBuscaApi.setEnabled(false);
