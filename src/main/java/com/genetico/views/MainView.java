@@ -14,6 +14,7 @@ import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.provider.ListDataProvider;
@@ -37,8 +38,8 @@ public class MainView extends VerticalLayout {
     private TextField cep;
     private TextField cidade;
     private ComboBox<String> uf;
-    private TextField latitude;
-    private TextField longitude;
+    private NumberField latitude;
+    private NumberField longitude;
 
     private Grid<Endereco> grid;
     private ListDataProvider<Endereco> enderecoProvider;
@@ -118,10 +119,10 @@ public class MainView extends VerticalLayout {
 
         uf = criarComboBoxUF();
 
-        latitude = new TextField("Digite a latitude");
+        latitude = new NumberField("Digite a latitude");
         latitude.setId("txt-form-cadastro-latitude");
 
-        longitude = new TextField("Digite a longitude");
+        longitude = new NumberField("Digite a longitude");
         longitude.setId("txt-form-cadastro-longitude");
 
         formularioCadastroEndereco.add(logradouro, numero, bairro, complemento, cep, cidade, uf, latitude, longitude);
@@ -165,8 +166,8 @@ public class MainView extends VerticalLayout {
 
                     var coordenadaGeografica = integracaoLocationIQAPI.buscarCoordenadaGeografica(logradouro.getValue(), numero.getValue(), bairro.getValue(), uf.getValue(), cidade.getValue(), cep.getValue());
 
-                    latitude.setValue(String.valueOf(coordenadaGeografica.latitude()));
-                    longitude.setValue(String.valueOf(coordenadaGeografica.longitude()));
+                    latitude.setValue(coordenadaGeografica.latitude());
+                    longitude.setValue(coordenadaGeografica.longitude());
                     exibirMensagemSucesso("Latitude e longitude encontradas com sucesso. Foram definidas nos campos de texto");
                 } catch (IntegracaoLocationIQAPIException exception) {
                     log.error(exception.getMessage(), exception);

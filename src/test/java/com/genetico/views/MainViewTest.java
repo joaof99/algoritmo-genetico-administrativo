@@ -9,6 +9,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,12 +39,12 @@ class MainViewTest {
 
     private TextField numero;
     private TextField logradouro;
-    private TextField latitude;
-    private TextField longitude;
     private TextField bairro;
     private TextField cep;
     private ComboBox<String> uf;
     private TextField cidade;
+    private NumberField latitude;
+    private NumberField longitude;
 
     @BeforeEach
     void setUp() {
@@ -60,12 +61,6 @@ class MainViewTest {
         logradouro = _get(TextField.class, spec -> spec.withId("txt-form-cadastro-logradouro"));
         logradouro.setValue("Endereco Teste");
 
-        latitude = _get(TextField.class, spec -> spec.withId("txt-form-cadastro-latitude"));
-        latitude.setValue("-23.5");
-
-        longitude = _get(TextField.class, spec -> spec.withId("txt-form-cadastro-longitude"));
-        longitude.setValue("-46.6");
-
         bairro = _get(TextField.class, spec -> spec.withId("txt-form-cadastro-bairro"));
         bairro.setValue("Norte");
 
@@ -77,6 +72,12 @@ class MainViewTest {
 
         cidade = _get(TextField.class, spec -> spec.withId("txt-form-cadastro-cidade"));
         cidade.setValue("São Paulo");
+
+        latitude = _get(NumberField.class, spec -> spec.withId("txt-form-cadastro-latitude"));
+        latitude.setValue(-23.5);
+
+        longitude = _get(NumberField.class, spec -> spec.withId("txt-form-cadastro-longitude"));
+        longitude.setValue(-46.6);
     }
 
     @AfterEach
