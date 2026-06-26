@@ -32,6 +32,8 @@ public class MainView extends VerticalLayout {
     private TextField complemento;
     private TextField bairro;
     private TextField cep;
+    private TextField cidade;
+    private TextField uf;
     private TextField latitude;
     private TextField longitude;
 
@@ -108,13 +110,19 @@ public class MainView extends VerticalLayout {
         cep = new TextField("Digite o cep");
         cep.setId("txt-form-cadastro-cep");
 
+        cidade = new TextField("Digite a cidade");
+        cidade.setId("txt-form-cadastro-cidade");
+
+        uf = new TextField("Digite a UF");
+        uf.setId("txt-form-cadastro-uf");
+
         latitude = new TextField("Digite a latitude");
         latitude.setId("txt-form-cadastro-latitude");
 
         longitude = new TextField("Digite a longitude");
         longitude.setId("txt-form-cadastro-longitude");
 
-        formularioCadastroEndereco.add(logradouro, numero, bairro, complemento, cep, latitude, longitude);
+        formularioCadastroEndereco.add(logradouro, numero, bairro, complemento, cep, cidade, uf, latitude, longitude);
 
         return formularioCadastroEndereco;
     }
@@ -125,25 +133,29 @@ public class MainView extends VerticalLayout {
     }
 
     private Button criarBotaoBuscaApi() {
-        var botaoBuscaApi = new Button("Buscar lat/long na API");
+        var botaoBuscaApi = new Button("Buscar latitude/longitude na API");
         botaoBuscaApi.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         botaoBuscaApi.setId("botao-busca-api");
 
         botaoBuscaApi.addClickListener(clickBotao -> {
-            if (logradouro.isEmpty()) {
-                exibirMensagemErro("Erro. Digite o logradouro antes de pesquisar na API");
+            var algumCampoFaltando = logradouro.isEmpty() || numero.isEmpty() || bairro.isEmpty() || uf.isEmpty() || cidade.isEmpty() || cep.isEmpty();
+
+            if (algumCampoFaltando) {
+                exibirMensagemErro("Erro. Todos os campos de endereço são obrigatórios para pesquisar na API");
             } else {
                 try {
                     botaoBuscaApi.setEnabled(false);
                     log.info("Buscando logradouro {}", logradouro.getValue());
 
-                    var coordenadaGeografica = integracaoLocationIQAPI.buscarCoordenadaGeografica(logradouro.getValue());
+                    var coordenadaGeografica = integracaoLocationIQAPI
+                            .buscarCoordenadaGeografica(logradouro.getValue(), numero.getValue(), bairro.getValue(), uf.getValue(), cidade.getValue(), cep.getValue());
+
                     latitude.setValue(String.valueOf(coordenadaGeografica.latitude()));
                     longitude.setValue(String.valueOf(coordenadaGeografica.longitude()));
                     exibirMensagemSucesso("Latitude e longitude encontradas com sucesso. Foram definidas nos campos de texto");
                 } catch (IntegracaoLocationIQAPIException e) {
                     log.error(e.getMessage(), e);
-                    log.info("Houve um erro ao efetuar requisição a API, tente novamente");
+                    exibirMensagemErro("Erro ao consultar a API. Tente novamente");
                 } finally {
                     botaoBuscaAPI.setEnabled(true);
                 }

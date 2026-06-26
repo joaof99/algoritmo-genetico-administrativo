@@ -41,6 +41,8 @@ class MainViewTest {
     private TextField longitude;
     private TextField bairro;
     private TextField cep;
+    private TextField uf;
+    private TextField cidade;
 
     @BeforeEach
     void setUp() {
@@ -68,6 +70,12 @@ class MainViewTest {
 
         cep = _get(TextField.class, spec -> spec.withId("txt-form-cadastro-cep"));
         cep.setValue("18304-303");
+
+        uf = _get(TextField.class, spec -> spec.withId("txt-form-cadastro-uf"));
+        uf.setValue("SP");
+
+        cidade = _get(TextField.class, spec -> spec.withId("txt-form-cadastro-cidade"));
+        cidade.setValue("São Paulo");
     }
 
     @AfterEach
@@ -120,7 +128,7 @@ class MainViewTest {
     @Test
     @DisplayName("Latitude e longitude devem ser preenchidos corretamente ao buscar na API")
     void latitudeELongitudeDevemSerPreenchidosCorretamenteAobuscarNaAPI() {
-        when(integracaoLocationIQAPI.buscarCoordenadaGeografica(anyString()))
+        when(integracaoLocationIQAPI.buscarCoordenadaGeografica(anyString(), anyString(), anyString(), anyString(), anyString(), anyString()))
                 .thenReturn(new CoordenadaGeografica(-90.50, -80.40));
 
         _click(_get(Button.class, spec -> spec.withId("botao-busca-api")));
