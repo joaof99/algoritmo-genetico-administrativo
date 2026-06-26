@@ -85,7 +85,7 @@ public class MainView extends VerticalLayout {
                     limparFormularioEndereco();
                     exibirMensagemSucesso("Endereço salvo com sucesso");
                 } catch (Exception exception) {
-                    log.error(exception.getMessage());
+                    log.error(exception.getMessage(), exception);
                     Notification.show("Erro inesperado ao salvar endereço, tente novamente", 4000, Notification.Position.MIDDLE);
                 }
             }
@@ -134,11 +134,7 @@ public class MainView extends VerticalLayout {
         comboBoxUF.setId("cbx-form-cadastro-uf");
         comboBoxUF.setWidth("100%");
 
-        var ufs = List.of(
-                "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO",
-                "MA", "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI",
-                "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO"
-        );
+        var ufs = List.of("AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO");
 
         comboBoxUF.setItems(ufs);
         comboBoxUF.setValue(ufs.getFirst());
@@ -167,14 +163,13 @@ public class MainView extends VerticalLayout {
                     botaoBuscaApi.setEnabled(false);
                     log.info("Buscando logradouro {}", logradouro.getValue());
 
-                    var coordenadaGeografica = integracaoLocationIQAPI
-                            .buscarCoordenadaGeografica(logradouro.getValue(), numero.getValue(), bairro.getValue(), uf.getValue(), cidade.getValue(), cep.getValue());
+                    var coordenadaGeografica = integracaoLocationIQAPI.buscarCoordenadaGeografica(logradouro.getValue(), numero.getValue(), bairro.getValue(), uf.getValue(), cidade.getValue(), cep.getValue());
 
                     latitude.setValue(String.valueOf(coordenadaGeografica.latitude()));
                     longitude.setValue(String.valueOf(coordenadaGeografica.longitude()));
                     exibirMensagemSucesso("Latitude e longitude encontradas com sucesso. Foram definidas nos campos de texto");
-                } catch (IntegracaoLocationIQAPIException e) {
-                    log.error(e.getMessage(), e);
+                } catch (IntegracaoLocationIQAPIException exception) {
+                    log.error(exception.getMessage(), exception);
                     exibirMensagemErro("Erro ao consultar a API. Tente novamente");
                 } finally {
                     botaoBuscaAPI.setEnabled(true);
