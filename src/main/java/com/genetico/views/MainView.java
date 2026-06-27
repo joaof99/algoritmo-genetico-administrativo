@@ -114,6 +114,7 @@ public class MainView extends VerticalLayout {
 
         cep = new TextField("Digite o cep");
         cep.setId("txt-form-cadastro-cep");
+        cep.setMaxLength(9);
 
         cidade = new TextField("Digite a cidade");
         cidade.setId("txt-form-cadastro-cidade");

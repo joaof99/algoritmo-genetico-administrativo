@@ -1,10 +1,7 @@
 package com.genetico.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 
 import java.util.List;
 
@@ -38,6 +35,7 @@ public class Endereco {
 
     @NotNull(message = "Cep é obrigatório")
     @NotEmpty(message = "Cep não pode ser vazio")
+    @Size(max = 9, message = "Deve possuir no máximo 9 caracteres")
     private String cep;
 
     @NotNull(message = "Latitude é obrigatória")
