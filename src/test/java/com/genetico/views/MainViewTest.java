@@ -145,6 +145,6 @@ class MainViewTest {
     void apiNaoDeveSerChamadaCasoNaoSejaPreenchidoValoresExigidosParaBusca() {
         logradouro.setValue("");
         _click(_get(Button.class, spec -> spec.withId("botao-busca-api")));
-        verify(integracaoLocationIQAPI, never()).buscarCoordenadaGeografica(anyString());
+        verify(integracaoLocationIQAPI, never()).buscarCoordenadaGeografica(anyString(), anyInt(), anyString(), anyString(), anyString(), anyString());
     }
 }
