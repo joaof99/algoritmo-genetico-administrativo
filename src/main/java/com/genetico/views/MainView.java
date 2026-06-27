@@ -102,28 +102,35 @@ public class MainView extends VerticalLayout {
 
         logradouro = new TextField("Digite o logradouro");
         logradouro.setId("txt-form-cadastro-logradouro");
+        logradouro.setMaxLength(255);
 
         numero = new IntegerField("Digite o número");
         numero.setId("txt-form-cadastro-numero");
 
         bairro = new TextField("Digite o bairro");
+        bairro.setMaxLength(255);
         bairro.setId("txt-form-cadastro-bairro");
 
         complemento = new TextField("Digite o complemento");
         complemento.setId("txt-form-cadastro-complemento");
+        complemento.setMaxLength(255);
 
         cep = criarCep();
 
         cidade = new TextField("Digite a cidade");
         cidade.setId("txt-form-cadastro-cidade");
+        cidade.setMaxLength(255);
+        cidade.setAllowedCharPattern("[a-zA-ZÀ-ÿ\\s]");
 
         uf = criarComboBoxUF();
 
         latitude = new NumberField("Digite a latitude");
         latitude.setId("txt-form-cadastro-latitude");
+        latitude.setAllowedCharPattern("[0-9.\\-]");
 
         longitude = new NumberField("Digite a longitude");
         longitude.setId("txt-form-cadastro-longitude");
+        longitude.setAllowedCharPattern("[0-9.\\-]");
 
         formularioCadastroEndereco.add(logradouro, numero, bairro, complemento, cep, cidade, uf, latitude, longitude);
 
