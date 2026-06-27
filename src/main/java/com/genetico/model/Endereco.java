@@ -34,8 +34,7 @@ public class Endereco {
     private String complemento;
 
     @NotNull(message = "Cep é obrigatório")
-    @NotEmpty(message = "Cep não pode ser vazio")
-    @Size(max = 9, message = "Deve possuir no máximo 9 caracteres")
+    @Pattern(regexp = "^[0-9]{5}-[0-9]{3}$", message = "CEP deve estar no formato: 00000-000")
     private String cep;
 
     @NotNull(message = "Latitude é obrigatória")

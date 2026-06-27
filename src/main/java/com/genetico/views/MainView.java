@@ -112,9 +112,7 @@ public class MainView extends VerticalLayout {
         complemento = new TextField("Digite o complemento");
         complemento.setId("txt-form-cadastro-complemento");
 
-        cep = new TextField("Digite o cep");
-        cep.setId("txt-form-cadastro-cep");
-        cep.setMaxLength(9);
+        cep = criarCep();
 
         cidade = new TextField("Digite a cidade");
         cidade.setId("txt-form-cadastro-cidade");
@@ -130,6 +128,15 @@ public class MainView extends VerticalLayout {
         formularioCadastroEndereco.add(logradouro, numero, bairro, complemento, cep, cidade, uf, latitude, longitude);
 
         return formularioCadastroEndereco;
+    }
+
+    private TextField criarCep() {
+        var cep = new TextField("Digite o cep");
+        cep.setId("txt-form-cadastro-cep");
+        cep.setMaxLength(9);
+        cep.setAllowedCharPattern("[0-9\\-]");
+
+        return cep;
     }
 
     private ComboBox<String> criarComboBoxUF() {
