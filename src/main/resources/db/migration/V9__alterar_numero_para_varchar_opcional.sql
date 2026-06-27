@@ -1,0 +1,3 @@
+ALTER TABLE enderecos
+    ALTER COLUMN numero TYPE VARCHAR(10),
+    ALTER COLUMN numero DROP NOT NULL;

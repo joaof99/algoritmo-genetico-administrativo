@@ -38,7 +38,7 @@ class MainViewTest {
     @Mock
     private IntegracaoLocationIQAPI integracaoLocationIQAPI;
 
-    private IntegerField numero;
+    private TextField numero;
     private TextField logradouro;
     private TextField bairro;
     private TextField cep;
@@ -56,8 +56,8 @@ class MainViewTest {
     }
 
     private void inicializarTextFields() {
-        numero = _get(IntegerField.class, spec -> spec.withId("txt-form-cadastro-numero"));
-        numero.setValue(500);
+        numero = _get(TextField.class, spec -> spec.withId("txt-form-cadastro-numero"));
+        numero.setValue("500");
 
         logradouro = _get(TextField.class, spec -> spec.withId("txt-form-cadastro-logradouro"));
         logradouro.setValue("Endereco Teste");
@@ -131,7 +131,7 @@ class MainViewTest {
     @Test
     @DisplayName("Latitude e longitude devem ser preenchidos corretamente ao buscar na API")
     void latitudeELongitudeDevemSerPreenchidosCorretamenteAobuscarNaAPI() {
-        when(integracaoLocationIQAPI.buscarCoordenadaGeografica(anyString(), anyInt(), anyString(), anyString(), anyString(), anyString()))
+        when(integracaoLocationIQAPI.buscarCoordenadaGeografica(anyString(), anyString(), anyString(), anyString(), anyString(), anyString()))
                 .thenReturn(new CoordenadaGeografica(-90.50, -80.40));
 
         _click(_get(Button.class, spec -> spec.withId("botao-busca-api")));
@@ -145,6 +145,6 @@ class MainViewTest {
     void apiNaoDeveSerChamadaCasoNaoSejaPreenchidoValoresExigidosParaBusca() {
         logradouro.setValue("");
         _click(_get(Button.class, spec -> spec.withId("botao-busca-api")));
-        verify(integracaoLocationIQAPI, never()).buscarCoordenadaGeografica(anyString(), anyInt(), anyString(), anyString(), anyString(), anyString());
+        verify(integracaoLocationIQAPI, never()).buscarCoordenadaGeografica(anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
     }
 }

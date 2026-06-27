@@ -33,7 +33,7 @@ public class MainView extends VerticalLayout {
     private final BeanValidationBinder<Endereco> enderecoBinder;
 
     private TextField logradouro;
-    private IntegerField numero;
+    private TextField numero;
     private TextField complemento;
     private TextField bairro;
     private TextField cep;
@@ -104,7 +104,7 @@ public class MainView extends VerticalLayout {
         logradouro.setId("txt-form-cadastro-logradouro");
         logradouro.setMaxLength(255);
 
-        numero = new IntegerField("Digite o número");
+        numero = new TextField("Digite o número");
         numero.setId("txt-form-cadastro-numero");
 
         bairro = new TextField("Digite o bairro");

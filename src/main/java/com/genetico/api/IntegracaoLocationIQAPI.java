@@ -28,7 +28,7 @@ public class IntegracaoLocationIQAPI {
         httpClient = HttpClient.newHttpClient();
     }
 
-    public CoordenadaGeografica buscarCoordenadaGeografica(String logradouro, Integer numero, String bairro, String uf, String cidade, String cep) {
+    public CoordenadaGeografica buscarCoordenadaGeografica(String logradouro, String numero, String bairro, String uf, String cidade, String cep) {
         var uri = UriComponentsBuilder
                 .fromUriString("https://us1.locationiq.com/v1/search")
                 .queryParam("key", locationIQKey)
