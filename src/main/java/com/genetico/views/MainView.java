@@ -14,7 +14,6 @@ import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
@@ -172,7 +171,7 @@ public class MainView extends VerticalLayout {
         botaoBuscaApi.setTooltipText("Todos os campos de endereço marcados com * são obrigatórios para pesquisar na API");
 
         botaoBuscaApi.addClickListener(clickBotao -> {
-            var algumCampoFaltando = logradouro.isEmpty() || numero.isEmpty() || bairro.isEmpty() || uf.isEmpty() || cidade.isEmpty() || cep.isEmpty();
+            var algumCampoFaltando = logradouro.isEmpty() || bairro.isEmpty() || uf.isEmpty() || cidade.isEmpty() || cep.isEmpty();
 
             if (algumCampoFaltando) {
                 exibirMensagemErro("Erro. Todos os campos de endereço marcados com * são obrigatórios para pesquisar na API");
@@ -181,7 +180,9 @@ public class MainView extends VerticalLayout {
                     botaoBuscaApi.setEnabled(false);
                     log.info("Buscando logradouro {}", logradouro.getValue());
 
-                    var coordenadaGeografica = integracaoLocationIQAPI.buscarCoordenadaGeografica(logradouro.getValue(), numero.getValue(), bairro.getValue(), uf.getValue(), cidade.getValue(), cep.getValue());
+                    var numeroEndereco = numero.getValue().isBlank() ? null : numero.getValue();
+
+                    var coordenadaGeografica = integracaoLocationIQAPI.buscarCoordenadaGeografica(logradouro.getValue(), numeroEndereco, bairro.getValue(), uf.getValue(), cidade.getValue(), cep.getValue());
 
                     latitude.setValue(coordenadaGeografica.latitude());
                     longitude.setValue(coordenadaGeografica.longitude());

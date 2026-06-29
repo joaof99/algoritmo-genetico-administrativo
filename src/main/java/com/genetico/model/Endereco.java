@@ -16,7 +16,6 @@ public class Endereco {
     @NotEmpty(message = "Logradouro não pode ser vazio")
     private String logradouro;
 
-    @NotNull(message = "Número é obrigatório")
     private String numero;
 
     @NotNull(message = "Bairro é obrigatório")

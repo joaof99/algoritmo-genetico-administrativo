@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.genetico.model.CoordenadaGeografica;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,11 +29,15 @@ public class IntegracaoLocationIQAPI {
         httpClient = HttpClient.newHttpClient();
     }
 
-    public CoordenadaGeografica buscarCoordenadaGeografica(String logradouro, String numero, String bairro, String uf, String cidade, String cep) {
+    public CoordenadaGeografica buscarCoordenadaGeografica(String logradouro, @Nullable String numero, String bairro, String uf, String cidade, String cep) {
+        var logradouroENumero = numero != null && !numero.isBlank()
+                ? logradouro + ", " + numero
+                : logradouro;
+
         var uri = UriComponentsBuilder
                 .fromUriString("https://us1.locationiq.com/v1/search")
                 .queryParam("key", locationIQKey)
-                .queryParam("street", logradouro + ", " + numero)
+                .queryParam("street", logradouroENumero)
                 .queryParam("neighbourhood", bairro)
                 .queryParam("city", cidade)
                 .queryParam("state", uf)
