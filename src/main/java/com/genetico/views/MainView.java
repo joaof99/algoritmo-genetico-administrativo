@@ -106,6 +106,7 @@ public class MainView extends VerticalLayout {
 
         numero = new TextField("Digite o número");
         numero.setId("txt-form-cadastro-numero");
+        numero.setMaxLength(10);
 
         bairro = new TextField("Digite o bairro");
         bairro.setMaxLength(255);
