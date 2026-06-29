@@ -53,6 +53,7 @@ public class Endereco {
 
     }
 
+    @Deprecated
     public Endereco(String logradouro, Double latitude, Double longitude) {
         this.logradouro = logradouro;
         this.latitude = latitude;
