@@ -1,10 +1,7 @@
 package com.genetico.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 
 import java.util.List;
 
@@ -18,6 +15,26 @@ public class Endereco {
 
     @NotEmpty(message = "Logradouro não pode ser vazio")
     private String logradouro;
+
+    private String numero;
+
+    @NotNull(message = "Bairro é obrigatório")
+    @NotEmpty(message = "Bairro não pode ser vazio")
+    private String bairro;
+
+    @NotNull(message = "Cidade é obrigatória")
+    @NotEmpty(message = "Cidade não pode ser vazia")
+    private String cidade;
+
+    @NotNull(message = "Uf é obrigatório")
+    @NotEmpty(message = "Uf não pode ser vazio")
+    private String uf;
+
+    private String complemento;
+
+    @NotNull(message = "Cep é obrigatório")
+    @Pattern(regexp = "^[0-9]{5}-[0-9]{3}$", message = "CEP deve estar no formato: 00000-000")
+    private String cep;
 
     @NotNull(message = "Latitude é obrigatória")
     @DecimalMin(value = "-90.0", message = "Latitude mínima deve ser -90.0")
@@ -36,8 +53,19 @@ public class Endereco {
 
     }
 
+    @Deprecated
     public Endereco(String logradouro, Double latitude, Double longitude) {
         this.logradouro = logradouro;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+    public Endereco(String logradouro, String numero, String complemento, String bairro, String cep, Double latitude, Double longitude) {
+        this.logradouro = logradouro;
+        this.numero = numero;
+        this.complemento = complemento;
+        this.bairro = bairro;
+        this.cep = cep;
         this.latitude = latitude;
         this.longitude = longitude;
     }
@@ -48,6 +76,30 @@ public class Endereco {
 
     public String getLogradouro() {
         return logradouro;
+    }
+
+    public void setNumero(String numero) {
+        this.numero = numero;
+    }
+
+    public String getNumero() {
+        return numero;
+    }
+
+    public void setBairro(String bairro) {
+        this.bairro = bairro;
+    }
+
+    public String getBairro() {
+        return bairro;
+    }
+
+    public void setCep(String cep) {
+        this.cep = cep;
+    }
+
+    public String getCep() {
+        return cep;
     }
 
     public void setLatitude(Double latitude) {
@@ -64,5 +116,21 @@ public class Endereco {
 
     public Double getLongitude() {
         return longitude;
+    }
+
+    public void setUf(String uf) {
+        this.uf = uf;
+    }
+
+    public String getUf() {
+        return uf;
+    }
+
+    public void setCidade(String cidade) {
+        this.cidade = cidade;
+    }
+
+    public String getCidade() {
+        return cidade;
     }
 }
