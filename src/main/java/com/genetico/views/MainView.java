@@ -206,12 +206,22 @@ public class MainView extends VerticalLayout {
     }
 
     private Grid<Endereco> criarGrid() {
-        grid = new Grid<>(Endereco.class, true);
+        var grid = new Grid<>(Endereco.class, false);
+
+        grid.addColumn(Endereco::getLogradouro).setHeader("Logradouro");
+        grid.addColumn(Endereco::getNumero).setHeader("Número");
+        grid.addColumn(Endereco::getBairro).setHeader("Bairro");
+        grid.addColumn(Endereco::getCep).setHeader("CEP");
+        grid.addColumn(Endereco::getCidade).setHeader("Cidade");
+        grid.addColumn(Endereco::getUf).setHeader("UF");
+        grid.addColumn(Endereco::getLatitude).setHeader("Latitude");
+        grid.addColumn(Endereco::getLongitude).setHeader("Longitude");
+
         grid.setId("grid-enderecos");
 
         var enderecos = enderecoService.buscarTodos();
-
         enderecoProvider = new ListDataProvider<>(enderecos);
+
         grid.setDataProvider(enderecoProvider);
 
         return grid;
