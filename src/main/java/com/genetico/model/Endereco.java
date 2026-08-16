@@ -70,6 +70,10 @@ public class Endereco {
         this.longitude = longitude;
     }
 
+    public Integer getId() {
+        return id;
+    }
+
     public void setLogradouro(String logradouro) {
         this.logradouro = logradouro;
     }
