@@ -61,6 +61,27 @@ public class IntegracaoLocationIQAPI {
         return new CoordenadaGeografica(latitude, longitude);
     }
 
+    public double buscarDistanciaEntreCoordenadas(CoordenadaGeografica origem, CoordenadaGeografica destino) {
+        var coordenadas = origem.longitude() + "," + origem.latitude()
+                + ";" + destino.longitude() + "," + destino.latitude();
+
+        var uri = UriComponentsBuilder
+                .fromUriString("https://us1.locationiq.com/v1/directions/driving/" + coordenadas)
+                .queryParam("key", locationIQKey)
+                .queryParam("overview", "false")
+                .queryParam("annotations", "false")
+                .encode()
+                .build()
+                .toUri();
+
+        var response = executarRequisicaoAPI(uri);
+        var json = parsearResposta(response);
+        var distanciaEmMetros = json.get("routes").get(0).get("distance").asDouble();
+
+        var distanciaEmKm = distanciaEmMetros / 1000;
+
+        return distanciaEmKm;
+    }
 
     private HttpResponse<String> executarRequisicaoAPI(URI uri) {
         try {
