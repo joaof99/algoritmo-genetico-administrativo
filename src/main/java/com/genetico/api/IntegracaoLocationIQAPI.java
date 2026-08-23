@@ -53,6 +53,10 @@ public class IntegracaoLocationIQAPI {
 
         var json = parsearResposta(response);
 
+        if (!json.isArray() || json.isEmpty()) {
+            throw new IntegracaoLocationIQAPIException("API de geocodificação retornou resposta vazia para");
+        }
+
         var primeiroItem = json.get(0);
 
         var latitude = primeiroItem.get("lat").asDouble();
@@ -65,6 +69,10 @@ public class IntegracaoLocationIQAPI {
         var coordenadas = origem.longitude() + "," + origem.latitude()
                 + ";" + destino.longitude() + "," + destino.latitude();
 
+        log.info("Buscando distância entre coordenadas");
+        log.info("Coordenadas origem: {}, {}", origem.latitude(), origem.longitude());
+        log.info("Coordenadas destino: {}, {}", destino.latitude(), destino.longitude());
+
         var uri = UriComponentsBuilder
                 .fromUriString("https://us1.locationiq.com/v1/directions/driving/" + coordenadas)
                 .queryParam("key", locationIQKey)
@@ -76,8 +84,12 @@ public class IntegracaoLocationIQAPI {
 
         var response = executarRequisicaoAPI(uri);
         var json = parsearResposta(response);
-        var distanciaEmMetros = json.get("routes").get(0).get("distance").asDouble();
 
+        if (!json.has("routes") || json.get("routes").isEmpty()) {
+            throw new IntegracaoLocationIQAPIException("Directions API retornou resposta sem rotas");
+        }
+
+        var distanciaEmMetros = json.get("routes").get(0).get("distance").asDouble();
         var distanciaEmKm = distanciaEmMetros / 1000;
 
         return distanciaEmKm;
@@ -89,38 +101,22 @@ public class IntegracaoLocationIQAPI {
             var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() != 200) {
-                var mensagemErro = "Erro na API de geocodificação (LocationIQ). HTTP status: " + response.statusCode();
-                log.error("{} - body: {}", mensagemErro, response.body());
-                throw new IntegracaoLocationIQAPIException(mensagemErro);
+                throw new IntegracaoLocationIQAPIException("Erro na API de geocodificação (LocationIQ). HTTP status: " + response.statusCode());
             }
 
             return response;
         } catch (IOException e) {
-            var mensagemErro = "Erro de comunicação ao consultar a API de geocodificação (LocationIQ)";
-            log.error(mensagemErro);
-            throw new IntegracaoLocationIQAPIException(mensagemErro, e);
+            throw new IntegracaoLocationIQAPIException("Erro de comunicação ao consultar a API de geocodificação (LocationIQ)", e);
         } catch (InterruptedException e) {
-            var mensagemErro = "Requisição à API de geocodificação (LocationIQ) foi interrompida.";
-            log.error(mensagemErro);
             Thread.currentThread().interrupt();
-            throw new IntegracaoLocationIQAPIException(mensagemErro, e);
+            throw new IntegracaoLocationIQAPIException("Requisição à API de geocodificação (LocationIQ) foi interrompida.", e);
         }
     }
 
     private JsonNode parsearResposta(HttpResponse<String> response) {
         try {
-            var json = new ObjectMapper().readTree(response.body());
-
-            if (!json.isArray() || json.isEmpty()) {
-                var mensagemErro = "API de geocodificação retornou resposta vazia para";
-                log.error(mensagemErro);
-                throw new IntegracaoLocationIQAPIException(mensagemErro);
-            }
-
-            return json;
+            return new ObjectMapper().readTree(response.body());
         } catch (JsonProcessingException e) {
-            var mensagemErro = "Resposta inválida da API de geocodificação (formato inesperado).";
-            log.error(mensagemErro);
             throw new IntegracaoLocationIQAPIException("Resposta inválida da API de geocodificação (formato inesperado).", e);
         }
     }
