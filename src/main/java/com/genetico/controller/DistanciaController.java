@@ -42,11 +42,11 @@ public class DistanciaController {
     private double buscarDistanciaEmApi(int origemId, int destinoId) {
         var origem = enderecoRepository.findById(origemId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Endereço de ID " + origemId + " não encontrado"));
+                        String.format("Origem de ID %d não encontrado", origemId)));
 
         var destino = enderecoRepository.findById(destinoId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Endereço de ID " + destinoId + " não encontrado"));
+                        String.format("Destino de ID %d não encontrado", destinoId)));
 
         var coordenadaOrigem = new CoordenadaGeografica(origem.getLatitude(), origem.getLongitude());
         var coordenadaDestino = new CoordenadaGeografica(destino.getLatitude(), destino.getLongitude());
