@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.genetico.model.CoordenadaGeografica;
+import com.genetico.model.Distancia;
+import com.genetico.model.Endereco;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +18,9 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class IntegracaoLocationIQAPI {
@@ -93,6 +98,49 @@ public class IntegracaoLocationIQAPI {
         var distanciaEmKm = distanciaEmMetros / 1000;
 
         return distanciaEmKm;
+    }
+
+    public List<Distancia> buscarDistanciaEnderecos(List<Endereco> enderecos) {
+        log.info("Mapeamento distâncias entre {} endereços.", enderecos.size());
+
+        var coordenadas = enderecos.stream()
+                .map(e -> new CoordenadaGeografica(e.getLatitude(), e.getLongitude()))
+                .toList();
+
+        var coordenadasFormatadas = coordenadas.stream()
+                .map(c -> c.longitude() + "," + c.latitude())
+                .collect(Collectors.joining(";"));
+
+        var uri = UriComponentsBuilder
+                .fromUriString("https://us1.locationiq.com/v1/matrix/driving/" + coordenadasFormatadas)
+                .queryParam("key", locationIQKey)
+                .queryParam("annotations", "distance")
+                .encode()
+                .build()
+                .toUri();
+
+        var response = executarRequisicaoAPI(uri);
+        var json = parsearResposta(response);
+
+        if (!json.has("distances") || json.get("distances").isEmpty()) {
+            throw new IntegracaoLocationIQAPIException("Matrix API retornou resposta sem distâncias");
+        }
+
+        var distances = json.get("distances");
+        var tamanho = enderecos.size();
+        var distancias = new ArrayList<Distancia>();
+
+        for (int i = 0; i < tamanho; i++) {
+            for (int j = 0; j < tamanho; j++) {
+                var origem = enderecos.get(i);
+                var destino = enderecos.get(j);
+                var distanciaEmKm = distances.get(i).get(j).asDouble() / 1000;
+                distancias.add(new Distancia(origem, destino, distanciaEmKm));
+
+            }
+        }
+
+        return distancias;
     }
 
     private HttpResponse<String> executarRequisicaoAPI(URI uri) {

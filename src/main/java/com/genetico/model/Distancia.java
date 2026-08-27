@@ -28,6 +28,14 @@ public class Distancia {
         this.distancia = distanciaEntreEnderecos;
     }
 
+    public Endereco getOrigem() {
+        return origem;
+    }
+
+    public Endereco getDestino() {
+        return destino;
+    }
+
     public double getDistancia() {
         return distancia;
     }

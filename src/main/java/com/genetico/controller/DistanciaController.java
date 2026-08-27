@@ -1,20 +1,17 @@
 package com.genetico.controller;
 
 import com.genetico.api.IntegracaoLocationIQAPI;
-import com.genetico.model.CoordenadaGeografica;
-import com.genetico.model.Distancia;
-import com.genetico.model.DistanciaId;
-import com.genetico.model.Endereco;
+import com.genetico.dto.DistanciaResponse;
+import com.genetico.model.*;
 import com.genetico.repository.DistanciaRepository;
 import com.genetico.repository.EnderecoRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/distancias")
@@ -61,5 +58,19 @@ public class DistanciaController {
     private void salvarDistanciaNoBanco(int origemId, int destinoId, Endereco origem, Endereco destino, double distanciaAPI) {
         distanciaRepository.save(new Distancia(origem, destino, distanciaAPI));
         log.info("Distância entre endereço de ID {} e ID {} armazenada com sucesso na base de dados", origemId, destinoId);
+    }
+
+    @GetMapping("/matrix")
+    public List<DistanciaResponse> buscarDistanciaEnderecos(@RequestParam List<Integer> idsEnderecos) {
+        var enderecos = enderecoRepository.findAllById(idsEnderecos);
+        var distanciasEntreEnderecos = integracaoLocationIQAPI.buscarDistanciaEnderecos(enderecos);
+
+        return distanciasEntreEnderecos.stream()
+                .map(d -> new DistanciaResponse(
+                        d.getOrigem().getId(),
+                        d.getDestino().getId(),
+                        d.getDistancia()
+                ))
+                .toList();
     }
 }
