@@ -2,6 +2,8 @@ package com.genetico.model;
 
 import jakarta.persistence.*;
 
+import java.util.Objects;
+
 @Entity
 @Table(name = "distancias")
 @IdClass(DistanciaId.class)
@@ -38,5 +40,24 @@ public class Distancia {
 
     public double getDistancia() {
         return distancia;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof Distancia outra)) {
+            return false;
+        }
+
+        return Objects.equals(origem.getId(), outra.origem.getId())
+                && Objects.equals(destino.getId(), outra.destino.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(origem.getId(), destino.getId());
     }
 }

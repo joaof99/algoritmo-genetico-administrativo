@@ -11,7 +11,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/distancias")
@@ -62,10 +65,70 @@ public class DistanciaController {
 
     @GetMapping("/matrix")
     public List<DistanciaResponse> buscarDistanciaEnderecos(@RequestParam List<Integer> idsEnderecos) {
-        var enderecos = enderecoRepository.findAllById(idsEnderecos);
-        var distanciasEntreEnderecos = integracaoLocationIQAPI.buscarDistanciaEnderecos(enderecos);
+        var distanciasIdsRequisicao = new ArrayList<DistanciaId>();
 
-        return distanciasEntreEnderecos.stream()
+        for (Integer idOrigem : idsEnderecos) {
+            for (Integer idDestino : idsEnderecos) {
+                if (idOrigem.equals(idDestino)) {
+                    continue;
+                }
+
+                distanciasIdsRequisicao.add(new DistanciaId(idOrigem, idDestino));
+            }
+        }
+
+        var distanciasBanco = distanciaRepository.findAllById(distanciasIdsRequisicao);
+
+        var paresExistentesBanco = distanciasBanco.stream()
+                .map(d -> new DistanciaId(
+                        d.getOrigem().getId(),
+                        d.getDestino().getId()
+                ))
+                .collect(Collectors.toSet());
+
+        var paresFaltantesBanco = distanciasIdsRequisicao.stream()
+                .filter(par -> !paresExistentesBanco.contains(par))
+                .toList();
+
+        var idsFaltantes = paresFaltantesBanco.stream()
+                .flatMap(d -> Stream.of(
+                        d.getOrigem(),
+                        d.getDestino()
+                ))
+                .collect(Collectors.toSet());
+
+        var enderecos = enderecoRepository.findAllById(idsEnderecos);
+
+        var enderecosParaBusca = enderecos.stream()
+                .filter(e -> idsFaltantes.contains(e.getId()))
+                .toList();
+
+        if (enderecosParaBusca.isEmpty()) {
+            log.info("Todos os endereços já possuem suas combinações. Não é necessário busca na API");
+
+            return distanciasBanco.stream()
+                    .map(d -> new DistanciaResponse(
+                            d.getOrigem().getId(),
+                            d.getDestino().getId(),
+                            d.getDistancia()
+                    ))
+                    .toList();
+        }
+
+        var distanciasAPI = integracaoLocationIQAPI.buscarDistanciaEnderecos(enderecosParaBusca);
+
+        var distanciasAPISemMesmaOrigemDestino = distanciasAPI.stream()
+                .filter(d -> !d.getOrigem().getId().equals(d.getDestino().getId()))
+                .toList();
+
+        var distanciasParaSalvar = distanciasAPISemMesmaOrigemDestino
+                .stream()
+                .filter(d -> !distanciasBanco.contains(d))
+                .toList();
+
+        distanciaRepository.saveAll(distanciasParaSalvar);
+
+        return distanciasParaSalvar.stream()
                 .map(d -> new DistanciaResponse(
                         d.getOrigem().getId(),
                         d.getDestino().getId(),
