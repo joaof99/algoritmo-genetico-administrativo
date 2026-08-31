@@ -1,6 +1,7 @@
 package com.genetico.service;
 
 import com.genetico.api.IntegracaoLocationIQAPI;
+import com.genetico.dto.DistanciaResponse;
 import com.genetico.model.Distancia;
 import com.genetico.model.Endereco;
 import com.genetico.repository.DistanciaRepository;
@@ -53,8 +54,8 @@ class DistanciaServiceTest {
     }
 
     @Test
-    @DisplayName("Não deve buscar na API caso todas as distâncias já possuam suas combinações")
-    void naoDeveBuscarNaAPICasoTodasAsDistanciasJaPossuamSuasCombinacoes() {
+    @DisplayName("Deve retornar distâncias corretamente mas sem buscar na API")
+    void deveRetornarDistanciasCorretamenteSemBuscarNaAPI() {
         var endereco = new Endereco();
         endereco.setId(1);
 
@@ -65,18 +66,44 @@ class DistanciaServiceTest {
         endereco3.setId(3);
 
         var distancias = List.of(
-                new Distancia(endereco, endereco2, 3),
-                new Distancia(endereco, endereco3, 3),
-                new Distancia(endereco2, endereco, 3),
-                new Distancia(endereco2, endereco3, 3),
-                new Distancia(endereco3, endereco, 3),
-                new Distancia(endereco3, endereco2, 3)
+                new Distancia(endereco, endereco2, 50),
+                new Distancia(endereco, endereco3, 60),
+                new Distancia(endereco2, endereco, 70),
+                new Distancia(endereco2, endereco3, 80),
+                new Distancia(endereco3, endereco, 90),
+                new Distancia(endereco3, endereco2, 100)
         );
 
         when(distanciaRepository.findAllById(any()))
                 .thenReturn(distancias);
 
-        distanciaService.buscarDistancias(List.of(1, 2, 3));
+        var distanciaResponses = distanciaService.buscarDistancias(List.of(1, 2, 3));
+
         verify(integracaoLocationIQAPI, never()).buscarDistanciaEnderecos(any());
+        assertEquals(6, distanciaResponses.size());
+
+        assertEquals(1, distanciaResponses.getFirst().idOrigem());
+        assertEquals(2, distanciaResponses.getFirst().idDestino());
+        assertEquals(50, distanciaResponses.getFirst().distancia());
+
+        assertEquals(1, distanciaResponses.get(1).idOrigem());
+        assertEquals(3, distanciaResponses.get(1).idDestino());
+        assertEquals(60, distanciaResponses.get(1).distancia());
+
+        assertEquals(2, distanciaResponses.get(2).idOrigem());
+        assertEquals(1, distanciaResponses.get(2).idDestino());
+        assertEquals(70, distanciaResponses.get(2).distancia());
+
+        assertEquals(2, distanciaResponses.get(3).idOrigem());
+        assertEquals(3, distanciaResponses.get(3).idDestino());
+        assertEquals(80, distanciaResponses.get(3).distancia());
+
+        assertEquals(3, distanciaResponses.get(4).idOrigem());
+        assertEquals(1, distanciaResponses.get(4).idDestino());
+        assertEquals(90, distanciaResponses.get(4).distancia());
+
+        assertEquals(3, distanciaResponses.get(5).idOrigem());
+        assertEquals(2, distanciaResponses.get(5).idDestino());
+        assertEquals(100, distanciaResponses.get(5).distancia());
     }
 }
