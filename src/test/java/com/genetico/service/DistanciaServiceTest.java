@@ -1,7 +1,6 @@
 package com.genetico.service;
 
 import com.genetico.api.IntegracaoLocationIQAPI;
-import com.genetico.dto.DistanciaResponse;
 import com.genetico.model.Distancia;
 import com.genetico.model.Endereco;
 import com.genetico.repository.DistanciaRepository;
@@ -18,7 +17,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
