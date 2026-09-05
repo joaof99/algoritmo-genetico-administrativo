@@ -52,12 +52,19 @@ public class Distancia {
             return false;
         }
 
-        return Objects.equals(origem.getId(), outra.origem.getId())
-                && Objects.equals(destino.getId(), outra.destino.getId());
+        var origemId = origem != null ? origem.getId() : null;
+        var destinoId = destino != null ? destino.getId() : null;
+        var outraOrigemId = outra.origem != null ? outra.origem.getId() : null;
+        var outroDestinoId = outra.destino != null ? outra.destino.getId() : null;
+
+        return origemId != null
+                && destinoId != null
+                && Objects.equals(origemId, outraOrigemId)
+                && Objects.equals(destinoId, outroDestinoId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(origem.getId(), destino.getId());
+        return Distancia.class.hashCode();
     }
 }
