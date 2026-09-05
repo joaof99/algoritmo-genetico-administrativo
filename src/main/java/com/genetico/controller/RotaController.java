@@ -1,8 +1,10 @@
 package com.genetico.controller;
 
+import com.genetico.dto.AlgoritmoGeneticoResponse;
 import com.genetico.model.Endereco;
 import com.genetico.model.Rota;
 import com.genetico.repository.RotaRepository;
+import com.genetico.service.DistanciaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,9 +19,11 @@ import java.util.List;
 @RequestMapping("/rotas")
 public class RotaController {
     private final RotaRepository rotaRepository;
+    private final DistanciaService distanciaService;
 
-    public RotaController(RotaRepository rotaRepository) {
+    public RotaController(RotaRepository rotaRepository, DistanciaService distanciaService) {
         this.rotaRepository = rotaRepository;
+        this.distanciaService = distanciaService;
     }
 
     @GetMapping("/todas")
@@ -28,13 +32,21 @@ public class RotaController {
     }
 
     @GetMapping("/{id}/enderecos")
-    public ResponseEntity<List<Endereco>> buscarEnderecosPorRotaId(@PathVariable Integer id) {
+    public ResponseEntity<AlgoritmoGeneticoResponse> buscarEnderecosPorRotaId(@PathVariable Integer id) {
         var rota = rotaRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         String.format("Rota de ID %d não encontrada", id)
                 ));
 
-        return ResponseEntity.ok(rota.getEnderecos());
+        var enderecos = rota.getEnderecos();
+
+        var idsEnderecos = enderecos
+                .stream()
+                .map(Endereco::getId).toList();
+
+        var distanciasResponse = distanciaService.buscarDistancias(idsEnderecos);
+
+        return ResponseEntity.ok(new AlgoritmoGeneticoResponse(distanciasResponse, enderecos));
     }
 }
