@@ -11,7 +11,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/distancias")
 public class DistanciaController {
-    private final Logger log = LoggerFactory.getLogger(DistanciaController.class);
     private final DistanciaService distanciaService;
 
     public DistanciaController(DistanciaService distanciaService) {
@@ -20,7 +19,6 @@ public class DistanciaController {
 
     @GetMapping("/{origemId}/{destinoId}")
     public double buscarDistancia(@PathVariable int origemId, @PathVariable int destinoId) {
-        log.info("Buscando distância na API entre os pontos os endereços de ID {} e ID {} ", origemId, destinoId);
         return distanciaService.buscarDistancia(origemId, destinoId);
     }
 

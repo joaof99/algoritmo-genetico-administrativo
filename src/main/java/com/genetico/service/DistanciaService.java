@@ -33,12 +33,15 @@ public class DistanciaService {
     }
 
     public double buscarDistancia(int origemId, int destinoId) {
+        log.info("Buscando distância entre os pontos os endereços de ID {} e ID {} no banco de dados...", origemId, destinoId);
         return distanciaRepository.findById(new DistanciaId(origemId, destinoId))
                 .map(Distancia::getDistancia)
                 .orElseGet(() -> buscarDistanciaEmApi(origemId, destinoId));
     }
 
     private double buscarDistanciaEmApi(int origemId, int destinoId) {
+        log.info("Buscando distância entre endereço de ID {} e ID {} na API...", origemId, destinoId);
+
         var origem = enderecoRepository.findById(origemId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         String.format("Origem de ID %d não encontrado", origemId)));
