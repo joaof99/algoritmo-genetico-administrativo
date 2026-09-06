@@ -66,7 +66,7 @@ public class DistanciaService {
     }
 
     public List<DistanciaResponse> buscarDistancias(List<Integer> idsEnderecos) {
-        var distanciasIdsRequisicao = new ArrayList<DistanciaId>();
+        var distanciasIds = new ArrayList<DistanciaId>();
 
         for (Integer idOrigem : idsEnderecos) {
             for (Integer idDestino : idsEnderecos) {
@@ -74,11 +74,11 @@ public class DistanciaService {
                     continue;
                 }
 
-                distanciasIdsRequisicao.add(new DistanciaId(idOrigem, idDestino));
+                distanciasIds.add(new DistanciaId(idOrigem, idDestino));
             }
         }
 
-        var distanciasBanco = distanciaRepository.findAllById(distanciasIdsRequisicao);
+        var distanciasBanco = distanciaRepository.findAllById(distanciasIds);
 
         var paresExistentesBanco = distanciasBanco.stream()
                 .map(d -> new DistanciaId(
@@ -87,7 +87,7 @@ public class DistanciaService {
                 ))
                 .collect(Collectors.toSet());
 
-        var paresFaltantesBanco = distanciasIdsRequisicao.stream()
+        var paresFaltantesBanco = distanciasIds.stream()
                 .filter(par -> !paresExistentesBanco.contains(par))
                 .toList();
 
