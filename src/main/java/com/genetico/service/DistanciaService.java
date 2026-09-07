@@ -68,49 +68,23 @@ public class DistanciaService {
 
     public List<DistanciaResponse> obterDistancias(List<Integer> idsEnderecos) {
         var distanciasIds = criarDistanciasIds(idsEnderecos);
-
         var distanciasExistentesBanco = distanciaRepository.findAllById(distanciasIds);
 
-        var idsEnderecosSemTodasAsDistancias = crirIdsEnderecosSemTodasAsDistancias(distanciasIds, distanciasExistentesBanco);
-
-        var enderecosParaBuscaAPI = enderecoRepository
-                .findAllById(idsEnderecos)
-                .stream()
-                .filter(e -> idsEnderecosSemTodasAsDistancias.contains(e.getId()))
-                .toList();
+        var enderecosParaBuscaAPI = buscarEnderecosComDistanciasFaltantes(
+                idsEnderecos,
+                criarIdsEnderecosSemTodasAsDistancias(distanciasIds, distanciasExistentesBanco)
+        );
 
         if (enderecosParaBuscaAPI.isEmpty()) {
             log.info("Todos os endereços já possuem suas combinações de distâncias. Não é necessário busca na API");
 
-            return distanciasExistentesBanco.stream()
-                    .map(d -> new DistanciaResponse(
-                            d.getOrigem().getId(),
-                            d.getDestino().getId(),
-                            d.getDistancia()
-                    ))
-                    .toList();
+            return converterParaResponse(distanciasExistentesBanco);
         }
 
-        var distanciasAPI = integracaoLocationIQAPI.buscarDistanciaEnderecos(enderecosParaBuscaAPI);
+        var distanciasParaSalvar = buscarDistanciasNovas(enderecosParaBuscaAPI, distanciasExistentesBanco);
+        salvarDistancias(distanciasParaSalvar);
 
-        var distanciasAPISemMesmaOrigemDestino = distanciasAPI.stream()
-                .filter(d -> !d.getOrigem().getId().equals(d.getDestino().getId()))
-                .toList();
-
-        var distanciasParaSalvar = distanciasAPISemMesmaOrigemDestino
-                .stream()
-                .filter(d -> !distanciasExistentesBanco.contains(d))
-                .toList();
-
-        distanciaRepository.saveAll(distanciasParaSalvar);
-
-        return distanciasParaSalvar.stream()
-                .map(d -> new DistanciaResponse(
-                        d.getOrigem().getId(),
-                        d.getDestino().getId(),
-                        d.getDistancia()
-                ))
-                .toList();
+        return converterParaResponse(distanciasParaSalvar);
     }
 
     private List<DistanciaId> criarDistanciasIds(List<Integer> idsEnderecos) {
@@ -129,7 +103,13 @@ public class DistanciaService {
         return distanciasIds;
     }
 
-    private Set<Integer> crirIdsEnderecosSemTodasAsDistancias(List<DistanciaId> distanciasIds, List<Distancia> distanciasBanco) {
+    private List<Endereco> buscarEnderecosComDistanciasFaltantes(List<Integer> idsEnderecos, Set<Integer> idsEnderecosComDistanciasFaltantes) {
+        return enderecoRepository.findAllById(idsEnderecos).stream()
+                .filter(endereco -> idsEnderecosComDistanciasFaltantes.contains(endereco.getId()))
+                .toList();
+    }
+
+    private Set<Integer> criarIdsEnderecosSemTodasAsDistancias(List<DistanciaId> distanciasIds, List<Distancia> distanciasBanco) {
         var paresJaExistentesBanco = distanciasBanco.stream()
                 .map(d -> new DistanciaId(
                         d.getOrigem().getId(),
@@ -147,6 +127,27 @@ public class DistanciaService {
                         d.getDestino()
                 ))
                 .collect(Collectors.toSet());
+    }
+
+    private List<Distancia> buscarDistanciasNovas(List<Endereco> enderecosParaBuscaAPI, List<Distancia> distanciasExistentesBanco) {
+        return integracaoLocationIQAPI.buscarDistanciaEnderecos(enderecosParaBuscaAPI).stream()
+                .filter(distancia -> !distancia.getOrigem().getId().equals(distancia.getDestino().getId()))
+                .filter(distancia -> !distanciasExistentesBanco.contains(distancia))
+                .toList();
+    }
+
+    private void salvarDistancias(List<Distancia> distancias){
+        distanciaRepository.saveAll(distancias);
+    }
+
+    private List<DistanciaResponse> converterParaResponse(List<Distancia> distancias) {
+        return distancias.stream()
+                .map(d -> new DistanciaResponse(
+                        d.getOrigem().getId(),
+                        d.getDestino().getId(),
+                        d.getDistancia()
+                ))
+                .toList();
     }
 }
 
