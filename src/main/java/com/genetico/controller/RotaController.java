@@ -45,7 +45,7 @@ public class RotaController {
                 .stream()
                 .map(Endereco::getId).toList();
 
-        var distanciasResponse = distanciaService.buscarDistancias(idsEnderecos);
+        var distanciasResponse = distanciaService.obterDistancias(idsEnderecos);
 
         return ResponseEntity.ok(new AlgoritmoGeneticoResponse(distanciasResponse, enderecos));
     }

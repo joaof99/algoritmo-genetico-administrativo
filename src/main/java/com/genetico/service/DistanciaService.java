@@ -66,7 +66,7 @@ public class DistanciaService {
         log.info("Distância entre endereço de ID {} e ID {} armazenada com sucesso na base de dados", origemId, destinoId);
     }
 
-    public List<DistanciaResponse> buscarDistancias(List<Integer> idsEnderecos) {
+    public List<DistanciaResponse> obterDistancias(List<Integer> idsEnderecos) {
         var distanciasIds = criarDistanciasIds(idsEnderecos);
 
         var distanciasExistentesBanco = distanciaRepository.findAllById(distanciasIds);

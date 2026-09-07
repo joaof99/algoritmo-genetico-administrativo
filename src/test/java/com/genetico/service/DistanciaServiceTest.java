@@ -3,7 +3,6 @@ package com.genetico.service;
 import com.genetico.api.IntegracaoLocationIQAPI;
 import com.genetico.model.Distancia;
 import com.genetico.model.Endereco;
-import com.genetico.model.Rota;
 import com.genetico.repository.DistanciaRepository;
 import com.genetico.repository.EnderecoRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -80,7 +79,7 @@ class DistanciaServiceTest {
         when(enderecoRepository.findAllById(any()))
                 .thenReturn(List.of(endereco, endereco2, endereco3));
 
-        var distanciaResponses = distanciaService.buscarDistancias(List.of(1, 2, 3));
+        var distanciaResponses = distanciaService.obterDistancias(List.of(1, 2, 3));
 
         verify(integracaoLocationIQAPI, never()).buscarDistanciaEnderecos(any());
         assertEquals(6, distanciaResponses.size());
@@ -151,7 +150,7 @@ class DistanciaServiceTest {
                         new Distancia(endereco3, endereco3, 0)
                 ));
 
-        distanciaService.buscarDistancias(List.of(1, 2, 3, 4));
+        distanciaService.obterDistancias(List.of(1, 2, 3, 4));
 
         ArgumentCaptor<List<Endereco>> enderecosCaptor = ArgumentCaptor.forClass(List.class);
         verify(integracaoLocationIQAPI, times(1)).buscarDistanciaEnderecos(enderecosCaptor.capture());

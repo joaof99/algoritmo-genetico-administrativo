@@ -22,6 +22,6 @@ public class DistanciaController {
 
     @GetMapping("/matrix")
     public List<DistanciaResponse> buscarDistanciaEnderecos(@RequestParam List<Integer> idsEnderecos) {
-        return distanciaService.buscarDistancias(idsEnderecos);
+        return distanciaService.obterDistancias(idsEnderecos);
     }
 }
