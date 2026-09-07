@@ -146,7 +146,10 @@ class DistanciaServiceTest {
                 .thenReturn(List.of(endereco1, endereco2, endereco3, endereco4));
 
         when(integracaoLocationIQAPI.buscarDistanciaEnderecos(any()))
-                .thenReturn(List.of(new Distancia(endereco4, endereco3, 100)));
+                .thenReturn(List.of(new Distancia(endereco4, endereco3, 100),
+                        new Distancia(endereco4, endereco4, 0),
+                        new Distancia(endereco3, endereco3, 0)
+                ));
 
         distanciaService.buscarDistancias(List.of(1, 2, 3, 4));
 
