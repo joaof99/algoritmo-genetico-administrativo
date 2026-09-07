@@ -16,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -66,48 +67,22 @@ public class DistanciaService {
     }
 
     public List<DistanciaResponse> buscarDistancias(List<Integer> idsEnderecos) {
-        var distanciasIds = new ArrayList<DistanciaId>();
+        var distanciasIds = criarDistanciasIds(idsEnderecos);
 
-        for (Integer idOrigem : idsEnderecos) {
-            for (Integer idDestino : idsEnderecos) {
-                if (idOrigem.equals(idDestino)) {
-                    continue;
-                }
+        var distanciasExistentesBanco = distanciaRepository.findAllById(distanciasIds);
 
-                distanciasIds.add(new DistanciaId(idOrigem, idDestino));
-            }
-        }
+        var idsEnderecosSemTodasAsDistancias = crirIdsEnderecosSemTodasAsDistancias(distanciasIds, distanciasExistentesBanco);
 
-        var distanciasBanco = distanciaRepository.findAllById(distanciasIds);
-
-        var paresExistentesBanco = distanciasBanco.stream()
-                .map(d -> new DistanciaId(
-                        d.getOrigem().getId(),
-                        d.getDestino().getId()
-                ))
-                .collect(Collectors.toSet());
-
-        var paresFaltantesBanco = distanciasIds.stream()
-                .filter(par -> !paresExistentesBanco.contains(par))
+        var enderecosParaBuscaAPI = enderecoRepository
+                .findAllById(idsEnderecos)
+                .stream()
+                .filter(e -> idsEnderecosSemTodasAsDistancias.contains(e.getId()))
                 .toList();
 
-        var idsFaltantes = paresFaltantesBanco.stream()
-                .flatMap(d -> Stream.of(
-                        d.getOrigem(),
-                        d.getDestino()
-                ))
-                .collect(Collectors.toSet());
+        if (enderecosParaBuscaAPI.isEmpty()) {
+            log.info("Todos os endereços já possuem suas combinações de distâncias. Não é necessário busca na API");
 
-        var enderecos = enderecoRepository.findAllById(idsEnderecos);
-
-        var enderecosParaBusca = enderecos.stream()
-                .filter(e -> idsFaltantes.contains(e.getId()))
-                .toList();
-
-        if (enderecosParaBusca.isEmpty()) {
-            log.info("Todos os endereços já possuem suas combinações. Não é necessário busca na API");
-
-            return distanciasBanco.stream()
+            return distanciasExistentesBanco.stream()
                     .map(d -> new DistanciaResponse(
                             d.getOrigem().getId(),
                             d.getDestino().getId(),
@@ -116,7 +91,7 @@ public class DistanciaService {
                     .toList();
         }
 
-        var distanciasAPI = integracaoLocationIQAPI.buscarDistanciaEnderecos(enderecosParaBusca);
+        var distanciasAPI = integracaoLocationIQAPI.buscarDistanciaEnderecos(enderecosParaBuscaAPI);
 
         var distanciasAPISemMesmaOrigemDestino = distanciasAPI.stream()
                 .filter(d -> !d.getOrigem().getId().equals(d.getDestino().getId()))
@@ -124,7 +99,7 @@ public class DistanciaService {
 
         var distanciasParaSalvar = distanciasAPISemMesmaOrigemDestino
                 .stream()
-                .filter(d -> !distanciasBanco.contains(d))
+                .filter(d -> !distanciasExistentesBanco.contains(d))
                 .toList();
 
         distanciaRepository.saveAll(distanciasParaSalvar);
@@ -137,4 +112,41 @@ public class DistanciaService {
                 ))
                 .toList();
     }
+
+    private List<DistanciaId> criarDistanciasIds(List<Integer> idsEnderecos) {
+        var distanciasIds = new ArrayList<com.genetico.model.DistanciaId>();
+
+        for (Integer idOrigem : idsEnderecos) {
+            for (Integer idDestino : idsEnderecos) {
+                if (idOrigem.equals(idDestino)) {
+                    continue;
+                }
+
+                distanciasIds.add(new com.genetico.model.DistanciaId(idOrigem, idDestino));
+            }
+        }
+
+        return distanciasIds;
+    }
+
+    private Set<Integer> crirIdsEnderecosSemTodasAsDistancias(List<DistanciaId> distanciasIds, List<Distancia> distanciasBanco) {
+        var paresJaExistentesBanco = distanciasBanco.stream()
+                .map(d -> new DistanciaId(
+                        d.getOrigem().getId(),
+                        d.getDestino().getId()
+                ))
+                .collect(Collectors.toSet());
+
+        var paresFaltantesBanco = distanciasIds.stream()
+                .filter(par -> !paresJaExistentesBanco.contains(par))
+                .toList();
+
+        return paresFaltantesBanco.stream()
+                .flatMap(d -> Stream.of(
+                        d.getOrigem(),
+                        d.getDestino()
+                ))
+                .collect(Collectors.toSet());
+    }
 }
+
