@@ -31,7 +31,7 @@ public class AlgoritmoGeneticoController {
         return rotaRepository.findAll();
     }
 
-    @GetMapping("/{id}/enderecos")
+    @GetMapping("/{idRota}/enderecos")
     public ResponseEntity<AlgoritmoGeneticoResponse> buscarEnderecosPorRotaId(@PathVariable Integer idRota) {
         var rota = rotaRepository.findById(idRota)
                 .orElseThrow(() -> new ResponseStatusException(
