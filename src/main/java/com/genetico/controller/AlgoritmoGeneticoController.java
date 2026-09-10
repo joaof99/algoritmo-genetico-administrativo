@@ -17,11 +17,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/rotas")
-public class RotaController {
+public class AlgoritmoGeneticoController {
     private final RotaRepository rotaRepository;
     private final DistanciaService distanciaService;
 
-    public RotaController(RotaRepository rotaRepository, DistanciaService distanciaService) {
+    public AlgoritmoGeneticoController(RotaRepository rotaRepository, DistanciaService distanciaService) {
         this.rotaRepository = rotaRepository;
         this.distanciaService = distanciaService;
     }
@@ -32,11 +32,11 @@ public class RotaController {
     }
 
     @GetMapping("/{id}/enderecos")
-    public ResponseEntity<AlgoritmoGeneticoResponse> buscarEnderecosPorRotaId(@PathVariable Integer id) {
-        var rota = rotaRepository.findById(id)
+    public ResponseEntity<AlgoritmoGeneticoResponse> buscarEnderecosPorRotaId(@PathVariable Integer idRota) {
+        var rota = rotaRepository.findById(idRota)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
-                        String.format("Rota de ID %d não encontrada", id)
+                        String.format("Rota de ID %d não encontrada", idRota)
                 ));
 
         var enderecos = rota.getEnderecos();
