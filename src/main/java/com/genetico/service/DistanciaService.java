@@ -51,10 +51,7 @@ public class DistanciaService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         String.format("Destino de ID %d não encontrado", destinoId)));
 
-        var coordenadaOrigem = new CoordenadaGeografica(origem.getLatitude(), origem.getLongitude());
-        var coordenadaDestino = new CoordenadaGeografica(destino.getLatitude(), destino.getLongitude());
-
-        var distanciaAPI = integracaoLocationIQAPI.buscarDistanciaEntreCoordenadas(coordenadaOrigem, coordenadaDestino);
+        var distanciaAPI = integracaoLocationIQAPI.buscarDistanciaEntreCoordenadas(origem, destino);
 
         salvarDistanciaNoBanco(origemId, destinoId, origem, destino, distanciaAPI);
 

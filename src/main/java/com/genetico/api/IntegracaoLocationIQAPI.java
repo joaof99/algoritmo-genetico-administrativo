@@ -70,13 +70,13 @@ public class IntegracaoLocationIQAPI {
         return new CoordenadaGeografica(latitude, longitude);
     }
 
-    public double buscarDistanciaEntreCoordenadas(CoordenadaGeografica origem, CoordenadaGeografica destino) {
-        var coordenadas = origem.longitude() + "," + origem.latitude()
-                + ";" + destino.longitude() + "," + destino.latitude();
+    public double buscarDistanciaEntreCoordenadas(Endereco origem, Endereco destino) {
+        var coordenadas = origem.getLongitude() + "," + origem.getLatitude()
+                + ";" + destino.getLongitude() + "," + destino.getLatitude();
 
         log.info("Buscando distância entre coordenadas");
-        log.info("Coordenadas origem: {}, {}", origem.latitude(), origem.longitude());
-        log.info("Coordenadas destino: {}, {}", destino.latitude(), destino.longitude());
+        log.info("Coordenadas origem: {}, {}", origem.getLatitude(), origem.getLongitude());
+        log.info("Coordenadas destino: {}, {}", destino.getLatitude(), destino.getLongitude());
 
         var uri = UriComponentsBuilder
                 .fromUriString("https://us1.locationiq.com/v1/directions/driving/" + coordenadas)
