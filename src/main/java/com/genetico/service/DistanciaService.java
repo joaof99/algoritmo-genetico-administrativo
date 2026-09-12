@@ -80,7 +80,10 @@ public class DistanciaService {
         var distanciasParaSalvar = buscarDistanciasNovas(enderecosParaBuscaAPI, distanciasExistentesBanco);
         salvarDistancias(distanciasParaSalvar);
 
-        return converterParaResponse(distanciasParaSalvar);
+        var todasDistancias = new ArrayList<>(distanciasExistentesBanco);
+        todasDistancias.addAll(distanciasParaSalvar);
+
+        return converterParaResponse(todasDistancias);
     }
 
     private List<DistanciaId> criarDistanciasIds(List<Integer> idsEnderecos) {

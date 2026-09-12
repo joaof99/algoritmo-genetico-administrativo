@@ -150,7 +150,8 @@ class DistanciaServiceTest {
                         new Distancia(endereco3, endereco3, 0)
                 ));
 
-        distanciaService.obterDistancias(List.of(1, 2, 3, 4));
+        var distanciaResponses = distanciaService.obterDistancias(List.of(1, 2, 3, 4));
+        assertEquals(12, distanciaResponses.size());
 
         ArgumentCaptor<List<Endereco>> enderecosCaptor = ArgumentCaptor.forClass(List.class);
         verify(integracaoLocationIQAPI, times(1)).buscarDistanciaEnderecos(enderecosCaptor.capture());
