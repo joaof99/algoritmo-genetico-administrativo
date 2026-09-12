@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -62,6 +61,36 @@ class IntegracaoLocationIQAPITest {
 
         assertEquals(-23.5505, coordenadaGeografica.latitude());
         assertEquals(-46.6333, coordenadaGeografica.longitude());
+    }
+
+    @Test
+    @DisplayName("Deve retornar distância em km entre 2 endereços corretamente")
+    void deveRetornarDistanciaEmKmEntre2EnderecosCorretamente() throws IOException, InterruptedException {
+        var response = Mockito.mock(HttpResponse.class);
+
+        when(response.statusCode())
+                .thenReturn(200);
+
+        when(response.body()).thenReturn("""
+                {
+                    "routes": [
+                        {
+                            "distance": 12500
+                        }
+                    ]
+                }
+                """);
+
+        when(httpClient.send(
+                any(HttpRequest.class),
+                any(HttpResponse.BodyHandler.class)
+        )).thenReturn(response);
+
+        var distancia = integracaoLocationIQAPI.buscarDistanciaEntreCoordenadas(
+                new Endereco("Endereço A", "", "", "", "", -9.5, -8.3),
+                new Endereco("Endereço A", "", "", "", "", -9.5, -8.3));
+
+        assertEquals(12.5, distancia);
     }
 
     @Test
