@@ -104,12 +104,12 @@ public class IntegracaoLocationIQAPI {
 
     public List<Distancia> buscarDistanciaEnderecos(List<Endereco> enderecos) {
         if (enderecos.isEmpty()) {
-            throw new IntegracaoLocationIQAPIException("Nenhum endereço foi encontrado.");
+            throw new IntegracaoLocationIQAPIException("É necessário informar pelo menos um endereço.");
         }
 
         var quantidadeEnderecos = enderecos.size();
         if (quantidadeEnderecos > 25) {
-            throw new IntegracaoLocationIQAPIException(String.format("A API suporta no máximo 25 endereços simultâneos. Encontrado %d", quantidadeEnderecos));
+            throw new IntegracaoLocationIQAPIException(String.format("A API suporta no máximo 25 endereços simultâneos. Encontrado %d.", quantidadeEnderecos));
         }
 
         log.info("Mapeamento distâncias entre {} endereços.", quantidadeEnderecos);

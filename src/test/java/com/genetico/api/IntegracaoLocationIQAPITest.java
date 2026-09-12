@@ -4,6 +4,9 @@ import com.genetico.model.Endereco;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -13,9 +16,13 @@ import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -66,15 +73,15 @@ class IntegracaoLocationIQAPITest {
                 .thenReturn(200);
 
         when(response.body()).thenReturn("""
-    {
-        "distances": [
-            [0,     12500, 8300,  15700],
-            [12500, 0,     6200,  9400],
-            [8300,  6200,  0,     11200],
-            [15700, 9400,  11200, 0]
-        ]
-    }
-    """);
+                {
+                    "distances": [
+                        [0,     12500, 8300,  15700],
+                        [12500, 0,     6200,  9400],
+                        [8300,  6200,  0,     11200],
+                        [15700, 9400,  11200, 0]
+                    ]
+                }
+                """);
 
         when(httpClient.send(
                 any(HttpRequest.class),
@@ -108,5 +115,28 @@ class IntegracaoLocationIQAPITest {
         assertEquals(9.4, distancias.get(13).getDistancia(), 0.0001);
         assertEquals(11.2, distancias.get(14).getDistancia(), 0.0001);
         assertEquals(0.0, distancias.get(15).getDistancia(), 0.0001);
+    }
+
+    @ParameterizedTest
+    @MethodSource("cenariosInvalidos")
+    @DisplayName("Deve ocorrer erro para quantidade inválida de endereços")
+    void deveGerarErroParaQuantidadeInvalidaDeEnderecos(List<Endereco> enderecos, String mensagemEsperada) {
+        var exception = assertThrows(
+                IntegracaoLocationIQAPIException.class,
+                () -> integracaoLocationIQAPI.buscarDistanciaEnderecos(enderecos)
+        );
+
+        assertEquals(mensagemEsperada, exception.getMessage());
+    }
+
+    private static Stream<Arguments> cenariosInvalidos() {
+        var enderecosAcimaDoLimite = IntStream.range(0, 26)
+                .mapToObj(i -> new Endereco("", "", "", "", "", -9.5, -8.3))
+                .toList();
+
+        return Stream.of(
+                Arguments.of(List.of(), "É necessário informar pelo menos um endereço."),
+                Arguments.of(enderecosAcimaDoLimite, "A API suporta no máximo 25 endereços simultâneos. Encontrado 26.")
+        );
     }
 }
