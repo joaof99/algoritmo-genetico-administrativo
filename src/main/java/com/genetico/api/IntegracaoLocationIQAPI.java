@@ -9,6 +9,7 @@ import com.genetico.model.Endereco;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -25,13 +26,14 @@ import java.util.stream.Collectors;
 @Component
 public class IntegracaoLocationIQAPI {
     private final Logger log = LoggerFactory.getLogger(IntegracaoLocationIQAPI.class);
+
     private final HttpClient httpClient;
 
     @Value("${locationiq.api.key}")
     private String locationIQKey;
 
-    public IntegracaoLocationIQAPI() {
-        httpClient = HttpClient.newHttpClient();
+    public IntegracaoLocationIQAPI(HttpClient httpClient) {
+        this.httpClient = httpClient;
     }
 
     public CoordenadaGeografica buscarCoordenadaGeografica(String logradouro, @Nullable String numero, String bairro, String uf, String cidade, String cep) {
