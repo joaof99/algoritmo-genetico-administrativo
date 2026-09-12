@@ -2,7 +2,6 @@ package com.genetico.service;
 
 import com.genetico.api.IntegracaoLocationIQAPI;
 import com.genetico.dto.DistanciaResponse;
-import com.genetico.model.CoordenadaGeografica;
 import com.genetico.model.Distancia;
 import com.genetico.model.DistanciaId;
 import com.genetico.model.Endereco;
