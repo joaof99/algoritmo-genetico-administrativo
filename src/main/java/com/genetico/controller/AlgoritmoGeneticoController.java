@@ -1,6 +1,6 @@
 package com.genetico.controller;
 
-import com.genetico.dto.AlgoritmoGeneticoResponse;
+import com.genetico.dto.AlgoritmoGeneticoRequest;
 import com.genetico.model.Endereco;
 import com.genetico.model.Rota;
 import com.genetico.repository.RotaRepository;
@@ -32,7 +32,7 @@ public class AlgoritmoGeneticoController {
     }
 
     @GetMapping("/{idRota}/enderecos")
-    public ResponseEntity<AlgoritmoGeneticoResponse> buscarEnderecosPorRotaId(@PathVariable Integer idRota) {
+    public ResponseEntity<AlgoritmoGeneticoRequest> buscarEnderecosPorRotaId(@PathVariable Integer idRota) {
         var rota = rotaRepository.findById(idRota)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
@@ -47,6 +47,6 @@ public class AlgoritmoGeneticoController {
 
         var distanciasResponse = distanciaService.obterDistancias(idsEnderecos);
 
-        return ResponseEntity.ok(new AlgoritmoGeneticoResponse(distanciasResponse, enderecos));
+        return ResponseEntity.ok(new AlgoritmoGeneticoRequest(distanciasResponse, enderecos, 0, 0, 0, 0));
     }
 }
