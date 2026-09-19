@@ -32,7 +32,7 @@ public class DistanciaService {
         this.distanciaRepository = distanciaRepository;
     }
 
-    public double buscarDistancia(int origemId, int destinoId) {
+    public double obterDistancia(int origemId, int destinoId) {
         log.info("Buscando distância entre os pontos os endereços de ID {} e ID {} no banco de dados...", origemId, destinoId);
         return distanciaRepository.findById(new DistanciaId(origemId, destinoId))
                 .map(Distancia::getDistancia)

@@ -47,7 +47,7 @@ class DistanciaServiceTest {
         when(distanciaRepository.findById(any()))
                 .thenReturn(Optional.of(new Distancia(origem, destino, 3000)));
 
-        var distancia = distanciaService.buscarDistancia(1, 2);
+        var distancia = distanciaService.obterDistancia(1, 2);
         assertEquals(3000, distancia);
         verify(integracaoLocationIQAPI, never()).buscarDistanciaEntreCoordenadas(any(), any());
     }

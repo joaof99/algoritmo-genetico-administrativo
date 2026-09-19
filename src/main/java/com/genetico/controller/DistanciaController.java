@@ -17,7 +17,7 @@ public class DistanciaController {
 
     @GetMapping("/{origemId}/{destinoId}")
     public double buscarDistancia(@PathVariable int origemId, @PathVariable int destinoId) {
-        return distanciaService.buscarDistancia(origemId, destinoId);
+        return distanciaService.obterDistancia(origemId, destinoId);
     }
 
     @GetMapping("/matrix")
