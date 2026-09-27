@@ -12,7 +12,7 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
@@ -23,10 +23,10 @@ import java.util.stream.Collectors;
 public class AlgoritmoGeneticoView extends VerticalLayout {
     private final RotaRepository rotaRepository;
     private final AlgoritmoGeneticoService algoritmoGeneticoService;
-    private TextField txtTamanhoPopulacao;
-    private TextField txtQuantidadeGeracoes;
-    private TextField txtChanceOcorrenciaMutacao;
-    private TextField txtChanceOcorrenciaCrossover;
+    private IntegerField txtTamanhoPopulacao;
+    private IntegerField txtQuantidadeGeracoes;
+    private IntegerField txtChanceOcorrenciaMutacao;
+    private IntegerField txtChanceOcorrenciaCrossover;
     private ComboBox<Rota> cbxRotas;
 
     public AlgoritmoGeneticoView(RotaRepository rotaRepository, AlgoritmoGeneticoService algoritmoGeneticoService) {
@@ -68,25 +68,33 @@ public class AlgoritmoGeneticoView extends VerticalLayout {
         var formulario = new FormLayout();
         formulario.setId("form-solicitacao-roteirizacao");
 
-        txtTamanhoPopulacao = new TextField("Digite o tamanho da poulação");
+        txtTamanhoPopulacao = new IntegerField("Digite o tamanho da poulação");
         txtTamanhoPopulacao.setId("txt-tamanho-populacao");
-        txtTamanhoPopulacao.setMaxLength(3);
         txtTamanhoPopulacao.setRequired(true);
+        txtTamanhoPopulacao.setMin(20);
+        txtTamanhoPopulacao.setMax(500);
+        txtTamanhoPopulacao.setTooltipText("Mínimo de 20 e no máximo 500 populações");
 
-        txtQuantidadeGeracoes = new TextField("Digite a quantidade de gerações");
+        txtQuantidadeGeracoes = new IntegerField("Digite a quantidade de gerações");
         txtQuantidadeGeracoes.setId("txt-quantidade-geracoes");
-        txtQuantidadeGeracoes.setMaxLength(3);
         txtQuantidadeGeracoes.setRequired(true);
+        txtQuantidadeGeracoes.setMin(10);
+        txtQuantidadeGeracoes.setMin(1000);
+        txtQuantidadeGeracoes.setTooltipText("Mínimo 10 e no máximo 1000 gerações");
 
-        txtChanceOcorrenciaMutacao = new TextField("Digite a probabilidade de chance de ocorrência de mutação");
+        txtChanceOcorrenciaMutacao = new IntegerField("Digite a probabilidade de chance de ocorrência de mutação");
         txtChanceOcorrenciaMutacao.setId("txt-chance-ocorrencia-mutacao");
-        txtChanceOcorrenciaMutacao.setMaxLength(3);
         txtChanceOcorrenciaMutacao.setRequired(true);
+        txtChanceOcorrenciaMutacao.setMin(1);
+        txtChanceOcorrenciaMutacao.setMax(100);
+        txtChanceOcorrenciaMutacao.setTooltipText("Probabilidade entre 1 e 100%");
 
-        txtChanceOcorrenciaCrossover = new TextField("Digite a probabilidade de chance de ocorrência de crossover");
+        txtChanceOcorrenciaCrossover = new IntegerField("Digite a probabilidade de chance de ocorrência de crossover");
         txtChanceOcorrenciaCrossover.setId("txt-chance-ocorrencia-crossover");
-        txtChanceOcorrenciaCrossover.setMaxLength(3);
         txtChanceOcorrenciaCrossover.setRequired(true);
+        txtChanceOcorrenciaCrossover.setMin(1);
+        txtChanceOcorrenciaCrossover.setMax(100);
+        txtChanceOcorrenciaCrossover.setTooltipText("Probabilidade entre 1 e 100%");
 
         formulario.add(txtTamanhoPopulacao, txtQuantidadeGeracoes, txtChanceOcorrenciaMutacao, txtChanceOcorrenciaCrossover);
 
@@ -99,10 +107,10 @@ public class AlgoritmoGeneticoView extends VerticalLayout {
         botaoRoteirizacao.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         botaoRoteirizacao.addClickListener(clickBotao -> {
-            if (txtTamanhoPopulacao.getValue().isBlank() ||
-                    txtChanceOcorrenciaCrossover.getValue().isBlank() ||
-                    txtChanceOcorrenciaMutacao.getValue().isBlank() ||
-                    txtQuantidadeGeracoes.getValue().isBlank()) {
+            if (txtTamanhoPopulacao.getValue() == null ||
+                    txtChanceOcorrenciaCrossover.getValue() == null ||
+                    txtChanceOcorrenciaMutacao.getValue() == null ||
+                    txtQuantidadeGeracoes.getValue() == null) {
                 Notification.show("Todos os campos são obrigatórios para solicitar uma roteirização.", 4500, Notification.Position.MIDDLE);
                 return;
             }
@@ -120,10 +128,10 @@ public class AlgoritmoGeneticoView extends VerticalLayout {
 
     private void solicitarRoteirizacao() {
         var idRota = cbxRotas.getValue().getId();
-        var tamanhoPopulacao = Integer.parseInt(txtTamanhoPopulacao.getValue());
-        var quantidadeGeracoes = Integer.parseInt(txtQuantidadeGeracoes.getValue());
-        var chanceOcorrenciaMutacao = Integer.parseInt(txtChanceOcorrenciaMutacao.getValue());
-        var chanceOcorrenciaCrossover = Integer.parseInt(txtChanceOcorrenciaCrossover.getValue());
+        var tamanhoPopulacao = txtTamanhoPopulacao.getValue();
+        var quantidadeGeracoes = txtQuantidadeGeracoes.getValue();
+        var chanceOcorrenciaMutacao = txtChanceOcorrenciaMutacao.getValue();
+        var chanceOcorrenciaCrossover = txtChanceOcorrenciaCrossover.getValue();
 
         algoritmoGeneticoService.iniciarAlgoritmoGenetico(idRota,
                 tamanhoPopulacao,
