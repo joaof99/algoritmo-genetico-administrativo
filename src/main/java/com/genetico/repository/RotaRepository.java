@@ -10,7 +10,7 @@ public interface RotaRepository extends JpaRepository<Rota, Integer> {
     @Query("""
     SELECT DISTINCT r
     FROM Rota r
-    LEFT JOIN FETCH r.enderecos
+    JOIN FETCH r.enderecos
 """)
     List<Rota> buscarTodosComEnderecos();
 }

@@ -79,7 +79,7 @@ public class AlgoritmoGeneticoView extends VerticalLayout {
         txtQuantidadeGeracoes.setId("txt-quantidade-geracoes");
         txtQuantidadeGeracoes.setRequired(true);
         txtQuantidadeGeracoes.setMin(10);
-        txtQuantidadeGeracoes.setMin(1000);
+        txtQuantidadeGeracoes.setMax(1000);
         txtQuantidadeGeracoes.setTooltipText("Mínimo 10 e no máximo 1000 gerações");
 
         txtChanceOcorrenciaMutacao = new IntegerField("Digite a probabilidade de chance de ocorrência de mutação");
