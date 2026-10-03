@@ -68,7 +68,7 @@ public class AlgoritmoGeneticoView extends VerticalLayout {
         var formulario = new FormLayout();
         formulario.setId("form-solicitacao-roteirizacao");
 
-        txtTamanhoPopulacao = new IntegerField("Digite o tamanho da poulação");
+        txtTamanhoPopulacao = new IntegerField("Digite o tamanho da população");
         txtTamanhoPopulacao.setId("txt-tamanho-populacao");
         txtTamanhoPopulacao.setRequired(true);
         txtTamanhoPopulacao.setMin(20);
