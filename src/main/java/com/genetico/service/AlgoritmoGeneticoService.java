@@ -23,7 +23,7 @@ public class AlgoritmoGeneticoService {
     }
 
     @Transactional
-    public void iniciarAlgoritmoGenetico(int idRota, int tamanhoPopulacao, int quantidadeGeracoes, int chanceOcorrenciaMutacao, int chanceOcorrenciaCrossover) {
+    public void solicitarRoteirizacao(int idRota, int tamanhoPopulacao, int quantidadeGeracoes, int chanceOcorrenciaMutacao, int chanceOcorrenciaCrossover) {
         var rota = rotaRepository.findById(idRota)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
