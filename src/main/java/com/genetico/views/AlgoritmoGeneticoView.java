@@ -98,6 +98,7 @@ public class AlgoritmoGeneticoView extends VerticalLayout {
 
     private ComboBox<Rota> criarCbx() {
         var cbx = new ComboBox<Rota>("Rota");
+        cbx.setId("cbx-rota");
         cbx.setItems(rotaRepository.buscarTodosComEnderecos());
         cbx.setWidthFull();
 
@@ -119,7 +120,6 @@ public class AlgoritmoGeneticoView extends VerticalLayout {
         formulario.setId("form-solicitacao-roteirizacao");
 
         txtTamanhoPopulacao = new IntegerField("Digite o tamanho da população");
-        txtTamanhoPopulacao.setId("txt-tamanho-populacao");
         txtTamanhoPopulacao.setTooltipText("Mínimo de 20 e no máximo 500 populações");
 
         txtQuantidadeGeracoes = new IntegerField("Digite a quantidade de gerações");
