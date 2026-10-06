@@ -77,7 +77,7 @@ public class AlgoritmoGeneticoView extends VerticalLayout {
     private IntegerField txtChanceOcorrenciaMutacao;
     private IntegerField txtChanceOcorrenciaCrossover;
     private ComboBox<Rota> cbxRotas;
-    private final Binder<ParametrosAlgoritmo> binder = new Binder<>(ParametrosAlgoritmo.class);
+    private final Binder<ParametrosAlgoritmo> binder = new Binder<>();
 
     public AlgoritmoGeneticoView(RotaRepository rotaRepository, AlgoritmoGeneticoService algoritmoGeneticoService) {
         this.rotaRepository = rotaRepository;
@@ -120,6 +120,7 @@ public class AlgoritmoGeneticoView extends VerticalLayout {
         formulario.setId("form-solicitacao-roteirizacao");
 
         txtTamanhoPopulacao = new IntegerField("Digite o tamanho da população");
+        txtTamanhoPopulacao.setId("txt-tamanho-populacao");
         txtTamanhoPopulacao.setTooltipText("Mínimo de 20 e no máximo 500 populações");
 
         txtQuantidadeGeracoes = new IntegerField("Digite a quantidade de gerações");
@@ -144,27 +145,27 @@ public class AlgoritmoGeneticoView extends VerticalLayout {
     private void configurarBinder() {
         binder.forField(cbxRotas)
                 .asRequired("Selecione uma rota")
-                .bind("rota");
+                .bind(ParametrosAlgoritmo::getRota, ParametrosAlgoritmo::setRota);
 
         binder.forField(txtTamanhoPopulacao)
                 .asRequired("Informe o tamanho da população")
                 .withValidator(valor -> valor != null && valor >= 20 && valor <= 500, "O tamanho deve estar entre 20 e 500")
-                .bind("tamanhoPopulacao");
+                .bind(ParametrosAlgoritmo::getTamanhoPopulacao, ParametrosAlgoritmo::setTamanhoPopulacao);
 
         binder.forField(txtQuantidadeGeracoes)
                 .asRequired("Informe a quantidade de gerações")
                 .withValidator(valor -> valor != null && valor >= 10 && valor <= 1000, "A quantidade deve estar entre 10 e 1000")
-                .bind("quantidadeGeracoes");
+                .bind(ParametrosAlgoritmo::getQuantidadeGeracoes, ParametrosAlgoritmo::setQuantidadeGeracoes);
 
         binder.forField(txtChanceOcorrenciaMutacao)
                 .asRequired("Informe a chance de mutação")
                 .withValidator(valor -> valor != null && valor >= 1 && valor <= 100, "A chance deve estar entre 1 e 100%")
-                .bind("chanceMutacao");
+                .bind(ParametrosAlgoritmo::getChanceMutacao, ParametrosAlgoritmo::setChanceMutacao);
 
         binder.forField(txtChanceOcorrenciaCrossover)
                 .asRequired("Informe a chance de crossover")
                 .withValidator(valor -> valor != null && valor >= 1 && valor <= 100, "A chance deve estar entre 1 e 100%")
-                .bind("chanceCrossover");
+                .bind(ParametrosAlgoritmo::getChanceCrossover, ParametrosAlgoritmo::setChanceCrossover);
     }
 
     private Button criarBotaoRoteirizacao() {
