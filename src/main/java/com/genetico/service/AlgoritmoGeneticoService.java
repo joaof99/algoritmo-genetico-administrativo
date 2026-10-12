@@ -3,7 +3,6 @@ package com.genetico.service;
 import com.genetico.dto.AlgoritmoGeneticoRequest;
 import com.genetico.model.Endereco;
 import com.genetico.repository.RotaRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
@@ -22,9 +21,8 @@ public class AlgoritmoGeneticoService {
         this.distanciaService = distanciaService;
     }
 
-    @Transactional
     public void solicitarRoteirizacao(int idRota, int tamanhoPopulacao, int quantidadeGeracoes, int chanceOcorrenciaMutacao, int chanceOcorrenciaCrossover) {
-        var rota = rotaRepository.findById(idRota)
+        var rota = rotaRepository.buscarPorIdComEnderecos(idRota)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         String.format("Rota de ID %d não encontrada", idRota)

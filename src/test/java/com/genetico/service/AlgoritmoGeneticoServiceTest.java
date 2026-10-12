@@ -53,7 +53,7 @@ class AlgoritmoGeneticoServiceTest {
         var enderecos = List.of(enderecoA, enderecoB, enderecoC);
         var distancias = List.of(new DistanciaResponse(10, 20, 125.5), new DistanciaResponse(20, 10, 130.0));
 
-        when(rotaRepository.findById(7))
+        when(rotaRepository.buscarPorIdComEnderecos(7))
                 .thenReturn(Optional.of(new Rota(enderecos)));
 
         when(distanciaService.obterDistancias(List.of(10, 20, 30)))
@@ -70,7 +70,7 @@ class AlgoritmoGeneticoServiceTest {
         assertEquals(10, requisicaoCaptor.getValue().chanceOcorrenciaMutacao());
         assertEquals(75, requisicaoCaptor.getValue().chanceOcorrenciaCrossover());
 
-        verify(rotaRepository).findById(7);
+        verify(rotaRepository).buscarPorIdComEnderecos(7);
         verify(distanciaService).obterDistancias(List.of(10, 20, 30));
         verify(restClient.post().uri("/ag/iniciar").body(any(AlgoritmoGeneticoRequest.class)).retrieve())
                 .toBodilessEntity();
@@ -79,7 +79,8 @@ class AlgoritmoGeneticoServiceTest {
     @Test
     @DisplayName("Deve retornar erro 404 quando a rota não for encontrada")
     void deveRetornarErro404QuandoRotaNaoForEncontrada() {
-        when(rotaRepository.findById(404)).thenReturn(Optional.empty());
+        when(rotaRepository.buscarPorIdComEnderecos(404))
+                .thenReturn(Optional.empty());
 
         var excecao = assertThrows(ResponseStatusException.class,
                 () -> algoritmoGeneticoService.solicitarRoteirizacao(404, 100, 50, 10, 75));
