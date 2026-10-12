@@ -46,10 +46,10 @@ class RotaViewTest {
     @Test
     @DisplayName("Somente endereços selecionados em combo box devem ser cadastrados na rota")
     void somenteEnderecosSelecionadosEmComboBoxDevemSerCadastradosNaRota() {
-        var endereco1 = new Endereco("Endereço A", -9.5, -8.3);
-        var endereco2 = new Endereco("Endereço B", -10.5, -24.3);
-        var endereco3 = new Endereco("Endereço C", -11.5, -25.3);
-        var endereco4 = new Endereco("Endereço D", -25.5, -90.3);
+        var endereco1 = new Endereco("Endereço A", "", "", "", "", -9.5, -8.3);
+        var endereco2 = new Endereco("Endereço B", "", "", "", "", -10.5, -24.3);
+        var endereco3 = new Endereco("Endereço C", "", "", "", "", -11.5, -25.3);
+        var endereco4 = new Endereco("Endereço D", "", "", "", "", -25.5, -90.3);
 
         when(enderecoService.buscarTodos()).thenReturn(List.of(endereco1, endereco2, endereco3, endereco4));
 
@@ -70,10 +70,10 @@ class RotaViewTest {
     @Test
     @DisplayName("ComboBox de clientes deve ser limpa após um cadastro de rota")
     void comboBoxClientesDeveSerLimpaAposUmCadastroDeRota() {
-        var endereco1 = new Endereco("Endereço A", -9.5, -8.3);
-        var endereco2 = new Endereco("Endereço B", -10.5, -24.3);
-        var endereco3 = new Endereco("Endereço C", -10.5, -24.3);
-        var endereco4 = new Endereco("Endereço D", -10.5, -24.3);
+        var endereco1 = new Endereco("Endereço A", "", "", "", "", -9.5, -8.3);
+        var endereco2 = new Endereco("Endereço B", "", "", "", "", -10.5, -24.3);
+        var endereco3 = new Endereco("Endereço C", "", "", "", "", -10.5, -24.3);
+        var endereco4 = new Endereco("Endereço D", "", "", "", "", -10.5, -24.3);
 
         UI.getCurrent().add(new RotaView(enderecoService, rotaRepository));
 

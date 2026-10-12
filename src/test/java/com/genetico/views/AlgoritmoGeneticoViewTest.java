@@ -36,10 +36,10 @@ class AlgoritmoGeneticoViewTest {
     void setUp() {
         MockVaadin.setup();
 
-        var enderecos = List.of(new Endereco("Endereço A", -9.5, -8.3),
-                new Endereco("Endereço B", -10.5, -24.3),
-                new Endereco("Endereço C", -11.5, -25.3),
-                new Endereco("Endereço D", -25.5, -90.3));
+        var enderecos = List.of(new Endereco("Endereço A", "", "", "", "", -9.5, -8.3),
+                new Endereco("Endereço B", "", "", "", "", -10.5, -24.3),
+                new Endereco("Endereço C", "", "", "", "", -11.5, -25.3),
+                new Endereco("Endereço D", "", "", "", "", -25.5, -90.3));
 
         when(rotaRepository.buscarTodosComEnderecos()).thenReturn(List.of(new Rota(enderecos)));
 

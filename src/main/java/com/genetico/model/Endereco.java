@@ -3,8 +3,6 @@ package com.genetico.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 
-import java.util.List;
-
 @Entity
 @Table(name = "enderecos")
 public class Endereco {
@@ -46,18 +44,8 @@ public class Endereco {
     @DecimalMax(value = "180.0", message = "Longitude máxima deve ser 180.0")
     private Double longitude;
 
-    @ManyToMany(mappedBy = "enderecos")
-    private List<Rota> rotas;
-
     public Endereco() {
 
-    }
-
-    @Deprecated
-    public Endereco(String logradouro, Double latitude, Double longitude) {
-        this.logradouro = logradouro;
-        this.latitude = latitude;
-        this.longitude = longitude;
     }
 
     public Endereco(String logradouro, String numero, String complemento, String bairro, String cep, Double latitude, Double longitude) {

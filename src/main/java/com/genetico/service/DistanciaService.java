@@ -87,7 +87,7 @@ public class DistanciaService {
     }
 
     private List<DistanciaId> criarDistanciasIds(List<Integer> idsEnderecos) {
-        var distanciasIds = new ArrayList<com.genetico.model.DistanciaId>();
+        var distanciasIds = new ArrayList<DistanciaId>();
 
         for (Integer idOrigem : idsEnderecos) {
             for (Integer idDestino : idsEnderecos) {
@@ -95,7 +95,7 @@ public class DistanciaService {
                     continue;
                 }
 
-                distanciasIds.add(new com.genetico.model.DistanciaId(idOrigem, idDestino));
+                distanciasIds.add(new DistanciaId(idOrigem, idDestino));
             }
         }
 
