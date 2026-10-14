@@ -63,6 +63,7 @@ class AlgoritmoGeneticoServiceTest {
 
         var requisicaoCaptor = ArgumentCaptor.forClass(AlgoritmoGeneticoRequest.class);
         verify(restClient.post().uri("/ag/iniciar")).body(requisicaoCaptor.capture());
+        assertEquals(7, requisicaoCaptor.getValue().idRota());
         assertEquals(distancias, requisicaoCaptor.getValue().distancias());
         assertEquals(enderecos, requisicaoCaptor.getValue().enderecos());
         assertEquals(100, requisicaoCaptor.getValue().tamanhoPopulacao());

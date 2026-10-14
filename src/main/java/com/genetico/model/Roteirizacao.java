@@ -9,6 +9,10 @@ public class Roteirizacao {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "rota_id")
+    private Rota rota;
+
     private double melhorFitnessPopulacaoInicial;
 
     private double melhorFitnessPopulacaoFinal;
@@ -25,7 +29,8 @@ public class Roteirizacao {
 
     }
 
-    public Roteirizacao(double melhorFitnessPopulacaoInicial, double melhorFitnessPopulacaoFinal, int quantidadeGeracoes, int tamanhoPopulacao, int chanceOcorrenciaCrossover, int chanceOcorrenciaMutacao) {
+    public Roteirizacao(Rota rota, double melhorFitnessPopulacaoInicial, double melhorFitnessPopulacaoFinal, int quantidadeGeracoes, int tamanhoPopulacao, int chanceOcorrenciaCrossover, int chanceOcorrenciaMutacao) {
+        this.rota = rota;
         this.melhorFitnessPopulacaoInicial = melhorFitnessPopulacaoInicial;
         this.melhorFitnessPopulacaoFinal = melhorFitnessPopulacaoFinal;
         this.quantidadeGeracoes = quantidadeGeracoes;
@@ -36,6 +41,10 @@ public class Roteirizacao {
 
     public Integer getId() {
         return id;
+    }
+
+    public Rota getRota() {
+        return rota;
     }
 
     public double getMelhorFitnessPopulacaoInicial() {

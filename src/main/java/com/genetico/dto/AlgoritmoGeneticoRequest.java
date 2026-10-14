@@ -4,7 +4,8 @@ import com.genetico.model.Endereco;
 
 import java.util.List;
 
-public record AlgoritmoGeneticoRequest(List<DistanciaResponse> distancias,
+public record AlgoritmoGeneticoRequest(int idRota,
+                                       List<DistanciaResponse> distancias,
                                        List<Endereco> enderecos,
                                        int tamanhoPopulacao,
                                        int quantidadeGeracoes,

@@ -36,7 +36,13 @@ public class AlgoritmoGeneticoService {
                 .toList();
 
         var distanciaResponse = distanciaService.obterDistancias(idsEnderecos);
-        var response = new AlgoritmoGeneticoRequest(distanciaResponse, enderecos, tamanhoPopulacao, quantidadeGeracoes, chanceOcorrenciaMutacao, chanceOcorrenciaCrossover);
+        var response = new AlgoritmoGeneticoRequest(idRota,
+                distanciaResponse,
+                enderecos,
+                tamanhoPopulacao,
+                quantidadeGeracoes,
+                chanceOcorrenciaMutacao,
+                chanceOcorrenciaCrossover);
 
         restClient.post()
                 .uri("/ag/iniciar")
