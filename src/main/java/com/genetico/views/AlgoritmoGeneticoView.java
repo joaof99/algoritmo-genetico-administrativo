@@ -1,5 +1,6 @@
 package com.genetico.views;
 
+import com.genetico.exception.SolicitacaoRoteirizacaoException;
 import com.genetico.model.Endereco;
 import com.genetico.model.Rota;
 import com.genetico.repository.RotaRepository;
@@ -11,6 +12,7 @@ import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.data.binder.Binder;
@@ -188,13 +190,19 @@ public class AlgoritmoGeneticoView extends VerticalLayout {
     private void solicitarRoteirizacao(ParametrosAlgoritmo parametros) {
         var idRota = cbxRotas.getValue().getId();
 
-        algoritmoGeneticoService.solicitarRoteirizacao(idRota,
-                parametros.getTamanhoPopulacao(),
-                parametros.getQuantidadeGeracoes(),
-                parametros.getChanceMutacao(),
-                parametros.getChanceCrossover());
+        try {
+            algoritmoGeneticoService.solicitarRoteirizacao(idRota,
+                    parametros.getTamanhoPopulacao(),
+                    parametros.getQuantidadeGeracoes(),
+                    parametros.getChanceMutacao(),
+                    parametros.getChanceCrossover());
 
-        Notification.show("Roteirização solicitada!", 4500, Notification.Position.MIDDLE);
+            Notification.show("Roteirização solicitada!", 4500, Notification.Position.MIDDLE);
+        } catch (SolicitacaoRoteirizacaoException e) {
+            var notification = new Notification("Não foi possível solicitar a roteirização, tente novamente", 4500, Notification.Position.MIDDLE);
+            notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+            notification.open();
+        }
     }
 }
 

@@ -1,5 +1,6 @@
 package com.genetico.views;
 
+import com.genetico.exception.SolicitacaoRoteirizacaoException;
 import com.genetico.model.Endereco;
 import com.genetico.model.Rota;
 import com.genetico.repository.RotaRepository;
@@ -22,6 +23,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static com.github.mvysny.kaributesting.v10.LocatorJ._click;
 import static com.github.mvysny.kaributesting.v10.LocatorJ._get;
+import static com.github.mvysny.kaributesting.v10.NotificationsKt.expectNotifications;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -68,29 +70,53 @@ class AlgoritmoGeneticoViewTest {
     @Test
     @DisplayName("Deve enviar ao serviço a rota selecionada e os quatro parâmetros válidos")
     void deveEnviarRotaSelecionadaEParametrosValidosAoServico() {
-        var rota = new Rota(rotaRepository.buscarTodosComEnderecos().get(0).getEnderecos()) {
+        var rota = new Rota(List.of()) {
             @Override
             public Integer getId() {
                 return 42;
             }
         };
+
         var cbxRotas = _get(ComboBox.class, spec -> spec.withId("cbx-rota"));
         cbxRotas.setItems(rota);
         cbxRotas.setValue(rota);
 
-        var tamanhoPopulacao = _get(IntegerField.class, spec -> spec.withId("txt-tamanho-populacao"));
-        var quantidadeGeracoes = _get(IntegerField.class, spec -> spec.withId("txt-quantidade-geracoes"));
-        var chanceMutacao = _get(IntegerField.class, spec -> spec.withId("txt-chance-ocorrencia-mutacao"));
-        var chanceCrossover = _get(IntegerField.class, spec -> spec.withId("txt-chance-ocorrencia-crossover"));
-
-        tamanhoPopulacao.setValue(100);
-        quantidadeGeracoes.setValue(50);
-        chanceMutacao.setValue(10);
-        chanceCrossover.setValue(75);
+        _get(IntegerField.class, spec -> spec.withId("txt-tamanho-populacao")).setValue(100);
+        _get(IntegerField.class, spec -> spec.withId("txt-quantidade-geracoes")).setValue(50);
+        _get(IntegerField.class, spec -> spec.withId("txt-chance-ocorrencia-mutacao")).setValue(10);
+        _get(IntegerField.class, spec -> spec.withId("txt-chance-ocorrencia-crossover")).setValue(75);
 
         _click(_get(Button.class, spec -> spec.withId("btn-roteirizacao")));
 
         verify(algoritmoGeneticoService).solicitarRoteirizacao(42, 100, 50, 10, 75);
+    }
+
+    @Test
+    @DisplayName("Deve exibir mensagem de erro quando não for possível solicitar a roteirização")
+    void deveExibirMensagemDeErroQuandoNaoForPossivelSolicitarRoteirizacao() {
+        var rota = new Rota(List.of()) {
+            @Override
+            public Integer getId() {
+                return 42;
+            }
+        };
+
+        var cbxRotas = _get(ComboBox.class, spec -> spec.withId("cbx-rota"));
+        cbxRotas.setItems(rota);
+        cbxRotas.setValue(rota);
+
+        _get(IntegerField.class, spec -> spec.withId("txt-tamanho-populacao")).setValue(100);
+        _get(IntegerField.class, spec -> spec.withId("txt-quantidade-geracoes")).setValue(50);
+        _get(IntegerField.class, spec -> spec.withId("txt-chance-ocorrencia-mutacao")).setValue(10);
+        _get(IntegerField.class, spec -> spec.withId("txt-chance-ocorrencia-crossover")).setValue(75);
+
+        doThrow(new SolicitacaoRoteirizacaoException("Algoritmo indisponível", new RuntimeException()))
+                .when(algoritmoGeneticoService)
+                .solicitarRoteirizacao(42, 100, 50, 10, 75);
+
+        _click(_get(Button.class, spec -> spec.withId("btn-roteirizacao")));
+
+        expectNotifications("Não foi possível solicitar a roteirização, tente novamente");
     }
 
     @Test

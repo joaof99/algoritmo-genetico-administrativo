@@ -1,13 +1,14 @@
 package com.genetico.controller;
 
-import com.genetico.dto.RoteirizacaoRequest;
+import com.genetico.dto.ConclusaoRoteirizacaoRequest;
+import com.genetico.dto.FalhaRoteirizacaoRequest;
 import com.genetico.service.RoteirizacaoService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/roteirizacao")
+@RequestMapping("/api/roteirizacao")
 public class RoteirizacaoController {
     private final RoteirizacaoService roteirizacaoService;
 
@@ -15,9 +16,15 @@ public class RoteirizacaoController {
         this.roteirizacaoService = roteirizacaoService;
     }
 
-    @PostMapping("/armazenar")
-    @ResponseStatus(HttpStatus.CREATED)
-    public void armazenar(@Valid @RequestBody RoteirizacaoRequest request) {
-        roteirizacaoService.armazenar(request);
+    @PostMapping("/{id}/concluir")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void concluir(@PathVariable int id, @Valid @RequestBody ConclusaoRoteirizacaoRequest request) {
+        roteirizacaoService.concluir(id, request);
+    }
+
+    @PostMapping("/{id}/falhar")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void falhar(@PathVariable int id, @Valid @RequestBody FalhaRoteirizacaoRequest request) {
+        roteirizacaoService.falhar(id, request);
     }
 }

@@ -1,10 +1,19 @@
 package com.genetico.model;
 
+import com.genetico.enums.StatusRoteirizacao;
+import com.genetico.exception.RoteirizacaoFinalizadaException;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
+import java.time.Instant;
+import java.util.List;
 
 @Entity
 @Table(name = "roteirizacoes")
 public class Roteirizacao {
+    private static final int TAMANHO_MAXIMO_MENSAGEM_ERRO = 500;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -13,9 +22,12 @@ public class Roteirizacao {
     @JoinColumn(name = "rota_id")
     private Rota rota;
 
-    private double melhorFitnessPopulacaoInicial;
+    @Enumerated(EnumType.STRING)
+    private StatusRoteirizacao status;
 
-    private double melhorFitnessPopulacaoFinal;
+    private Instant dataInicio;
+
+    private Instant dataFim;
 
     private int quantidadeGeracoes;
 
@@ -25,18 +37,53 @@ public class Roteirizacao {
 
     private int chanceOcorrenciaMutacao;
 
+    private Double melhorFitnessPopulacaoInicial;
+
+    private Double melhorFitnessPopulacaoFinal;
+
+    @JdbcTypeCode(SqlTypes.ARRAY)
+    private List<Integer> melhorRota;
+
+    private String mensagemErro;
+
     public Roteirizacao() {
 
     }
 
-    public Roteirizacao(Rota rota, double melhorFitnessPopulacaoInicial, double melhorFitnessPopulacaoFinal, int quantidadeGeracoes, int tamanhoPopulacao, int chanceOcorrenciaCrossover, int chanceOcorrenciaMutacao) {
+    public Roteirizacao(Rota rota, int tamanhoPopulacao, int quantidadeGeracoes, int chanceOcorrenciaMutacao, int chanceOcorrenciaCrossover, Instant dataInicio) {
         this.rota = rota;
+        this.tamanhoPopulacao = tamanhoPopulacao;
+        this.quantidadeGeracoes = quantidadeGeracoes;
+        this.chanceOcorrenciaMutacao = chanceOcorrenciaMutacao;
+        this.chanceOcorrenciaCrossover = chanceOcorrenciaCrossover;
+        this.dataInicio = dataInicio;
+        this.status = StatusRoteirizacao.EM_ANDAMENTO;
+    }
+
+    public void concluir(double melhorFitnessPopulacaoInicial, double melhorFitnessPopulacaoFinal, List<Integer> melhorRota, Instant dataFim) {
+        validarEmAndamento();
+
         this.melhorFitnessPopulacaoInicial = melhorFitnessPopulacaoInicial;
         this.melhorFitnessPopulacaoFinal = melhorFitnessPopulacaoFinal;
-        this.quantidadeGeracoes = quantidadeGeracoes;
-        this.tamanhoPopulacao = tamanhoPopulacao;
-        this.chanceOcorrenciaCrossover = chanceOcorrenciaCrossover;
-        this.chanceOcorrenciaMutacao = chanceOcorrenciaMutacao;
+        this.melhorRota = melhorRota;
+        this.dataFim = dataFim;
+        this.status = StatusRoteirizacao.CONCLUIDA;
+    }
+
+    public void falhar(String mensagemErro, Instant dataFim) {
+        validarEmAndamento();
+
+        this.mensagemErro = mensagemErro.length() > TAMANHO_MAXIMO_MENSAGEM_ERRO
+                ? mensagemErro.substring(0, TAMANHO_MAXIMO_MENSAGEM_ERRO)
+                : mensagemErro;
+        this.dataFim = dataFim;
+        this.status = StatusRoteirizacao.FALHA;
+    }
+
+    private void validarEmAndamento() {
+        if (status != StatusRoteirizacao.EM_ANDAMENTO) {
+            throw new RoteirizacaoFinalizadaException(id);
+        }
     }
 
     public Integer getId() {
@@ -47,12 +94,16 @@ public class Roteirizacao {
         return rota;
     }
 
-    public double getMelhorFitnessPopulacaoInicial() {
-        return melhorFitnessPopulacaoInicial;
+    public StatusRoteirizacao getStatus() {
+        return status;
     }
 
-    public double getMelhorFitnessPopulacaoFinal() {
-        return melhorFitnessPopulacaoFinal;
+    public Instant getDataInicio() {
+        return dataInicio;
+    }
+
+    public Instant getDataFim() {
+        return dataFim;
     }
 
     public int getQuantidadeGeracoes() {
@@ -69,5 +120,21 @@ public class Roteirizacao {
 
     public int getChanceOcorrenciaMutacao() {
         return chanceOcorrenciaMutacao;
+    }
+
+    public Double getMelhorFitnessPopulacaoInicial() {
+        return melhorFitnessPopulacaoInicial;
+    }
+
+    public Double getMelhorFitnessPopulacaoFinal() {
+        return melhorFitnessPopulacaoFinal;
+    }
+
+    public List<Integer> getMelhorRota() {
+        return melhorRota;
+    }
+
+    public String getMensagemErro() {
+        return mensagemErro;
     }
 }
