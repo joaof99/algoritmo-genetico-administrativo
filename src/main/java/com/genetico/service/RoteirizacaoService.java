@@ -2,17 +2,23 @@ package com.genetico.service;
 
 import com.genetico.dto.ConclusaoRoteirizacaoRequest;
 import com.genetico.dto.FalhaRoteirizacaoRequest;
+import com.genetico.enums.StatusRoteirizacao;
+import com.genetico.exception.RoteirizacaoFinalizadaException;
 import com.genetico.model.Endereco;
 import com.genetico.model.Rota;
 import com.genetico.model.Roteirizacao;
 import com.genetico.repository.RoteirizacaoRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
@@ -23,10 +29,12 @@ public class RoteirizacaoService {
     private final Logger log = LoggerFactory.getLogger(RoteirizacaoService.class);
     private final RoteirizacaoRepository roteirizacaoRepository;
     private final Clock clock;
+    private final Duration tempoLimiteExecucao;
 
-    public RoteirizacaoService(RoteirizacaoRepository roteirizacaoRepository, Clock clock) {
+    public RoteirizacaoService(RoteirizacaoRepository roteirizacaoRepository, Clock clock, @Value("${roteirizacao.tempo-limite-execucao}") Duration tempoLimiteExecucao) {
         this.roteirizacaoRepository = roteirizacaoRepository;
         this.clock = clock;
+        this.tempoLimiteExecucao = tempoLimiteExecucao;
     }
 
     public void concluir(int idRoteirizacao, ConclusaoRoteirizacaoRequest request) {
@@ -38,7 +46,7 @@ public class RoteirizacaoService {
             var mensagemErro = String.format("A melhor rota devolvida pelo algoritmo genético não corresponde aos endereços da rota: %s", request.melhorRota());
 
             roteirizacao.falhar(mensagemErro, Instant.now(clock));
-            roteirizacaoRepository.save(roteirizacao);
+            salvarFinalizacao(roteirizacao);
 
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, mensagemErro);
         }
@@ -49,7 +57,7 @@ public class RoteirizacaoService {
                 request.melhorRota(),
                 Instant.now(clock));
 
-        roteirizacaoRepository.save(roteirizacao);
+        salvarFinalizacao(roteirizacao);
 
         log.info("Roteirização de ID {} da rota de ID {} concluída. Melhor fitness da população inicial: {}, melhor fitness da população final: {}",
                 roteirizacao.getId(),
@@ -64,7 +72,32 @@ public class RoteirizacaoService {
         var roteirizacao = buscarRoteirizacao(idRoteirizacao);
 
         roteirizacao.falhar(request.mensagem(), Instant.now(clock));
-        roteirizacaoRepository.save(roteirizacao);
+        salvarFinalizacao(roteirizacao);
+    }
+
+    @Scheduled(fixedDelayString = "${roteirizacao.intervalo-verificacao-expiracao}")
+    public void expirarRoteirizacoesSemResposta() {
+        var agora = Instant.now(clock);
+        var roteirizacoesSemResposta = roteirizacaoRepository.buscarPorStatusIniciadasAntesDe(StatusRoteirizacao.EM_ANDAMENTO, agora.minus(tempoLimiteExecucao));
+
+        for (var roteirizacao : roteirizacoesSemResposta) {
+            roteirizacao.falhar("Tempo limite de execução excedido sem resposta do algoritmo genético", agora);
+
+            try {
+                salvarFinalizacao(roteirizacao);
+                log.warn("Roteirização de ID {} marcada como falha por exceder o tempo limite sem resposta do algoritmo genético", roteirizacao.getId());
+            } catch (RoteirizacaoFinalizadaException e) {
+                log.info("Roteirização de ID {} foi finalizada por outra requisição durante a expiração", roteirizacao.getId());
+            }
+        }
+    }
+
+    private void salvarFinalizacao(Roteirizacao roteirizacao) {
+        try {
+            roteirizacaoRepository.save(roteirizacao);
+        } catch (ObjectOptimisticLockingFailureException e) {
+            throw new RoteirizacaoFinalizadaException(roteirizacao.getId());
+        }
     }
 
     private Roteirizacao buscarRoteirizacao(int idRoteirizacao) {

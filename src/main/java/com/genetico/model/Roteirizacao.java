@@ -46,6 +46,9 @@ public class Roteirizacao {
 
     private String mensagemErro;
 
+    @Version
+    private int versao;
+
     public Roteirizacao() {
 
     }

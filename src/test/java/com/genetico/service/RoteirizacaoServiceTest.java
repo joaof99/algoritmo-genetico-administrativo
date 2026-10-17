@@ -3,6 +3,7 @@ package com.genetico.service;
 import com.genetico.dto.ConclusaoRoteirizacaoRequest;
 import com.genetico.dto.FalhaRoteirizacaoRequest;
 import com.genetico.enums.StatusRoteirizacao;
+import com.genetico.exception.RoteirizacaoFinalizadaException;
 import com.genetico.model.Endereco;
 import com.genetico.model.Rota;
 import com.genetico.model.Roteirizacao;
@@ -14,9 +15,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -40,7 +43,7 @@ class RoteirizacaoServiceTest {
 
     @BeforeEach
     void setUp() {
-        roteirizacaoService = new RoteirizacaoService(roteirizacaoRepository, Clock.fixed(AGORA, ZoneOffset.UTC));
+        roteirizacaoService = new RoteirizacaoService(roteirizacaoRepository, Clock.fixed(AGORA, ZoneOffset.UTC), Duration.ofDays(1));
     }
 
     @Test
@@ -175,5 +178,80 @@ class RoteirizacaoServiceTest {
 
         assertEquals(HttpStatus.NOT_FOUND, excecao.getStatusCode());
         verifyNoMoreInteractions(roteirizacaoRepository);
+    }
+
+    @Test
+    @DisplayName("Deve retornar erro 409 quando outra requisição finalizar a roteirização durante a conclusão")
+    void deveRetornarErro409QuandoOutraRequisicaoFinalizarRoteirizacaoDuranteConclusao() {
+        var rota = new Rota(Stream.of(10, 20, 30)
+                .map(id -> {
+                    var endereco = new Endereco();
+                    endereco.setId(id);
+                    return endereco;
+                })
+                .toList());
+
+        var roteirizacao = new Roteirizacao(rota, 100, 50, 10, 75, AGORA.minusSeconds(60));
+
+        when(roteirizacaoRepository.buscarPorIdComEnderecosDaRota(7))
+                .thenReturn(Optional.of(roteirizacao));
+
+        when(roteirizacaoRepository.save(roteirizacao))
+                .thenThrow(new ObjectOptimisticLockingFailureException(Roteirizacao.class, 7));
+
+        assertThrows(RoteirizacaoFinalizadaException.class,
+                () -> roteirizacaoService.concluir(7, new ConclusaoRoteirizacaoRequest(1500.2, 1234.5, List.of(30, 10, 20))));
+    }
+
+    @Test
+    @DisplayName("Deve retornar erro 409 quando outra requisição finalizar a roteirização durante o registro da falha")
+    void deveRetornarErro409QuandoOutraRequisicaoFinalizarRoteirizacaoDuranteRegistroDaFalha() {
+        var roteirizacao = new Roteirizacao(new Rota(List.of()), 100, 50, 10, 75, AGORA.minusSeconds(60));
+
+        when(roteirizacaoRepository.buscarPorIdComEnderecosDaRota(7))
+                .thenReturn(Optional.of(roteirizacao));
+
+        when(roteirizacaoRepository.save(roteirizacao))
+                .thenThrow(new ObjectOptimisticLockingFailureException(Roteirizacao.class, 7));
+
+        assertThrows(RoteirizacaoFinalizadaException.class,
+                () -> roteirizacaoService.falhar(7, new FalhaRoteirizacaoRequest("Erro")));
+    }
+
+    @Test
+    @DisplayName("Deve marcar como falha as roteirizações em andamento que excederam o tempo limite")
+    void deveMarcarComoFalhaRoteirizacoesEmAndamentoQueExcederamTempoLimite() {
+        var roteirizacao = new Roteirizacao(new Rota(List.of()), 100, 50, 10, 75, AGORA.minus(Duration.ofDays(2)));
+
+        when(roteirizacaoRepository.buscarPorStatusIniciadasAntesDe(StatusRoteirizacao.EM_ANDAMENTO, AGORA.minus(Duration.ofDays(1))))
+                .thenReturn(List.of(roteirizacao));
+
+        roteirizacaoService.expirarRoteirizacoesSemResposta();
+
+        verify(roteirizacaoRepository).save(roteirizacao);
+
+        assertEquals(StatusRoteirizacao.FALHA, roteirizacao.getStatus());
+        assertEquals("Tempo limite de execução excedido sem resposta do algoritmo genético", roteirizacao.getMensagemErro());
+        assertEquals(AGORA, roteirizacao.getDataFim());
+    }
+
+    @Test
+    @DisplayName("Deve continuar expirando as demais roteirizações quando uma delas for finalizada por outra requisição")
+    void deveContinuarExpirandoDemaisRoteirizacoesQuandoUmaForFinalizadaPorOutraRequisicao() {
+        var roteirizacaoFinalizadaPorOutraRequisicao = new Roteirizacao(new Rota(List.of()), 100, 50, 10, 75, AGORA.minus(Duration.ofDays(3)));
+        var roteirizacaoSemResposta = new Roteirizacao(new Rota(List.of()), 100, 50, 10, 75, AGORA.minus(Duration.ofDays(2)));
+
+        when(roteirizacaoRepository.buscarPorStatusIniciadasAntesDe(StatusRoteirizacao.EM_ANDAMENTO, AGORA.minus(Duration.ofDays(1))))
+                .thenReturn(List.of(roteirizacaoFinalizadaPorOutraRequisicao, roteirizacaoSemResposta));
+
+        when(roteirizacaoRepository.save(roteirizacaoFinalizadaPorOutraRequisicao))
+                .thenThrow(new ObjectOptimisticLockingFailureException(Roteirizacao.class, 7));
+
+        when(roteirizacaoRepository.save(roteirizacaoSemResposta))
+                .thenReturn(roteirizacaoSemResposta);
+
+        roteirizacaoService.expirarRoteirizacoesSemResposta();
+
+        verify(roteirizacaoRepository).save(roteirizacaoSemResposta);
     }
 }
