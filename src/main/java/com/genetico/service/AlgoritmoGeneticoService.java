@@ -1,6 +1,7 @@
 package com.genetico.service;
 
 import com.genetico.dto.AlgoritmoGeneticoRequest;
+import com.genetico.dto.EnderecoRequest;
 import com.genetico.exception.SolicitacaoRoteirizacaoException;
 import com.genetico.model.Endereco;
 import com.genetico.model.Roteirizacao;
@@ -60,7 +61,9 @@ public class AlgoritmoGeneticoService {
 
         var request = new AlgoritmoGeneticoRequest(roteirizacao.getId(),
                 distanciaResponse,
-                enderecos,
+                enderecos.stream()
+                        .map(endereco -> new EnderecoRequest(endereco.getId(), endereco.getLatitude(), endereco.getLongitude()))
+                        .toList(),
                 tamanhoPopulacao,
                 quantidadeGeracoes,
                 chanceOcorrenciaMutacao,

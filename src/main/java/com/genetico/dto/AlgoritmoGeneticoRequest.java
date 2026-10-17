@@ -1,12 +1,10 @@
 package com.genetico.dto;
 
-import com.genetico.model.Endereco;
-
 import java.util.List;
 
 public record AlgoritmoGeneticoRequest(int idRoteirizacao,
                                        List<DistanciaResponse> distancias,
-                                       List<Endereco> enderecos,
+                                       List<EnderecoRequest> enderecos,
                                        int tamanhoPopulacao,
                                        int quantidadeGeracoes,
                                        int chanceOcorrenciaMutacao,

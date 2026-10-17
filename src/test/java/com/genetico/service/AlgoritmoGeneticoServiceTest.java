@@ -1,6 +1,7 @@
 package com.genetico.service;
 
 import com.genetico.dto.AlgoritmoGeneticoRequest;
+import com.genetico.dto.EnderecoRequest;
 import com.genetico.dto.DistanciaResponse;
 import com.genetico.enums.StatusRoteirizacao;
 import com.genetico.exception.SolicitacaoRoteirizacaoException;
@@ -103,6 +104,8 @@ class AlgoritmoGeneticoServiceTest {
                 .map(id -> {
                     var endereco = new Endereco();
                     endereco.setId(id);
+                    endereco.setLatitude(id + 0.1);
+                    endereco.setLongitude(id + 0.2);
                     return endereco;
                 })
                 .toList());
@@ -130,7 +133,7 @@ class AlgoritmoGeneticoServiceTest {
         var requisicao = requisicaoCaptor.getValue();
         assertEquals(99, requisicao.idRoteirizacao());
         assertEquals(distancias, requisicao.distancias());
-        assertEquals(rota.getEnderecos(), requisicao.enderecos());
+        assertEquals(List.of(new EnderecoRequest(10, 10.1, 10.2), new EnderecoRequest(20, 20.1, 20.2), new EnderecoRequest(30, 30.1, 30.2)), requisicao.enderecos());
         assertEquals(100, requisicao.tamanhoPopulacao());
         assertEquals(50, requisicao.quantidadeGeracoes());
         assertEquals(10, requisicao.chanceOcorrenciaMutacao());
