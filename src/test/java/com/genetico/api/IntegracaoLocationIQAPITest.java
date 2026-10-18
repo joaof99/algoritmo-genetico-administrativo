@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -16,13 +17,17 @@ import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.net.http.HttpTimeoutException;
+import java.time.Duration;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -144,6 +149,44 @@ class IntegracaoLocationIQAPITest {
         assertEquals(9.4, distancias.get(13).getDistancia(), 0.0001);
         assertEquals(11.2, distancias.get(14).getDistancia(), 0.0001);
         assertEquals(0.0, distancias.get(15).getDistancia(), 0.0001);
+    }
+
+    @Test
+    @DisplayName("Deve limitar a 10 segundos a espera pela resposta da API")
+    void deveLimitarA10SegundosEsperaPelaRespostaDaAPI() throws IOException, InterruptedException {
+        var response = Mockito.mock(HttpResponse.class);
+
+        when(response.statusCode())
+                .thenReturn(200);
+
+        when(response.body())
+                .thenReturn("""
+                        [{"lat": "-23.5505", "lon": "-46.6333"}]
+                        """);
+
+        when(httpClient.send(
+                any(HttpRequest.class),
+                any(HttpResponse.BodyHandler.class)
+        )).thenReturn(response);
+
+        integracaoLocationIQAPI.buscarCoordenadaGeografica("Av. Paulista", "1000", "Bela Vista", "SP", "São Paulo", "01310-100");
+
+        var requisicaoCaptor = ArgumentCaptor.forClass(HttpRequest.class);
+        verify(httpClient).send(requisicaoCaptor.capture(), any(HttpResponse.BodyHandler.class));
+
+        assertEquals(Optional.of(Duration.ofSeconds(10)), requisicaoCaptor.getValue().timeout());
+    }
+
+    @Test
+    @DisplayName("Deve lançar exceção de integração quando a API exceder o tempo limite de resposta")
+    void deveLancarExcecaoDeIntegracaoQuandoAPIExcederTempoLimiteDeResposta() throws IOException, InterruptedException {
+        when(httpClient.send(
+                any(HttpRequest.class),
+                any(HttpResponse.BodyHandler.class)
+        )).thenThrow(new HttpTimeoutException("request timed out"));
+
+        assertThrows(IntegracaoLocationIQAPIException.class,
+                () -> integracaoLocationIQAPI.buscarCoordenadaGeografica("Av. Paulista", "1000", "Bela Vista", "SP", "São Paulo", "01310-100"));
     }
 
     @ParameterizedTest

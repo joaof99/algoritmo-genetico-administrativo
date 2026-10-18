@@ -18,12 +18,15 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
 public class IntegracaoLocationIQAPI {
+    private static final Duration TEMPO_LIMITE_REQUISICAO = Duration.ofSeconds(10);
+
     private final Logger log = LoggerFactory.getLogger(IntegracaoLocationIQAPI.class);
 
     private final HttpClient httpClient;
@@ -155,7 +158,12 @@ public class IntegracaoLocationIQAPI {
 
     private HttpResponse<String> executarRequisicaoAPI(URI uri) {
         try {
-            var request = HttpRequest.newBuilder().uri(uri).GET().build();
+            var request = HttpRequest.newBuilder()
+                    .uri(uri)
+                    .timeout(TEMPO_LIMITE_REQUISICAO)
+                    .GET()
+                    .build();
+
             var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() != 200) {
