@@ -40,4 +40,8 @@ public class Rota {
     public List<Endereco> getEnderecos() {
         return enderecos;
     }
+
+    public Integer getId() {
+        return id;
+    }
 }
