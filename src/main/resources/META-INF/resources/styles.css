@@ -1,1 +1,51 @@
-/* Add your styles here */
+.logo {
+    padding: var(--lumo-space-m) var(--lumo-space-l);
+    font-size: var(--lumo-font-size-l);
+    font-weight: 600;
+}
+
+.logo-icone {
+    color: var(--lumo-primary-color);
+}
+
+.cabecalho {
+    width: 100%;
+    padding-right: var(--lumo-space-m);
+}
+
+.titulo-tela {
+    margin: 0;
+    font-size: var(--lumo-font-size-l);
+}
+
+.cartao {
+    background: var(--lumo-contrast-5pct);
+    border: 1px solid var(--lumo-contrast-10pct);
+    border-radius: var(--lumo-border-radius-l);
+}
+
+.cartao h3 {
+    margin: 0;
+    font-size: var(--lumo-font-size-m);
+}
+
+.status {
+    padding: var(--lumo-space-xs) var(--lumo-space-s);
+    border-radius: var(--lumo-border-radius-l);
+    font-size: var(--lumo-font-size-s);
+}
+
+.status-concluida {
+    background: var(--lumo-success-color-10pct);
+    color: var(--lumo-success-text-color);
+}
+
+.status-falha {
+    background: var(--lumo-error-color-10pct);
+    color: var(--lumo-error-text-color);
+}
+
+.status-em_andamento {
+    background: var(--lumo-primary-color-10pct);
+    color: var(--lumo-primary-text-color);
+}

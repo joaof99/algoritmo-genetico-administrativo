@@ -11,6 +11,7 @@ import com.genetico.repository.RoteirizacaoRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -95,6 +96,10 @@ public class RoteirizacaoService {
                 log.info("Roteirização de ID {} foi finalizada por outra requisição durante a expiração", roteirizacao.getId());
             }
         }
+    }
+
+    public List<Roteirizacao> buscarHistorico(Pageable pagina) {
+        return roteirizacaoRepository.buscarMaisRecentes(pagina);
     }
 
     private ResponseStatusException recusarConclusao(Roteirizacao roteirizacao, String mensagemErro) {

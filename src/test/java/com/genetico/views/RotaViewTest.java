@@ -2,12 +2,13 @@ package com.genetico.views;
 
 import com.genetico.model.Endereco;
 import com.genetico.model.Rota;
-import com.genetico.repository.RotaRepository;
 import com.genetico.service.EnderecoService;
+import com.genetico.service.RotaService;
 import com.github.mvysny.kaributesting.v10.MockVaadin;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
+import com.vaadin.flow.component.grid.Grid;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,9 +21,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Set;
 
+import static com.github.mvysny.kaributesting.v10.GridKt._getFormattedRow;
 import static com.github.mvysny.kaributesting.v10.LocatorJ._click;
 import static com.github.mvysny.kaributesting.v10.LocatorJ._get;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,7 +34,7 @@ class RotaViewTest {
     private EnderecoService enderecoService;
 
     @Mock
-    private RotaRepository rotaRepository;
+    private RotaService rotaService;
 
     @BeforeEach
     void setUp() {
@@ -53,7 +56,7 @@ class RotaViewTest {
 
         when(enderecoService.buscarTodos()).thenReturn(List.of(endereco1, endereco2, endereco3, endereco4));
 
-        UI.getCurrent().add(new RotaView(enderecoService, rotaRepository));
+        UI.getCurrent().add(new RotaView(enderecoService, rotaService));
 
         var cbxEnderecos = _get(MultiSelectComboBox.class, spec -> spec.withId("cbx-listagem-enderecos"));
         cbxEnderecos.setValue(Set.of(endereco1, endereco2, endereco3));
@@ -61,7 +64,7 @@ class RotaViewTest {
         _click(_get(Button.class, spec -> spec.withId("btn-cadastro-rota")));
 
         var rotaCaptor = ArgumentCaptor.forClass(Rota.class);
-        verify(rotaRepository, times(1)).save(rotaCaptor.capture());
+        verify(rotaService, times(1)).salvar(rotaCaptor.capture());
 
         var rotaCapturada = rotaCaptor.getValue();
         assertEquals(3, rotaCapturada.getEnderecos().size());
@@ -75,7 +78,7 @@ class RotaViewTest {
         var endereco3 = new Endereco("Endereço C", "", "", "", "", -10.5, -24.3);
         var endereco4 = new Endereco("Endereço D", "", "", "", "", -10.5, -24.3);
 
-        UI.getCurrent().add(new RotaView(enderecoService, rotaRepository));
+        UI.getCurrent().add(new RotaView(enderecoService, rotaService));
 
         var cbxEnderecos = _get(MultiSelectComboBox.class, spec -> spec.withId("cbx-listagem-enderecos"));
         cbxEnderecos.setValue(Set.of(endereco1, endereco2, endereco3, endereco4));
@@ -83,5 +86,28 @@ class RotaViewTest {
         _click(_get(Button.class, spec -> spec.withId("btn-cadastro-rota")));
 
         assertEquals(0, cbxEnderecos.getSelectedItems().size());
+    }
+
+    @Test
+    @DisplayName("Deve listar as rotas cadastradas com seus endereços e a quantidade de paradas")
+    void deveListarRotasCadastradasComSeusEnderecosEQuantidadeDeParadas() {
+        var rota = new Rota(List.of(
+                new Endereco("Rua A", "", "", "", "", -9.5, -8.3),
+                new Endereco("Rua B", "", "", "", "", -10.5, -24.3),
+                new Endereco("Rua C", "", "", "", "", -11.5, -25.3))) {
+            @Override
+            public Integer getId() {
+                return 8;
+            }
+        };
+
+        when(rotaService.buscarPaginaComEnderecos(any()))
+                .thenReturn(List.of(rota));
+
+        UI.getCurrent().add(new RotaView(enderecoService, rotaService));
+
+        var linha = _getFormattedRow(_get(Grid.class, spec -> spec.withId("grid-rotas")), 0);
+
+        assertEquals(List.of("Rota 8", "Rua A, Rua B, Rua C", "3"), linha);
     }
 }

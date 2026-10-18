@@ -3,26 +3,37 @@ package com.genetico.views;
 import com.genetico.exception.SolicitacaoRoteirizacaoException;
 import com.genetico.model.Endereco;
 import com.genetico.model.Rota;
-import com.genetico.repository.RotaRepository;
+import com.genetico.model.Roteirizacao;
 import com.genetico.service.AlgoritmoGeneticoService;
+import com.genetico.service.RotaService;
+import com.genetico.service.RoteirizacaoService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.H3;
-import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.notification.NotificationVariant;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.shared.Tooltip;
 import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import org.springframework.data.domain.PageRequest;
 
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
-@Route("solicitacao-roteirizacao")
-@PageTitle("Solicitação de roteirização")
+@Route(value = "solicitacao-roteirizacao", layout = MainLayout.class)
+@PageTitle("Roteirizações")
 public class AlgoritmoGeneticoView extends VerticalLayout {
     static class ParametrosAlgoritmo {
         private Rota rota;
@@ -72,36 +83,47 @@ public class AlgoritmoGeneticoView extends VerticalLayout {
         }
     }
 
-    private final RotaRepository rotaRepository;
+    private static final DateTimeFormatter FORMATO_DATA_HORA = DateTimeFormatter
+            .ofPattern("dd/MM/yyyy HH:mm")
+            .withZone(ZoneId.systemDefault());
+
+    private final RotaService rotaService;
     private final AlgoritmoGeneticoService algoritmoGeneticoService;
+    private final RoteirizacaoService roteirizacaoService;
     private IntegerField txtTamanhoPopulacao;
     private IntegerField txtQuantidadeGeracoes;
     private IntegerField txtChanceOcorrenciaMutacao;
     private IntegerField txtChanceOcorrenciaCrossover;
     private ComboBox<Rota> cbxRotas;
+    private Grid<Roteirizacao> gridHistorico;
     private final Binder<ParametrosAlgoritmo> binder = new Binder<>();
 
-    public AlgoritmoGeneticoView(RotaRepository rotaRepository, AlgoritmoGeneticoService algoritmoGeneticoService) {
-        this.rotaRepository = rotaRepository;
+    public AlgoritmoGeneticoView(RotaService rotaService, AlgoritmoGeneticoService algoritmoGeneticoService, RoteirizacaoService roteirizacaoService) {
+        this.rotaService = rotaService;
         this.algoritmoGeneticoService = algoritmoGeneticoService;
-        add(criarSecaoCadastro());
+        this.roteirizacaoService = roteirizacaoService;
+        add(criarSecaoCadastro(), criarSecaoHistorico());
     }
 
     private Component criarSecaoCadastro() {
         cbxRotas = criarCbx();
+        var botaoRoteirizacao = criarBotaoRoteirizacao();
 
-        return new VerticalLayout(
+        var secao = new VerticalLayout(
                 new H3("Solicitar roteirização"),
-                cbxRotas,
                 criarFormulario(),
-                criarBotaoRoteirizacao()
+                botaoRoteirizacao
         );
+        secao.addClassName("cartao");
+        secao.setHorizontalComponentAlignment(Alignment.END, botaoRoteirizacao);
+
+        return secao;
     }
 
     private ComboBox<Rota> criarCbx() {
         var cbx = new ComboBox<Rota>("Rota");
         cbx.setId("cbx-rota");
-        cbx.setItems(rotaRepository.buscarTodosComEnderecos());
+        cbx.setItems(rotaService.buscarTodosComEnderecos());
         cbx.setWidthFull();
 
         cbx.setItemLabelGenerator(rota ->
@@ -120,23 +142,28 @@ public class AlgoritmoGeneticoView extends VerticalLayout {
     private FormLayout criarFormulario() {
         var formulario = new FormLayout();
         formulario.setId("form-solicitacao-roteirizacao");
+        formulario.setResponsiveSteps(
+                new FormLayout.ResponsiveStep("0", 1),
+                new FormLayout.ResponsiveStep("600px", 2)
+        );
 
-        txtTamanhoPopulacao = new IntegerField("Digite o tamanho da população");
+        txtTamanhoPopulacao = new IntegerField("Tamanho da população (20 a 500)");
         txtTamanhoPopulacao.setId("txt-tamanho-populacao");
         txtTamanhoPopulacao.setTooltipText("Mínimo de 20 e no máximo 500 populações");
 
-        txtQuantidadeGeracoes = new IntegerField("Digite a quantidade de gerações");
+        txtQuantidadeGeracoes = new IntegerField("Quantidade de gerações (10 a 1000)");
         txtQuantidadeGeracoes.setId("txt-quantidade-geracoes");
         txtQuantidadeGeracoes.setTooltipText("Mínimo 10 e no máximo 1000 gerações");
 
-        txtChanceOcorrenciaMutacao = new IntegerField("Digite a probabilidade de chance de ocorrência de mutação");
+        txtChanceOcorrenciaMutacao = new IntegerField("Chance de mutação em % (1 a 100)");
         txtChanceOcorrenciaMutacao.setId("txt-chance-ocorrencia-mutacao");
         txtChanceOcorrenciaMutacao.setTooltipText("Probabilidade entre 1 e 100%");
 
-        txtChanceOcorrenciaCrossover = new IntegerField("Digite a probabilidade de chance de ocorrência de crossover");
+        txtChanceOcorrenciaCrossover = new IntegerField("Chance de crossover em % (1 a 100)");
         txtChanceOcorrenciaCrossover.setId("txt-chance-ocorrencia-crossover");
         txtChanceOcorrenciaCrossover.setTooltipText("Probabilidade entre 1 e 100%");
 
+        formulario.add(cbxRotas, 2);
         formulario.add(txtTamanhoPopulacao, txtQuantidadeGeracoes, txtChanceOcorrenciaMutacao, txtChanceOcorrenciaCrossover);
 
         configurarBinder();
@@ -197,12 +224,80 @@ public class AlgoritmoGeneticoView extends VerticalLayout {
                     parametros.getChanceMutacao(),
                     parametros.getChanceCrossover());
 
-            Notification.show("Roteirização solicitada!", 4500, Notification.Position.MIDDLE);
+            Notificacao.sucesso("Roteirização solicitada!");
         } catch (SolicitacaoRoteirizacaoException e) {
-            var notification = new Notification(e.getMessage(), 4500, Notification.Position.MIDDLE);
-            notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
-            notification.open();
+            Notificacao.erro(e.getMessage());
+        } finally {
+            gridHistorico.getDataProvider().refreshAll();
         }
     }
-}
 
+    private Component criarSecaoHistorico() {
+        gridHistorico = criarGridHistorico();
+
+        var botaoAtualizar = new Button("Atualizar", VaadinIcon.REFRESH.create());
+        botaoAtualizar.setId("btn-atualizar-historico");
+        botaoAtualizar.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        botaoAtualizar.addClickListener(clique -> gridHistorico.getDataProvider().refreshAll());
+
+        var cabecalho = new HorizontalLayout(new H3("Histórico de roteirizações"), botaoAtualizar);
+        cabecalho.setWidthFull();
+        cabecalho.setAlignItems(FlexComponent.Alignment.CENTER);
+        cabecalho.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
+
+        var secao = new VerticalLayout(cabecalho, gridHistorico);
+        secao.addClassName("cartao");
+
+        return secao;
+    }
+
+    private Grid<Roteirizacao> criarGridHistorico() {
+        var grid = new Grid<Roteirizacao>();
+        grid.setId("grid-historico-roteirizacoes");
+        grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
+
+        grid.addColumn(Roteirizacao::getId)
+                .setHeader("#")
+                .setAutoWidth(true)
+                .setFlexGrow(0);
+
+        grid.addColumn(roteirizacao -> String.format("Rota %d", roteirizacao.getRota().getId()))
+                .setHeader("Rota");
+
+        grid.addComponentColumn(this::criarIndicadorStatus)
+                .setKey("status")
+                .setHeader("Status");
+
+        grid.addColumn(roteirizacao -> roteirizacao.getMelhorFitnessPopulacaoFinal() == null
+                        ? "—"
+                        : String.format(Locale.of("pt", "BR"), "%.1f km", roteirizacao.getMelhorFitnessPopulacaoFinal()))
+                .setHeader("Melhor fitness");
+
+        grid.addColumn(roteirizacao -> FORMATO_DATA_HORA.format(roteirizacao.getDataInicio()))
+                .setHeader("Início")
+                .setAutoWidth(true)
+                .setFlexGrow(0);
+
+        grid.setItems(consulta -> roteirizacaoService
+                .buscarHistorico(PageRequest.of(consulta.getPage(), consulta.getPageSize()))
+                .stream());
+
+        return grid;
+    }
+
+    private Span criarIndicadorStatus(Roteirizacao roteirizacao) {
+        var indicador = new Span(switch (roteirizacao.getStatus()) {
+            case EM_ANDAMENTO -> "Em andamento";
+            case CONCLUIDA -> "Concluída";
+            case FALHA -> "Falha";
+        });
+
+        indicador.addClassNames("status", String.format("status-%s", roteirizacao.getStatus().name().toLowerCase()));
+
+        if (roteirizacao.getMensagemErro() != null) {
+            Tooltip.forComponent(indicador).setText(roteirizacao.getMensagemErro());
+        }
+
+        return indicador;
+    }
+}
