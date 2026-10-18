@@ -1,6 +1,8 @@
 package com.genetico.service;
 
+import com.genetico.api.IntegracaoLocationIQAPIException;
 import com.genetico.dto.AlgoritmoGeneticoRequest;
+import com.genetico.dto.DistanciaRequest;
 import com.genetico.dto.EnderecoRequest;
 import com.genetico.exception.SolicitacaoRoteirizacaoException;
 import com.genetico.model.Endereco;
@@ -17,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.util.List;
 
 @Service
 public class AlgoritmoGeneticoService {
@@ -50,7 +53,7 @@ public class AlgoritmoGeneticoService {
                 .map(Endereco::getId)
                 .toList();
 
-        var distancias = distanciaService.obterDistancias(idsEnderecos);
+        var distancias = obterDistancias(idRota, idsEnderecos);
 
         var roteirizacao = roteirizacaoRepository.save(new Roteirizacao.Builder()
                 .rota(rota)
@@ -83,7 +86,17 @@ public class AlgoritmoGeneticoService {
             roteirizacao.falhar(String.format("Não foi possível solicitar a roteirização ao algoritmo genético: %s", e.getMessage()), Instant.now(clock));
             roteirizacaoRepository.save(roteirizacao);
 
-            throw new SolicitacaoRoteirizacaoException("Não foi possível solicitar a roteirização ao algoritmo genético", e);
+            throw new SolicitacaoRoteirizacaoException("Não foi possível solicitar a roteirização ao algoritmo genético, tente novamente", e);
+        }
+    }
+
+    private List<DistanciaRequest> obterDistancias(int idRota, List<Integer> idsEnderecos) {
+        try {
+            return distanciaService.obterDistancias(idsEnderecos);
+        } catch (IntegracaoLocationIQAPIException e) {
+            log.error("Não foi possível obter as distâncias entre os endereços da rota de ID {}", idRota, e);
+
+            throw new SolicitacaoRoteirizacaoException("Não foi possível obter as distâncias entre os endereços da rota", e);
         }
     }
 }

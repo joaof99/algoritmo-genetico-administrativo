@@ -110,13 +110,13 @@ class AlgoritmoGeneticoViewTest {
         _get(IntegerField.class, spec -> spec.withId("txt-chance-ocorrencia-mutacao")).setValue(10);
         _get(IntegerField.class, spec -> spec.withId("txt-chance-ocorrencia-crossover")).setValue(75);
 
-        doThrow(new SolicitacaoRoteirizacaoException("Algoritmo indisponível", new RuntimeException()))
+        doThrow(new SolicitacaoRoteirizacaoException("Não foi possível obter as distâncias entre os endereços da rota", new RuntimeException()))
                 .when(algoritmoGeneticoService)
                 .solicitarRoteirizacao(42, 100, 50, 10, 75);
 
         _click(_get(Button.class, spec -> spec.withId("btn-roteirizacao")));
 
-        expectNotifications("Não foi possível solicitar a roteirização, tente novamente");
+        expectNotifications("Não foi possível obter as distâncias entre os endereços da rota");
     }
 
     @Test

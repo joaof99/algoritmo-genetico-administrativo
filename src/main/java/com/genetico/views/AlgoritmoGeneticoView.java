@@ -199,7 +199,7 @@ public class AlgoritmoGeneticoView extends VerticalLayout {
 
             Notification.show("Roteirização solicitada!", 4500, Notification.Position.MIDDLE);
         } catch (SolicitacaoRoteirizacaoException e) {
-            var notification = new Notification("Não foi possível solicitar a roteirização, tente novamente", 4500, Notification.Position.MIDDLE);
+            var notification = new Notification(e.getMessage(), 4500, Notification.Position.MIDDLE);
             notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
             notification.open();
         }

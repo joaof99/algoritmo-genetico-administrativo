@@ -142,6 +142,24 @@ class RoteirizacaoControllerTest {
     }
 
     @Test
+    @DisplayName("Deve retornar status 400 quando o melhor fitness de alguma geração vier nulo")
+    void deveRetornarStatus400QuandoMelhorFitnessDeAlgumaGeracaoVierNulo() throws Exception {
+        mockMvc.perform(post("/api/roteirizacao/7/concluir")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "melhor_fitness_populacao_inicial": 1500.2,
+                                    "melhor_fitness_populacao_final": 1234.5,
+                                    "melhor_rota": [30, 10, 20],
+                                    "melhores_fitness_por_geracao": [1500.2, null, 1234.5]
+                                }
+                                """))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(roteirizacaoService);
+    }
+
+    @Test
     @DisplayName("Deve retornar status 409 quando a roteirização já estiver finalizada")
     void deveRetornarStatus409QuandoRoteirizacaoJaEstiverFinalizada() throws Exception {
         doThrow(new RoteirizacaoFinalizadaException(7))

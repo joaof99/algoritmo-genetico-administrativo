@@ -1,5 +1,6 @@
 package com.genetico.service;
 
+import com.genetico.api.IntegracaoLocationIQAPIException;
 import com.genetico.dto.AlgoritmoGeneticoRequest;
 import com.genetico.dto.EnderecoRequest;
 import com.genetico.dto.DistanciaRequest;
@@ -162,6 +163,36 @@ class AlgoritmoGeneticoServiceTest {
                 .thenThrow(new ResourceAccessException("Connection refused"));
 
         assertThrows(SolicitacaoRoteirizacaoException.class, () -> algoritmoGeneticoService.solicitarRoteirizacao(7, 100, 50, 10, 75));
+    }
+
+    @Test
+    @DisplayName("Deve lançar exceção de solicitação quando não for possível obter as distâncias entre os endereços")
+    void deveLancarExcecaoDeSolicitacaoQuandoNaoForPossivelObterDistanciasEntreEnderecos() {
+        when(rotaRepository.buscarPorIdComEnderecos(7))
+                .thenReturn(Optional.of(new Rota(List.of())));
+
+        when(distanciaService.obterDistancias(List.of()))
+                .thenThrow(new IntegracaoLocationIQAPIException("Erro de comunicação ao consultar a API de geocodificação (LocationIQ)"));
+
+        var excecao = assertThrows(SolicitacaoRoteirizacaoException.class,
+                () -> algoritmoGeneticoService.solicitarRoteirizacao(7, 100, 50, 10, 75));
+
+        assertEquals("Não foi possível obter as distâncias entre os endereços da rota", excecao.getMessage());
+    }
+
+    @Test
+    @DisplayName("Não deve criar a roteirização quando não for possível obter as distâncias entre os endereços")
+    void naoDeveCriarRoteirizacaoQuandoNaoForPossivelObterDistanciasEntreEnderecos() {
+        when(rotaRepository.buscarPorIdComEnderecos(7))
+                .thenReturn(Optional.of(new Rota(List.of())));
+
+        when(distanciaService.obterDistancias(List.of()))
+                .thenThrow(new IntegracaoLocationIQAPIException("Erro de comunicação ao consultar a API de geocodificação (LocationIQ)"));
+
+        assertThrows(SolicitacaoRoteirizacaoException.class,
+                () -> algoritmoGeneticoService.solicitarRoteirizacao(7, 100, 50, 10, 75));
+
+        verifyNoInteractions(roteirizacaoRepository);
     }
 
     @Test
