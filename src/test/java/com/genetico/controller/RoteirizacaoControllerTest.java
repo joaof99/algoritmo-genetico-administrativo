@@ -49,7 +49,8 @@ class RoteirizacaoControllerTest {
                                 {
                                     "melhor_fitness_populacao_inicial": 1500.2,
                                     "melhor_fitness_populacao_final": 1234.5,
-                                    "melhor_rota": [30, 10, 20]
+                                    "melhor_rota": [30, 10, 20],
+                                    "melhores_fitness_por_geracao": [1500.2, 1350.0, 1234.5]
                                 }
                                 """))
                 .andExpect(status().isNoContent());
@@ -64,11 +65,12 @@ class RoteirizacaoControllerTest {
                         {
                             "melhor_fitness_populacao_inicial": 1500.2,
                             "melhor_fitness_populacao_final": 1234.5,
-                            "melhor_rota": [30, 10, 20]
+                            "melhor_rota": [30, 10, 20],
+                            "melhores_fitness_por_geracao": [1500.2, 1350.0, 1234.5]
                         }
                         """));
 
-        verify(roteirizacaoService).concluir(7, new ConclusaoRoteirizacaoRequest(1500.2, 1234.5, List.of(30, 10, 20)));
+        verify(roteirizacaoService).concluir(7, new ConclusaoRoteirizacaoRequest(1500.2, 1234.5, List.of(30, 10, 20), List.of(1500.2, 1350.0, 1234.5)));
     }
 
     @Test
@@ -79,7 +81,8 @@ class RoteirizacaoControllerTest {
                         .content("""
                                 {
                                     "melhor_fitness_populacao_inicial": 1500.2,
-                                    "melhor_fitness_populacao_final": 1234.5
+                                    "melhor_fitness_populacao_final": 1234.5,
+                                    "melhores_fitness_por_geracao": [1500.2, 1350.0, 1234.5]
                                 }
                                 """))
                 .andExpect(status().isBadRequest());
@@ -95,7 +98,8 @@ class RoteirizacaoControllerTest {
                         .content("""
                                 {
                                     "melhor_fitness_populacao_final": 1234.5,
-                                    "melhor_rota": [30, 10, 20]
+                                    "melhor_rota": [30, 10, 20],
+                                    "melhores_fitness_por_geracao": [1500.2, 1350.0, 1234.5]
                                 }
                                 """))
                 .andExpect(status().isBadRequest());
@@ -111,6 +115,24 @@ class RoteirizacaoControllerTest {
                         .content("""
                                 {
                                     "melhor_fitness_populacao_inicial": 1500.2,
+                                    "melhor_rota": [30, 10, 20],
+                                    "melhores_fitness_por_geracao": [1500.2, 1350.0, 1234.5]
+                                }
+                                """))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(roteirizacaoService);
+    }
+
+    @Test
+    @DisplayName("Deve retornar status 400 quando a conclusão não informar o melhor fitness de cada geração")
+    void deveRetornarStatus400QuandoConclusaoNaoInformarMelhorFitnessDeCadaGeracao() throws Exception {
+        mockMvc.perform(post("/api/roteirizacao/7/concluir")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "melhor_fitness_populacao_inicial": 1500.2,
+                                    "melhor_fitness_populacao_final": 1234.5,
                                     "melhor_rota": [30, 10, 20]
                                 }
                                 """))
@@ -132,7 +154,8 @@ class RoteirizacaoControllerTest {
                                 {
                                     "melhor_fitness_populacao_inicial": 1500.2,
                                     "melhor_fitness_populacao_final": 1234.5,
-                                    "melhor_rota": [30, 10, 20]
+                                    "melhor_rota": [30, 10, 20],
+                                    "melhores_fitness_por_geracao": [1500.2, 1350.0, 1234.5]
                                 }
                                 """))
                 .andExpect(status().isConflict());

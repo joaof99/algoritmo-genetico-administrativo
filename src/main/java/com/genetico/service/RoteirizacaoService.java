@@ -43,18 +43,23 @@ public class RoteirizacaoService {
         var roteirizacao = buscarRoteirizacao(idRoteirizacao);
 
         if (!melhorRotaContemCadaEnderecoDaRota(request.melhorRota(), roteirizacao.getRota())) {
-            var mensagemErro = String.format("A melhor rota devolvida pelo algoritmo genético não corresponde aos endereços da rota: %s", request.melhorRota());
+            throw recusarConclusao(roteirizacao, String.format("A melhor rota devolvida pelo algoritmo genético não corresponde aos endereços da rota: %s", request.melhorRota()));
+        }
 
-            roteirizacao.falhar(mensagemErro, Instant.now(clock));
-            salvarFinalizacao(roteirizacao);
+        var quantidadePopulacoes = roteirizacao.getQuantidadeGeracoes() + 1;
 
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, mensagemErro);
+        if (request.melhoresFitnessPorGeracao().size() != quantidadePopulacoes) {
+            throw recusarConclusao(roteirizacao, String.format("O algoritmo genético devolveu %d valores de melhor fitness por geração, mas eram esperados %d (população inicial e %d gerações)",
+                    request.melhoresFitnessPorGeracao().size(),
+                    quantidadePopulacoes,
+                    roteirizacao.getQuantidadeGeracoes()));
         }
 
         roteirizacao.concluir(
                 request.melhorFitnessPopulacaoInicial(),
                 request.melhorFitnessPopulacaoFinal(),
                 request.melhorRota(),
+                request.melhoresFitnessPorGeracao(),
                 Instant.now(clock));
 
         salvarFinalizacao(roteirizacao);
@@ -90,6 +95,13 @@ public class RoteirizacaoService {
                 log.info("Roteirização de ID {} foi finalizada por outra requisição durante a expiração", roteirizacao.getId());
             }
         }
+    }
+
+    private ResponseStatusException recusarConclusao(Roteirizacao roteirizacao, String mensagemErro) {
+        roteirizacao.falhar(mensagemErro, Instant.now(clock));
+        salvarFinalizacao(roteirizacao);
+
+        return new ResponseStatusException(HttpStatus.BAD_REQUEST, mensagemErro);
     }
 
     private void salvarFinalizacao(Roteirizacao roteirizacao) {

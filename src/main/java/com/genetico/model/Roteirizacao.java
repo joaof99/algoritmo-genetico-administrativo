@@ -44,6 +44,9 @@ public class Roteirizacao {
     @JdbcTypeCode(SqlTypes.ARRAY)
     private List<Integer> melhorRota;
 
+    @JdbcTypeCode(SqlTypes.ARRAY)
+    private List<Double> melhoresFitnessPorGeracao;
+
     private String mensagemErro;
 
     @Version
@@ -63,12 +66,13 @@ public class Roteirizacao {
         this.status = StatusRoteirizacao.EM_ANDAMENTO;
     }
 
-    public void concluir(double melhorFitnessPopulacaoInicial, double melhorFitnessPopulacaoFinal, List<Integer> melhorRota, Instant dataFim) {
+    public void concluir(double melhorFitnessPopulacaoInicial, double melhorFitnessPopulacaoFinal, List<Integer> melhorRota, List<Double> melhoresFitnessPorGeracao, Instant dataFim) {
         validarEmAndamento();
 
         this.melhorFitnessPopulacaoInicial = melhorFitnessPopulacaoInicial;
         this.melhorFitnessPopulacaoFinal = melhorFitnessPopulacaoFinal;
         this.melhorRota = melhorRota;
+        this.melhoresFitnessPorGeracao = melhoresFitnessPorGeracao;
         this.dataFim = dataFim;
         this.status = StatusRoteirizacao.CONCLUIDA;
     }
@@ -135,6 +139,10 @@ public class Roteirizacao {
 
     public List<Integer> getMelhorRota() {
         return melhorRota;
+    }
+
+    public List<Double> getMelhoresFitnessPorGeracao() {
+        return melhoresFitnessPorGeracao;
     }
 
     public String getMensagemErro() {

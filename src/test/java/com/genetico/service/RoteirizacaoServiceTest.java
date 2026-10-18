@@ -56,14 +56,16 @@ class RoteirizacaoServiceTest {
                     return endereco;
                 })
                 .toList());
+
         var roteirizacao = new Roteirizacao.Builder()
                 .rota(rota)
+                .quantidadeGeracoes(2)
                 .build();
 
         when(roteirizacaoRepository.buscarPorIdComEnderecosDaRota(7))
                 .thenReturn(Optional.of(roteirizacao));
 
-        roteirizacaoService.concluir(7, new ConclusaoRoteirizacaoRequest(1500.2, 1234.5, List.of(30, 10, 20)));
+        roteirizacaoService.concluir(7, new ConclusaoRoteirizacaoRequest(1500.2, 1234.5, List.of(30, 10, 20), List.of(1500.2, 1350.0, 1234.5)));
 
         verify(roteirizacaoRepository).save(roteirizacao);
 
@@ -71,6 +73,7 @@ class RoteirizacaoServiceTest {
         assertEquals(1500.2, roteirizacao.getMelhorFitnessPopulacaoInicial());
         assertEquals(1234.5, roteirizacao.getMelhorFitnessPopulacaoFinal());
         assertEquals(List.of(30, 10, 20), roteirizacao.getMelhorRota());
+        assertEquals(List.of(1500.2, 1350.0, 1234.5), roteirizacao.getMelhoresFitnessPorGeracao());
         assertEquals(AGORA, roteirizacao.getDataFim());
     }
 
@@ -91,7 +94,7 @@ class RoteirizacaoServiceTest {
                         .build()));
 
         var excecao = assertThrows(ResponseStatusException.class,
-                () -> roteirizacaoService.concluir(7, new ConclusaoRoteirizacaoRequest(1500.2, 1234.5, List.of(30, 10, 99))));
+                () -> roteirizacaoService.concluir(7, new ConclusaoRoteirizacaoRequest(1500.2, 1234.5, List.of(30, 10, 99), List.of(1500.2, 1350.0, 1234.5))));
 
         assertEquals(HttpStatus.BAD_REQUEST, excecao.getStatusCode());
     }
@@ -113,7 +116,7 @@ class RoteirizacaoServiceTest {
                         .build()));
 
         var excecao = assertThrows(ResponseStatusException.class,
-                () -> roteirizacaoService.concluir(7, new ConclusaoRoteirizacaoRequest(1500.2, 1234.5, List.of(30, 10, 20, 10))));
+                () -> roteirizacaoService.concluir(7, new ConclusaoRoteirizacaoRequest(1500.2, 1234.5, List.of(30, 10, 20, 10), List.of(1500.2, 1350.0, 1234.5))));
 
         assertEquals(HttpStatus.BAD_REQUEST, excecao.getStatusCode());
     }
@@ -128,6 +131,7 @@ class RoteirizacaoServiceTest {
                     return endereco;
                 })
                 .toList());
+
         var roteirizacao = new Roteirizacao.Builder()
                 .rota(rota)
                 .build();
@@ -136,12 +140,63 @@ class RoteirizacaoServiceTest {
                 .thenReturn(Optional.of(roteirizacao));
 
         assertThrows(ResponseStatusException.class,
-                () -> roteirizacaoService.concluir(7, new ConclusaoRoteirizacaoRequest(1500.2, 1234.5, List.of(30, 10, 99))));
+                () -> roteirizacaoService.concluir(7, new ConclusaoRoteirizacaoRequest(1500.2, 1234.5, List.of(30, 10, 99), List.of(1500.2, 1350.0, 1234.5))));
 
         verify(roteirizacaoRepository).save(roteirizacao);
 
         assertEquals(StatusRoteirizacao.FALHA, roteirizacao.getStatus());
         assertEquals("A melhor rota devolvida pelo algoritmo genético não corresponde aos endereços da rota: [30, 10, 99]", roteirizacao.getMensagemErro());
+    }
+
+    @Test
+    @DisplayName("Deve retornar erro 400 quando a quantidade de fitness por geração não corresponder às gerações da roteirização")
+    void deveRetornarErro400QuandoQuantidadeDeFitnessPorGeracaoNaoCorresponderAsGeracoesDaRoteirizacao() {
+        var rota = new Rota(Stream.of(10, 20, 30)
+                .map(id -> {
+                    var endereco = new Endereco();
+                    endereco.setId(id);
+                    return endereco;
+                })
+                .toList());
+
+        when(roteirizacaoRepository.buscarPorIdComEnderecosDaRota(7))
+                .thenReturn(Optional.of(new Roteirizacao.Builder()
+                        .rota(rota)
+                        .quantidadeGeracoes(2)
+                        .build()));
+
+        var excecao = assertThrows(ResponseStatusException.class,
+                () -> roteirizacaoService.concluir(7, new ConclusaoRoteirizacaoRequest(1500.2, 1234.5, List.of(30, 10, 20), List.of(1500.2, 1234.5))));
+
+        assertEquals(HttpStatus.BAD_REQUEST, excecao.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("Deve marcar a roteirização como falha quando a quantidade de fitness por geração não corresponder às gerações da roteirização")
+    void deveMarcarRoteirizacaoComoFalhaQuandoQuantidadeDeFitnessPorGeracaoNaoCorresponderAsGeracoesDaRoteirizacao() {
+        var rota = new Rota(Stream.of(10, 20, 30)
+                .map(id -> {
+                    var endereco = new Endereco();
+                    endereco.setId(id);
+                    return endereco;
+                })
+                .toList());
+
+        var roteirizacao = new Roteirizacao.Builder()
+                .rota(rota)
+                .quantidadeGeracoes(2)
+                .build();
+
+        when(roteirizacaoRepository.buscarPorIdComEnderecosDaRota(7))
+                .thenReturn(Optional.of(roteirizacao));
+
+        assertThrows(ResponseStatusException.class,
+                () -> roteirizacaoService.concluir(7, new ConclusaoRoteirizacaoRequest(1500.2, 1234.5, List.of(30, 10, 20), List.of(1500.2, 1234.5))));
+
+        verify(roteirizacaoRepository).save(roteirizacao);
+
+        assertEquals(StatusRoteirizacao.FALHA, roteirizacao.getStatus());
+        assertEquals("O algoritmo genético devolveu 2 valores de melhor fitness por geração, mas eram esperados 3 (população inicial e 2 gerações)", roteirizacao.getMensagemErro());
     }
 
     @Test
@@ -168,7 +223,7 @@ class RoteirizacaoServiceTest {
                 .thenReturn(Optional.empty());
 
         var excecao = assertThrows(ResponseStatusException.class,
-                () -> roteirizacaoService.concluir(404, new ConclusaoRoteirizacaoRequest(1500.2, 1234.5, List.of(30, 10, 20))));
+                () -> roteirizacaoService.concluir(404, new ConclusaoRoteirizacaoRequest(1500.2, 1234.5, List.of(30, 10, 20), List.of(1500.2, 1350.0, 1234.5))));
 
         assertEquals(HttpStatus.NOT_FOUND, excecao.getStatusCode());
         assertEquals("Roteirização de ID 404 não encontrada", excecao.getReason());
@@ -201,6 +256,7 @@ class RoteirizacaoServiceTest {
 
         var roteirizacao = new Roteirizacao.Builder()
                 .rota(rota)
+                .quantidadeGeracoes(2)
                 .build();
 
         when(roteirizacaoRepository.buscarPorIdComEnderecosDaRota(7))
@@ -210,7 +266,7 @@ class RoteirizacaoServiceTest {
                 .thenThrow(new ObjectOptimisticLockingFailureException(Roteirizacao.class, 7));
 
         assertThrows(RoteirizacaoFinalizadaException.class,
-                () -> roteirizacaoService.concluir(7, new ConclusaoRoteirizacaoRequest(1500.2, 1234.5, List.of(30, 10, 20))));
+                () -> roteirizacaoService.concluir(7, new ConclusaoRoteirizacaoRequest(1500.2, 1234.5, List.of(30, 10, 20), List.of(1500.2, 1350.0, 1234.5))));
     }
 
     @Test
