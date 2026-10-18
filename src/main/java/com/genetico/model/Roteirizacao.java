@@ -53,13 +53,13 @@ public class Roteirizacao {
 
     }
 
-    public Roteirizacao(Rota rota, int tamanhoPopulacao, int quantidadeGeracoes, int chanceOcorrenciaMutacao, int chanceOcorrenciaCrossover, Instant dataInicio) {
-        this.rota = rota;
-        this.tamanhoPopulacao = tamanhoPopulacao;
-        this.quantidadeGeracoes = quantidadeGeracoes;
-        this.chanceOcorrenciaMutacao = chanceOcorrenciaMutacao;
-        this.chanceOcorrenciaCrossover = chanceOcorrenciaCrossover;
-        this.dataInicio = dataInicio;
+    private Roteirizacao(Builder builder) {
+        this.rota = builder.rota;
+        this.tamanhoPopulacao = builder.tamanhoPopulacao;
+        this.quantidadeGeracoes = builder.quantidadeGeracoes;
+        this.chanceOcorrenciaMutacao = builder.chanceOcorrenciaMutacao;
+        this.chanceOcorrenciaCrossover = builder.chanceOcorrenciaCrossover;
+        this.dataInicio = builder.dataInicio;
         this.status = StatusRoteirizacao.EM_ANDAMENTO;
     }
 
@@ -139,5 +139,48 @@ public class Roteirizacao {
 
     public String getMensagemErro() {
         return mensagemErro;
+    }
+
+    public static class Builder {
+        private Rota rota;
+        private int tamanhoPopulacao;
+        private int quantidadeGeracoes;
+        private int chanceOcorrenciaMutacao;
+        private int chanceOcorrenciaCrossover;
+        private Instant dataInicio;
+
+        public Builder rota(Rota rota) {
+            this.rota = rota;
+            return this;
+        }
+
+        public Builder tamanhoPopulacao(int tamanhoPopulacao) {
+            this.tamanhoPopulacao = tamanhoPopulacao;
+            return this;
+        }
+
+        public Builder quantidadeGeracoes(int quantidadeGeracoes) {
+            this.quantidadeGeracoes = quantidadeGeracoes;
+            return this;
+        }
+
+        public Builder chanceOcorrenciaMutacao(int chanceOcorrenciaMutacao) {
+            this.chanceOcorrenciaMutacao = chanceOcorrenciaMutacao;
+            return this;
+        }
+
+        public Builder chanceOcorrenciaCrossover(int chanceOcorrenciaCrossover) {
+            this.chanceOcorrenciaCrossover = chanceOcorrenciaCrossover;
+            return this;
+        }
+
+        public Builder dataInicio(Instant dataInicio) {
+            this.dataInicio = dataInicio;
+            return this;
+        }
+
+        public Roteirizacao build() {
+            return new Roteirizacao(this);
+        }
     }
 }

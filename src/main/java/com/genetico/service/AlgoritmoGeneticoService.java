@@ -52,12 +52,14 @@ public class AlgoritmoGeneticoService {
 
         var distancias = distanciaService.obterDistancias(idsEnderecos);
 
-        var roteirizacao = roteirizacaoRepository.save(new Roteirizacao(rota,
-                tamanhoPopulacao,
-                quantidadeGeracoes,
-                chanceOcorrenciaMutacao,
-                chanceOcorrenciaCrossover,
-                Instant.now(clock)));
+        var roteirizacao = roteirizacaoRepository.save(new Roteirizacao.Builder()
+                .rota(rota)
+                .tamanhoPopulacao(tamanhoPopulacao)
+                .quantidadeGeracoes(quantidadeGeracoes)
+                .chanceOcorrenciaMutacao(chanceOcorrenciaMutacao)
+                .chanceOcorrenciaCrossover(chanceOcorrenciaCrossover)
+                .dataInicio(Instant.now(clock))
+                .build());
 
         var request = new AlgoritmoGeneticoRequest(roteirizacao.getId(),
                 distancias,

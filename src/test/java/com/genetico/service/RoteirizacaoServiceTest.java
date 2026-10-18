@@ -56,7 +56,9 @@ class RoteirizacaoServiceTest {
                     return endereco;
                 })
                 .toList());
-        var roteirizacao = new Roteirizacao(rota, 100, 50, 10, 75, AGORA.minusSeconds(60));
+        var roteirizacao = new Roteirizacao.Builder()
+                .rota(rota)
+                .build();
 
         when(roteirizacaoRepository.buscarPorIdComEnderecosDaRota(7))
                 .thenReturn(Optional.of(roteirizacao));
@@ -84,7 +86,9 @@ class RoteirizacaoServiceTest {
                 .toList());
 
         when(roteirizacaoRepository.buscarPorIdComEnderecosDaRota(7))
-                .thenReturn(Optional.of(new Roteirizacao(rota, 100, 50, 10, 75, AGORA.minusSeconds(60))));
+                .thenReturn(Optional.of(new Roteirizacao.Builder()
+                        .rota(rota)
+                        .build()));
 
         var excecao = assertThrows(ResponseStatusException.class,
                 () -> roteirizacaoService.concluir(7, new ConclusaoRoteirizacaoRequest(1500.2, 1234.5, List.of(30, 10, 99))));
@@ -104,7 +108,9 @@ class RoteirizacaoServiceTest {
                 .toList());
 
         when(roteirizacaoRepository.buscarPorIdComEnderecosDaRota(7))
-                .thenReturn(Optional.of(new Roteirizacao(rota, 100, 50, 10, 75, AGORA.minusSeconds(60))));
+                .thenReturn(Optional.of(new Roteirizacao.Builder()
+                        .rota(rota)
+                        .build()));
 
         var excecao = assertThrows(ResponseStatusException.class,
                 () -> roteirizacaoService.concluir(7, new ConclusaoRoteirizacaoRequest(1500.2, 1234.5, List.of(30, 10, 20, 10))));
@@ -122,7 +128,9 @@ class RoteirizacaoServiceTest {
                     return endereco;
                 })
                 .toList());
-        var roteirizacao = new Roteirizacao(rota, 100, 50, 10, 75, AGORA.minusSeconds(60));
+        var roteirizacao = new Roteirizacao.Builder()
+                .rota(rota)
+                .build();
 
         when(roteirizacaoRepository.buscarPorIdComEnderecosDaRota(7))
                 .thenReturn(Optional.of(roteirizacao));
@@ -139,7 +147,7 @@ class RoteirizacaoServiceTest {
     @Test
     @DisplayName("Deve marcar a roteirização como falha com a mensagem recebida do algoritmo")
     void deveMarcarRoteirizacaoComoFalhaComMensagemRecebidaDoAlgoritmo() {
-        var roteirizacao = new Roteirizacao(new Rota(List.of()), 100, 50, 10, 75, AGORA.minusSeconds(60));
+        var roteirizacao = new Roteirizacao.Builder().build();
 
         when(roteirizacaoRepository.buscarPorIdComEnderecosDaRota(7))
                 .thenReturn(Optional.of(roteirizacao));
@@ -191,7 +199,9 @@ class RoteirizacaoServiceTest {
                 })
                 .toList());
 
-        var roteirizacao = new Roteirizacao(rota, 100, 50, 10, 75, AGORA.minusSeconds(60));
+        var roteirizacao = new Roteirizacao.Builder()
+                .rota(rota)
+                .build();
 
         when(roteirizacaoRepository.buscarPorIdComEnderecosDaRota(7))
                 .thenReturn(Optional.of(roteirizacao));
@@ -206,7 +216,7 @@ class RoteirizacaoServiceTest {
     @Test
     @DisplayName("Deve retornar erro 409 quando outra requisição finalizar a roteirização durante o registro da falha")
     void deveRetornarErro409QuandoOutraRequisicaoFinalizarRoteirizacaoDuranteRegistroDaFalha() {
-        var roteirizacao = new Roteirizacao(new Rota(List.of()), 100, 50, 10, 75, AGORA.minusSeconds(60));
+        var roteirizacao = new Roteirizacao.Builder().build();
 
         when(roteirizacaoRepository.buscarPorIdComEnderecosDaRota(7))
                 .thenReturn(Optional.of(roteirizacao));
@@ -221,7 +231,9 @@ class RoteirizacaoServiceTest {
     @Test
     @DisplayName("Deve marcar como falha as roteirizações em andamento que excederam o tempo limite")
     void deveMarcarComoFalhaRoteirizacoesEmAndamentoQueExcederamTempoLimite() {
-        var roteirizacao = new Roteirizacao(new Rota(List.of()), 100, 50, 10, 75, AGORA.minus(Duration.ofDays(2)));
+        var roteirizacao = new Roteirizacao.Builder()
+                .dataInicio(AGORA.minus(Duration.ofDays(2)))
+                .build();
 
         when(roteirizacaoRepository.buscarPorStatusIniciadasAntesDe(StatusRoteirizacao.EM_ANDAMENTO, AGORA.minus(Duration.ofDays(1))))
                 .thenReturn(List.of(roteirizacao));
@@ -238,8 +250,13 @@ class RoteirizacaoServiceTest {
     @Test
     @DisplayName("Deve continuar expirando as demais roteirizações quando uma delas for finalizada por outra requisição")
     void deveContinuarExpirandoDemaisRoteirizacoesQuandoUmaForFinalizadaPorOutraRequisicao() {
-        var roteirizacaoFinalizadaPorOutraRequisicao = new Roteirizacao(new Rota(List.of()), 100, 50, 10, 75, AGORA.minus(Duration.ofDays(3)));
-        var roteirizacaoSemResposta = new Roteirizacao(new Rota(List.of()), 100, 50, 10, 75, AGORA.minus(Duration.ofDays(2)));
+        var roteirizacaoFinalizadaPorOutraRequisicao = new Roteirizacao.Builder()
+                .dataInicio(AGORA.minus(Duration.ofDays(3)))
+                .build();
+
+        var roteirizacaoSemResposta = new Roteirizacao.Builder()
+                .dataInicio(AGORA.minus(Duration.ofDays(2)))
+                .build();
 
         when(roteirizacaoRepository.buscarPorStatusIniciadasAntesDe(StatusRoteirizacao.EM_ANDAMENTO, AGORA.minus(Duration.ofDays(1))))
                 .thenReturn(List.of(roteirizacaoFinalizadaPorOutraRequisicao, roteirizacaoSemResposta));
