@@ -3,7 +3,7 @@ package com.genetico.dto;
 import java.util.List;
 
 public record AlgoritmoGeneticoRequest(int idRoteirizacao,
-                                       List<DistanciaResponse> distancias,
+                                       List<DistanciaRequest> distancias,
                                        List<EnderecoRequest> enderecos,
                                        int tamanhoPopulacao,
                                        int quantidadeGeracoes,

@@ -2,7 +2,7 @@ package com.genetico.service;
 
 import com.genetico.dto.AlgoritmoGeneticoRequest;
 import com.genetico.dto.EnderecoRequest;
-import com.genetico.dto.DistanciaResponse;
+import com.genetico.dto.DistanciaRequest;
 import com.genetico.enums.StatusRoteirizacao;
 import com.genetico.exception.SolicitacaoRoteirizacaoException;
 import com.genetico.model.Endereco;
@@ -113,7 +113,7 @@ class AlgoritmoGeneticoServiceTest {
         when(rotaRepository.buscarPorIdComEnderecos(7))
                 .thenReturn(Optional.of(rota));
 
-        var distancias = List.of(new DistanciaResponse(10, 20, 125.5), new DistanciaResponse(20, 10, 130.0));
+        var distancias = List.of(new DistanciaRequest(10, 20, 125.5), new DistanciaRequest(20, 10, 130.0));
 
         when(distanciaService.obterDistancias(List.of(10, 20, 30)))
                 .thenReturn(distancias);

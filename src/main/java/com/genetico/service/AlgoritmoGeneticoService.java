@@ -50,7 +50,7 @@ public class AlgoritmoGeneticoService {
                 .map(Endereco::getId)
                 .toList();
 
-        var distanciaResponse = distanciaService.obterDistancias(idsEnderecos);
+        var distancias = distanciaService.obterDistancias(idsEnderecos);
 
         var roteirizacao = roteirizacaoRepository.save(new Roteirizacao(rota,
                 tamanhoPopulacao,
@@ -60,7 +60,7 @@ public class AlgoritmoGeneticoService {
                 Instant.now(clock)));
 
         var request = new AlgoritmoGeneticoRequest(roteirizacao.getId(),
-                distanciaResponse,
+                distancias,
                 enderecos.stream()
                         .map(endereco -> new EnderecoRequest(endereco.getId(), endereco.getLatitude(), endereco.getLongitude()))
                         .toList(),

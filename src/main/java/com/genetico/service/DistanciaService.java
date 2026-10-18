@@ -1,7 +1,7 @@
 package com.genetico.service;
 
 import com.genetico.api.IntegracaoLocationIQAPI;
-import com.genetico.dto.DistanciaResponse;
+import com.genetico.dto.DistanciaRequest;
 import com.genetico.model.Distancia;
 import com.genetico.model.DistanciaId;
 import com.genetico.model.Endereco;
@@ -62,7 +62,7 @@ public class DistanciaService {
         log.info("Distância entre endereço de ID {} e ID {} armazenada com sucesso na base de dados", origemId, destinoId);
     }
 
-    public List<DistanciaResponse> obterDistancias(List<Integer> idsEnderecos) {
+    public List<DistanciaRequest> obterDistancias(List<Integer> idsEnderecos) {
         var distanciasIds = criarDistanciasIds(idsEnderecos);
         var distanciasExistentesBanco = distanciaRepository.findAllById(distanciasIds);
 
@@ -74,7 +74,7 @@ public class DistanciaService {
         if (enderecosParaBuscaAPI.isEmpty()) {
             log.info("Todos os endereços já possuem suas combinações de distâncias. Não é necessário busca na API");
 
-            return converterParaResponse(distanciasExistentesBanco);
+            return converterParaRequest(distanciasExistentesBanco);
         }
 
         var distanciasParaSalvar = buscarDistanciasNovas(enderecosParaBuscaAPI, distanciasExistentesBanco);
@@ -83,7 +83,7 @@ public class DistanciaService {
         var todasDistancias = new ArrayList<>(distanciasExistentesBanco);
         todasDistancias.addAll(distanciasParaSalvar);
 
-        return converterParaResponse(todasDistancias);
+        return converterParaRequest(todasDistancias);
     }
 
     private List<DistanciaId> criarDistanciasIds(List<Integer> idsEnderecos) {
@@ -139,9 +139,9 @@ public class DistanciaService {
         distanciaRepository.saveAll(distancias);
     }
 
-    private List<DistanciaResponse> converterParaResponse(List<Distancia> distancias) {
+    private List<DistanciaRequest> converterParaRequest(List<Distancia> distancias) {
         return distancias.stream()
-                .map(d -> new DistanciaResponse(
+                .map(d -> new DistanciaRequest(
                         d.getOrigem().getId(),
                         d.getDestino().getId(),
                         d.getDistancia()

@@ -79,34 +79,34 @@ class DistanciaServiceTest {
         when(enderecoRepository.findAllById(any()))
                 .thenReturn(List.of(endereco, endereco2, endereco3));
 
-        var distanciaResponses = distanciaService.obterDistancias(List.of(1, 2, 3));
+        var distanciaRequests = distanciaService.obterDistancias(List.of(1, 2, 3));
 
         verify(integracaoLocationIQAPI, never()).buscarDistanciaEnderecos(any());
-        assertEquals(6, distanciaResponses.size());
+        assertEquals(6, distanciaRequests.size());
 
-        assertEquals(1, distanciaResponses.getFirst().idOrigem());
-        assertEquals(2, distanciaResponses.getFirst().idDestino());
-        assertEquals(50, distanciaResponses.getFirst().distancia());
+        assertEquals(1, distanciaRequests.getFirst().idOrigem());
+        assertEquals(2, distanciaRequests.getFirst().idDestino());
+        assertEquals(50, distanciaRequests.getFirst().distancia());
 
-        assertEquals(1, distanciaResponses.get(1).idOrigem());
-        assertEquals(3, distanciaResponses.get(1).idDestino());
-        assertEquals(60, distanciaResponses.get(1).distancia());
+        assertEquals(1, distanciaRequests.get(1).idOrigem());
+        assertEquals(3, distanciaRequests.get(1).idDestino());
+        assertEquals(60, distanciaRequests.get(1).distancia());
 
-        assertEquals(2, distanciaResponses.get(2).idOrigem());
-        assertEquals(1, distanciaResponses.get(2).idDestino());
-        assertEquals(70, distanciaResponses.get(2).distancia());
+        assertEquals(2, distanciaRequests.get(2).idOrigem());
+        assertEquals(1, distanciaRequests.get(2).idDestino());
+        assertEquals(70, distanciaRequests.get(2).distancia());
 
-        assertEquals(2, distanciaResponses.get(3).idOrigem());
-        assertEquals(3, distanciaResponses.get(3).idDestino());
-        assertEquals(80, distanciaResponses.get(3).distancia());
+        assertEquals(2, distanciaRequests.get(3).idOrigem());
+        assertEquals(3, distanciaRequests.get(3).idDestino());
+        assertEquals(80, distanciaRequests.get(3).distancia());
 
-        assertEquals(3, distanciaResponses.get(4).idOrigem());
-        assertEquals(1, distanciaResponses.get(4).idDestino());
-        assertEquals(90, distanciaResponses.get(4).distancia());
+        assertEquals(3, distanciaRequests.get(4).idOrigem());
+        assertEquals(1, distanciaRequests.get(4).idDestino());
+        assertEquals(90, distanciaRequests.get(4).distancia());
 
-        assertEquals(3, distanciaResponses.get(5).idOrigem());
-        assertEquals(2, distanciaResponses.get(5).idDestino());
-        assertEquals(100, distanciaResponses.get(5).distancia());
+        assertEquals(3, distanciaRequests.get(5).idOrigem());
+        assertEquals(2, distanciaRequests.get(5).idDestino());
+        assertEquals(100, distanciaRequests.get(5).distancia());
     }
 
     @Test
@@ -150,8 +150,8 @@ class DistanciaServiceTest {
                         new Distancia(endereco3, endereco3, 0)
                 ));
 
-        var distanciaResponses = distanciaService.obterDistancias(List.of(1, 2, 3, 4));
-        assertEquals(12, distanciaResponses.size());
+        var distanciaRequests = distanciaService.obterDistancias(List.of(1, 2, 3, 4));
+        assertEquals(12, distanciaRequests.size());
 
         ArgumentCaptor<List<Endereco>> enderecosCaptor = ArgumentCaptor.forClass(List.class);
         verify(integracaoLocationIQAPI, times(1)).buscarDistanciaEnderecos(enderecosCaptor.capture());
