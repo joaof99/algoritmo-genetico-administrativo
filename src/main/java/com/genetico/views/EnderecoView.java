@@ -179,7 +179,7 @@ public class EnderecoView extends VerticalLayout {
     }
 
     private Button criarBotaoBuscaApi() {
-        var botaoBuscaApi = new Button("Buscar coordenadas", VaadinIcon.SEARCH.create());
+        var botaoBuscaApi = new Button("Buscar latitude/longitude", VaadinIcon.SEARCH.create());
         botaoBuscaApi.setId("botao-busca-api");
         botaoBuscaApi.setTooltipText("Todos os campos de endereço marcados com * são obrigatórios para pesquisar na API");
 
@@ -195,7 +195,9 @@ public class EnderecoView extends VerticalLayout {
 
                     var numeroEndereco = numero.getValue().isBlank() ? null : numero.getValue();
 
-                    var coordenadaGeografica = integracaoLocationIQAPI.buscarCoordenadaGeografica(logradouro.getValue(), numeroEndereco, bairro.getValue(), uf.getValue(), cidade.getValue(), cep.getValue());
+                    var coordenadaGeografica = integracaoLocationIQAPI.buscarCoordenadaGeografica(logradouro.getValue(), numeroEndereco,
+                            bairro.getValue(), uf.getValue(),
+                            cidade.getValue(), cep.getValue());
 
                     latitude.setValue(coordenadaGeografica.latitude());
                     longitude.setValue(coordenadaGeografica.longitude());
