@@ -47,7 +47,7 @@ public class RotaView extends VerticalLayout {
     private Component criarSecaoCadastroRota() {
         var secao = new VerticalLayout(new H3("Cadastro de rota"), comboBoxEnderecos, botaoCadastroRota);
         secao.addClassName("cartao");
-        secao.setHorizontalComponentAlignment(Alignment.END, botaoCadastroRota);
+        secao.setHorizontalComponentAlignment(Alignment.CENTER, botaoCadastroRota);
 
         return secao;
     }

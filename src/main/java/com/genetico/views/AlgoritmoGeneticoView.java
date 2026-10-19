@@ -114,8 +114,9 @@ public class AlgoritmoGeneticoView extends VerticalLayout {
                 criarFormulario(),
                 botaoRoteirizacao
         );
+
         secao.addClassName("cartao");
-        secao.setHorizontalComponentAlignment(Alignment.END, botaoRoteirizacao);
+        secao.setHorizontalComponentAlignment(Alignment.CENTER, botaoRoteirizacao);
 
         return secao;
     }

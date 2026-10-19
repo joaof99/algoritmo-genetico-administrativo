@@ -77,7 +77,7 @@ public class EnderecoView extends VerticalLayout {
 
         var secao = new VerticalLayout(cabecalho, criarFormularioCadastroEndereco(), botaoCadastroEndereco);
         secao.addClassName("cartao");
-        secao.setHorizontalComponentAlignment(Alignment.END, botaoCadastroEndereco);
+        secao.setHorizontalComponentAlignment(Alignment.CENTER, botaoCadastroEndereco);
 
         return secao;
     }
