@@ -13,6 +13,7 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
+import com.vaadin.flow.dom.ThemeList;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.PageTitle;
@@ -30,7 +31,7 @@ public class MainLayout extends AppLayout implements AfterNavigationObserver {
         setPrimarySection(Section.DRAWER);
         addToDrawer(criarLogo(), criarMenu());
         addToNavbar(criarCabecalho());
-        aplicarTema(Boolean.TRUE.equals(VaadinSession.getCurrent().getAttribute(ATRIBUTO_TEMA_CLARO)));
+        aplicarTemaDaSessao();
     }
 
     private HorizontalLayout criarLogo() {
@@ -75,21 +76,30 @@ public class MainLayout extends AppLayout implements AfterNavigationObserver {
     private void alternarTema() {
         var temaClaro = UI.getCurrent().getElement().getThemeList().contains(Lumo.DARK);
         VaadinSession.getCurrent().setAttribute(ATRIBUTO_TEMA_CLARO, temaClaro);
-        aplicarTema(temaClaro);
+
+        aplicarTemaDaSessao();
     }
 
-    private void aplicarTema(boolean temaClaro) {
+    private void aplicarTemaDaSessao() {
         var temas = UI.getCurrent().getElement().getThemeList();
 
-        if (temaClaro) {
-            temas.remove(Lumo.DARK);
-            botaoTema.setText("Tema escuro");
-            botaoTema.setIcon(VaadinIcon.MOON_O.create());
+        if (Boolean.TRUE.equals(VaadinSession.getCurrent().getAttribute(ATRIBUTO_TEMA_CLARO))) {
+            aplicarTemaClaro(temas);
         } else {
-            temas.add(Lumo.DARK);
-            botaoTema.setText("Tema claro");
-            botaoTema.setIcon(VaadinIcon.SUN_O.create());
+            aplicarTemaEscuro(temas);
         }
+    }
+
+    private void aplicarTemaClaro(ThemeList temas) {
+        temas.remove(Lumo.DARK);
+        botaoTema.setText("Tema escuro");
+        botaoTema.setIcon(VaadinIcon.MOON_O.create());
+    }
+
+    private void aplicarTemaEscuro(ThemeList temas) {
+        temas.add(Lumo.DARK);
+        botaoTema.setText("Tema claro");
+        botaoTema.setIcon(VaadinIcon.SUN_O.create());
     }
 
     @Override
