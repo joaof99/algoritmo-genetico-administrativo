@@ -74,8 +74,8 @@ public class MainLayout extends AppLayout implements AfterNavigationObserver {
     }
 
     private void alternarTema() {
-        var temaClaro = UI.getCurrent().getElement().getThemeList().contains(Lumo.DARK);
-        VaadinSession.getCurrent().setAttribute(ATRIBUTO_TEMA_CLARO, temaClaro);
+        var trocarParaTemaClaro = UI.getCurrent().getElement().getThemeList().contains(Lumo.DARK);
+        VaadinSession.getCurrent().setAttribute(ATRIBUTO_TEMA_CLARO, trocarParaTemaClaro);
 
         aplicarTemaDaSessao();
     }
