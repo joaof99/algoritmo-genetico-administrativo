@@ -50,7 +50,8 @@ public class RoteirizacaoService {
         var quantidadePopulacoes = roteirizacao.getQuantidadeGeracoes() + 1;
 
         if (request.melhoresFitnessPorGeracao().size() != quantidadePopulacoes) {
-            throw recusarConclusao(roteirizacao, String.format("O algoritmo genético devolveu %d valores de melhor fitness por geração, mas eram esperados %d (população inicial e %d gerações)",
+            throw recusarConclusao(roteirizacao,
+                    String.format("O algoritmo genético devolveu %d valores de melhor fitness por geração, mas eram esperados %d (população inicial e %d gerações)",
                     request.melhoresFitnessPorGeracao().size(),
                     quantidadePopulacoes,
                     roteirizacao.getQuantidadeGeracoes()));
