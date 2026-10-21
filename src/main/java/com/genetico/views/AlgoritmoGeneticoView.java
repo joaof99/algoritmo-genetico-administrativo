@@ -109,11 +109,7 @@ public class AlgoritmoGeneticoView extends VerticalLayout {
         cbxRotas = criarCbx();
         var botaoRoteirizacao = criarBotaoRoteirizacao();
 
-        var secao = new VerticalLayout(
-                new H3("Solicitar roteirização"),
-                criarFormulario(),
-                botaoRoteirizacao
-        );
+        var secao = new VerticalLayout(new H3("Solicitar roteirização"), criarFormulario(), botaoRoteirizacao);
 
         secao.addClassName("cartao");
         secao.setHorizontalComponentAlignment(Alignment.CENTER, botaoRoteirizacao);
@@ -143,10 +139,7 @@ public class AlgoritmoGeneticoView extends VerticalLayout {
     private FormLayout criarFormulario() {
         var formulario = new FormLayout();
         formulario.setId("form-solicitacao-roteirizacao");
-        formulario.setResponsiveSteps(
-                new FormLayout.ResponsiveStep("0", 1),
-                new FormLayout.ResponsiveStep("600px", 2)
-        );
+        formulario.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 1), new FormLayout.ResponsiveStep("600px", 2));
 
         txtTamanhoPopulacao = new IntegerField("Tamanho da população (20 a 500)");
         txtTamanhoPopulacao.setId("txt-tamanho-populacao");
