@@ -1,10 +1,12 @@
 package com.genetico.views;
 
+import com.genetico.enums.StatusRoteirizacao;
 import com.genetico.exception.SolicitacaoRoteirizacaoException;
 import com.genetico.model.Endereco;
 import com.genetico.model.Rota;
 import com.genetico.model.Roteirizacao;
 import com.genetico.service.AlgoritmoGeneticoService;
+import com.genetico.service.DistanciaService;
 import com.genetico.service.RotaService;
 import com.genetico.service.RoteirizacaoService;
 import com.vaadin.flow.component.Component;
@@ -15,12 +17,10 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.H3;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.shared.Tooltip;
 import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
@@ -29,7 +29,6 @@ import org.springframework.data.domain.PageRequest;
 
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Route(value = "solicitacao-roteirizacao", layout = MainLayout.class)
@@ -90,6 +89,7 @@ public class AlgoritmoGeneticoView extends VerticalLayout {
     private final RotaService rotaService;
     private final AlgoritmoGeneticoService algoritmoGeneticoService;
     private final RoteirizacaoService roteirizacaoService;
+    private final DistanciaService distanciaService;
     private IntegerField txtTamanhoPopulacao;
     private IntegerField txtQuantidadeGeracoes;
     private IntegerField txtChanceOcorrenciaMutacao;
@@ -98,10 +98,12 @@ public class AlgoritmoGeneticoView extends VerticalLayout {
     private Grid<Roteirizacao> gridHistorico;
     private final Binder<ParametrosAlgoritmo> binder = new Binder<>();
 
-    public AlgoritmoGeneticoView(RotaService rotaService, AlgoritmoGeneticoService algoritmoGeneticoService, RoteirizacaoService roteirizacaoService) {
+    public AlgoritmoGeneticoView(RotaService rotaService, AlgoritmoGeneticoService algoritmoGeneticoService, RoteirizacaoService roteirizacaoService,
+                                 DistanciaService distanciaService) {
         this.rotaService = rotaService;
         this.algoritmoGeneticoService = algoritmoGeneticoService;
         this.roteirizacaoService = roteirizacaoService;
+        this.distanciaService = distanciaService;
         add(criarSecaoCadastro(), criarSecaoHistorico());
     }
 
@@ -258,13 +260,11 @@ public class AlgoritmoGeneticoView extends VerticalLayout {
         grid.addColumn(roteirizacao -> String.format("Rota %d", roteirizacao.getRota().getId()))
                 .setHeader("Rota");
 
-        grid.addComponentColumn(this::criarIndicadorStatus)
+        grid.addComponentColumn(IndicadorStatusRoteirizacao::new)
                 .setKey("status")
                 .setHeader("Status");
 
-        grid.addColumn(roteirizacao -> roteirizacao.getMelhorFitnessPopulacaoFinal() == null
-                        ? "—"
-                        : String.format(Locale.of("pt", "BR"), "%.1f km", roteirizacao.getMelhorFitnessPopulacaoFinal()))
+        grid.addColumn(roteirizacao -> FormatoDistancia.formatar(roteirizacao.getMelhorFitnessPopulacaoFinal()))
                 .setHeader("Melhor fitness");
 
         grid.addColumn(roteirizacao -> FORMATO_DATA_HORA.format(roteirizacao.getDataInicio()))
@@ -272,26 +272,48 @@ public class AlgoritmoGeneticoView extends VerticalLayout {
                 .setAutoWidth(true)
                 .setFlexGrow(0);
 
+        grid.addComponentColumn(this::criarBotaoDetalhe)
+                .setKey("detalhe")
+                .setAutoWidth(true)
+                .setFlexGrow(0)
+                .setFrozenToEnd(true);
+
         grid.setItems(consulta -> roteirizacaoService
                 .buscarHistorico(PageRequest.of(consulta.getPage(), consulta.getPageSize()))
                 .stream());
 
+        grid.addItemDoubleClickListener(evento -> {
+            if (evento.getItem().getStatus() == StatusRoteirizacao.CONCLUIDA) {
+                abrirDialogDetalheRoteirizacao(evento.getItem());
+            } else {
+                Notificacao.informacao("Os detalhes da rota só são exibidos para roteirizações concluídas");
+            }
+        });
+
         return grid;
     }
 
-    private Span criarIndicadorStatus(Roteirizacao roteirizacao) {
-        var indicador = new Span(switch (roteirizacao.getStatus()) {
-            case EM_ANDAMENTO -> "Em andamento";
-            case CONCLUIDA -> "Concluída";
-            case FALHA -> "Falha";
-        });
+    private Button criarBotaoDetalhe(Roteirizacao roteirizacao) {
+        var botaoDetalhe = new Button(VaadinIcon.EYE.create(), clique -> abrirDialogDetalheRoteirizacao(roteirizacao));
+        botaoDetalhe.addThemeVariants(ButtonVariant.LUMO_ICON, ButtonVariant.LUMO_TERTIARY_INLINE);
+        botaoDetalhe.setTooltipText("Ver detalhes");
+        botaoDetalhe.setAriaLabel("Ver detalhes");
+        botaoDetalhe.setEnabled(roteirizacao.getStatus() == StatusRoteirizacao.CONCLUIDA);
 
-        indicador.addClassNames("status", String.format("status-%s", roteirizacao.getStatus().name().toLowerCase()));
+        return botaoDetalhe;
+    }
 
-        if (roteirizacao.getMensagemErro() != null) {
-            Tooltip.forComponent(indicador).setText(roteirizacao.getMensagemErro());
-        }
+    private void abrirDialogDetalheRoteirizacao(Roteirizacao roteirizacao) {
+        var idRota = roteirizacao.getRota().getId();
 
-        return indicador;
+        rotaService.buscarPorIdComEnderecos(idRota).ifPresentOrElse(
+                rota -> criarDialogDetalheRoteirizacao(roteirizacao, rota).open(),
+                () -> Notificacao.erro(String.format("Rota %d não encontrada", idRota)));
+    }
+
+    private DialogDetalheRoteirizacao criarDialogDetalheRoteirizacao(Roteirizacao roteirizacao, Rota rota) {
+        var distanciasPorTrecho = distanciaService.buscarDistanciasEntreParadasConsecutivas(roteirizacao.getMelhorRota());
+
+        return new DialogDetalheRoteirizacao(roteirizacao, rota.getEnderecos(), distanciasPorTrecho);
     }
 }
