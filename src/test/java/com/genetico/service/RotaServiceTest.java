@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -22,6 +23,20 @@ import static org.mockito.Mockito.when;
 class RotaServiceTest {
     @Mock
     private RotaRepository rotaRepository;
+
+    @Test
+    @DisplayName("Deve buscar a rota pelo id com seus endereços")
+    void deveBuscarRotaPeloIdComSeusEnderecos() {
+        var rota = new Rota();
+        var rotaService = new RotaService(rotaRepository);
+
+        when(rotaRepository.buscarPorIdComEnderecos(8))
+                .thenReturn(Optional.of(rota));
+
+        var rotaEncontrada = rotaService.buscarPorIdComEnderecos(8);
+
+        assertEquals(Optional.of(rota), rotaEncontrada);
+    }
 
     @Test
     @DisplayName("Deve buscar as rotas da página com seus endereços")

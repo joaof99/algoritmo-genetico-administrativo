@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RotaService {
@@ -21,6 +22,10 @@ public class RotaService {
 
     public List<Rota> buscarTodosComEnderecos() {
         return rotaRepository.buscarTodosComEnderecos();
+    }
+
+    public Optional<Rota> buscarPorIdComEnderecos(int id) {
+        return rotaRepository.buscarPorIdComEnderecos(id);
     }
 
     public List<Rota> buscarPaginaComEnderecos(Pageable pagina) {
