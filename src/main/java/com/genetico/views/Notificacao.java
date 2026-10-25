@@ -17,6 +17,10 @@ final class Notificacao {
         exibir(mensagem, NotificationVariant.LUMO_ERROR);
     }
 
+    static void informacao(String mensagem) {
+        exibir(mensagem, NotificationVariant.LUMO_CONTRAST);
+    }
+
     private static void exibir(String mensagem, NotificationVariant variante) {
         var notificacao = new Notification(mensagem, DURACAO_EM_MILISSEGUNDOS, Notification.Position.BOTTOM_END);
         notificacao.addThemeVariants(variante);
