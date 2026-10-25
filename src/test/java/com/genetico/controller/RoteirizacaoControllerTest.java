@@ -70,7 +70,12 @@ class RoteirizacaoControllerTest {
                         }
                         """));
 
-        verify(roteirizacaoService).concluir(7, new ConclusaoRoteirizacaoRequest(1500.2, 1234.5, List.of(30, 10, 20), List.of(1500.2, 1350.0, 1234.5)));
+        var melhorFitnessPopulacaoInicial = 1500.2;
+        var melhorFitnessPopulacaoFinal = 1234.5;
+        var melhorRota = List.of(30, 10, 20);
+        var melhoresFitnessPorGeracao = List.of(melhorFitnessPopulacaoInicial, 1350.0, melhorFitnessPopulacaoFinal);
+
+        verify(roteirizacaoService).concluir(7, new ConclusaoRoteirizacaoRequest(melhorFitnessPopulacaoInicial, melhorFitnessPopulacaoFinal, melhorRota, melhoresFitnessPorGeracao));
     }
 
     @Test

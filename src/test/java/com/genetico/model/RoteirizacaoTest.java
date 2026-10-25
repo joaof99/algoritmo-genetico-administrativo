@@ -16,10 +16,16 @@ class RoteirizacaoTest {
     void naoDevePermitirConcluirRoteirizacaoJaConcluida() {
         var roteirizacao = new Roteirizacao.Builder().build();
 
-        roteirizacao.concluir(1500.2, 1234.5, List.of(30, 10, 20), List.of(1500.2, 1234.5), Instant.parse("2026-10-13T20:05:00Z"));
+        var melhorFitnessPopulacaoInicial = 1500.2;
+        var melhorFitnessPopulacaoFinal = 1234.5;
+        var melhorRota = List.of(30, 10, 20);
+        var melhoresFitnessPorGeracao = List.of(melhorFitnessPopulacaoInicial, melhorFitnessPopulacaoFinal);
+        var dataFim = Instant.parse("2026-10-13T20:05:00Z");
+
+        roteirizacao.concluir(melhorFitnessPopulacaoInicial, melhorFitnessPopulacaoFinal, melhorRota, melhoresFitnessPorGeracao, dataFim);
 
         assertThrows(RoteirizacaoFinalizadaException.class,
-                () -> roteirizacao.concluir(1500.2, 1234.5, List.of(30, 10, 20), List.of(1500.2, 1234.5), Instant.parse("2026-10-13T20:06:00Z")));
+                () -> roteirizacao.concluir(melhorFitnessPopulacaoInicial, melhorFitnessPopulacaoFinal, melhorRota, melhoresFitnessPorGeracao, dataFim.plusSeconds(60)));
     }
 
     @Test
@@ -27,7 +33,13 @@ class RoteirizacaoTest {
     void naoDevePermitirRegistrarFalhaEmRoteirizacaoJaConcluida() {
         var roteirizacao = new Roteirizacao.Builder().build();
 
-        roteirizacao.concluir(1500.2, 1234.5, List.of(30, 10, 20), List.of(1500.2, 1234.5), Instant.parse("2026-10-13T20:05:00Z"));
+        var melhorFitnessPopulacaoInicial = 1500.2;
+        var melhorFitnessPopulacaoFinal = 1234.5;
+        var melhorRota = List.of(30, 10, 20);
+        var melhoresFitnessPorGeracao = List.of(melhorFitnessPopulacaoInicial, melhorFitnessPopulacaoFinal);
+        var dataFim = Instant.parse("2026-10-13T20:05:00Z");
+
+        roteirizacao.concluir(melhorFitnessPopulacaoInicial, melhorFitnessPopulacaoFinal, melhorRota, melhoresFitnessPorGeracao, dataFim);
 
         assertThrows(RoteirizacaoFinalizadaException.class,
                 () -> roteirizacao.falhar("Erro", Instant.parse("2026-10-13T20:06:00Z")));
@@ -40,8 +52,14 @@ class RoteirizacaoTest {
 
         roteirizacao.falhar("Erro", Instant.parse("2026-10-13T20:05:00Z"));
 
+        var melhorFitnessPopulacaoInicial = 1500.2;
+        var melhorFitnessPopulacaoFinal = 1234.5;
+        var melhorRota = List.of(30, 10, 20);
+        var melhoresFitnessPorGeracao = List.of(melhorFitnessPopulacaoInicial, melhorFitnessPopulacaoFinal);
+        var dataFim = Instant.parse("2026-10-13T20:06:00Z");
+
         assertThrows(RoteirizacaoFinalizadaException.class,
-                () -> roteirizacao.concluir(1500.2, 1234.5, List.of(30, 10, 20), List.of(1500.2, 1234.5), Instant.parse("2026-10-13T20:06:00Z")));
+                () -> roteirizacao.concluir(melhorFitnessPopulacaoInicial, melhorFitnessPopulacaoFinal, melhorRota, melhoresFitnessPorGeracao, dataFim));
     }
 
     @Test
