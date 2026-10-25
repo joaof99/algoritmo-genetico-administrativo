@@ -2,6 +2,7 @@ package com.genetico.service;
 
 import com.genetico.api.IntegracaoLocationIQAPI;
 import com.genetico.model.Distancia;
+import com.genetico.model.DistanciaId;
 import com.genetico.model.Endereco;
 import com.genetico.repository.DistanciaRepository;
 import com.genetico.repository.EnderecoRepository;
@@ -14,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -168,5 +170,29 @@ class DistanciaServiceTest {
         assertEquals(1, distanciasSalvasBanco.size());
         assertEquals(4, distanciasSalvasBanco.getFirst().getOrigem().getId());
         assertEquals(3, distanciasSalvasBanco.getFirst().getDestino().getId());
+    }
+
+    @Test
+    @DisplayName("Deve buscar no banco somente as distâncias entre paradas consecutivas")
+    void deveBuscarNoBancoSomenteDistanciasEntreParadasConsecutivas() {
+        var endereco1 = new Endereco();
+        endereco1.setId(1);
+
+        var endereco2 = new Endereco();
+        endereco2.setId(2);
+
+        var endereco3 = new Endereco();
+        endereco3.setId(3);
+
+        when(distanciaRepository.findAllById(List.of(new DistanciaId(3, 1), new DistanciaId(1, 2))))
+                .thenReturn(List.of(
+                        new Distancia(endereco3, endereco1, 12.5),
+                        new Distancia(endereco1, endereco2, 8.0))
+                );
+
+        var distancias = distanciaService.buscarDistanciasEntreParadasConsecutivas(List.of(3, 1, 2));
+
+        assertEquals(Map.of(new DistanciaId(3, 1), 12.5, new DistanciaId(1, 2), 8.0), distancias);
+        verifyNoInteractions(integracaoLocationIQAPI);
     }
 }

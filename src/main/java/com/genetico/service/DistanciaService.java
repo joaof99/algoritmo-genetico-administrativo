@@ -15,8 +15,10 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @Service
@@ -86,6 +88,22 @@ public class DistanciaService {
         return converterParaRequest(todasDistancias);
     }
 
+    public Map<DistanciaId, Double> buscarDistanciasEntreParadasConsecutivas(List<Integer> idsEnderecosEmOrdem) {
+        var quantidadeTrechos = idsEnderecosEmOrdem.size() - 1;
+
+        var distanciasIds = IntStream.range(0, quantidadeTrechos)
+                .mapToObj(indice -> new DistanciaId(idsEnderecosEmOrdem.get(indice), idsEnderecosEmOrdem.get(indice + 1)))
+                .toList();
+
+        var distanciasEntreParadas = distanciaRepository.findAllById(distanciasIds);
+
+        return distanciasEntreParadas
+                .stream()
+                .collect(Collectors.toMap(
+                        distancia -> new DistanciaId(distancia.getOrigem().getId(), distancia.getDestino().getId()),
+                        Distancia::getDistancia));
+    }
+
     private List<DistanciaId> criarDistanciasIds(List<Integer> idsEnderecos) {
         var distanciasIds = new ArrayList<DistanciaId>();
 
@@ -135,7 +153,7 @@ public class DistanciaService {
                 .toList();
     }
 
-    private void salvarDistancias(List<Distancia> distancias){
+    private void salvarDistancias(List<Distancia> distancias) {
         distanciaRepository.saveAll(distancias);
     }
 
